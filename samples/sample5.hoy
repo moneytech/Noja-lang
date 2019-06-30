@@ -1,0 +1,8 @@
+
+import 'fs' from 'C';
+
+fh = FileHandle();
+
+test = fh.open;
+
+test('hoy.txt', 'w');

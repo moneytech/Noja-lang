@@ -1,0 +1,46 @@
+
+
+fn do_shit() {
+
+  import 'sdl2' from 'C' as sdl;
+
+  sdl.init();
+
+  ctx = sdl.Context();
+
+  ctx.createWindow('Holaa come va amigoss', 300, 300);
+
+  ctx.clear();
+
+  ctx.fillRect(20, 20, 10, 10, 255, 0, 0, 0);
+
+  ctx.update();
+
+  running = true;
+
+  while running {
+
+    event = ctx.catchEvent();
+
+    if event['name'] == 'quit' {
+
+      running = false;
+
+    } else {
+
+      if event['name'] == 'keydown' {
+
+        print(event['code']);
+
+      }
+
+    }
+
+  }
+
+
+  sdl.quit();
+
+}
+
+do_shit();

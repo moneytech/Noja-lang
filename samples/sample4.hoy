@@ -1,0 +1,46 @@
+
+print('starting test');
+
+class DictWrapper {
+
+	fn __init__() {
+
+		self.data = {};
+	}
+
+	fn __insert__ (key, value) {
+
+		self.data[key] = value;
+
+	}
+
+	fn __select__ (key) {
+
+		return self.data[key];
+
+	}
+
+	fn __print__() {
+
+		print('hola fido!');
+		print(self.data);
+
+	}
+
+	fn __call__(a, b, c) {
+		print('e per di più la classe è state chiamata! (', a, ', ', b, ', ', c, ')');
+	}
+
+}
+
+d = DictWrapper();
+
+d['fly'] = 10;
+
+print(d['fly']);
+
+print(d);
+
+d(1, 3, 'hoy');
+
+print('ending test');

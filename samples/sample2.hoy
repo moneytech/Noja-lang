@@ -1,0 +1,43 @@
+
+import 'fs' from 'C';
+
+q = 0;
+
+while q < 1 {
+
+	fh = FileHandle();
+
+	path = 'test.txt';
+
+	r = fh.open(path, 'w');
+
+	if r {
+
+		fh.write('gnieeoooo');
+
+		print('File "', path, '" opened succesfully!');
+
+		array = ['Hola!', ' Bello ', 'come ', 'va', '?? (hehe)'].reverse();
+
+		while i = array.pop() {
+
+			print('writing "', i, '"');
+
+			r = fh.write(i);
+		}
+
+		print('dehehe');
+
+	} else {
+
+		print('Failed to open "', path, '"');
+
+	}
+
+	print('Byee!');
+
+	q = q + 1;
+
+}
+
+print('q is ', q);

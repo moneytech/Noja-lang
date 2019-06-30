@@ -1,0 +1,17 @@
+
+import 'fs' from 'C' as fs;
+import 'json' from 'C' as json;
+
+fh = fs.FileHandle();
+
+fh.open('samples/twitter.json', 'r');
+
+text = fh.read();
+
+n = text.length();
+
+fh.close();
+
+info = json.decode(text);
+
+print(info['statuses'][0]['entities']['user_mentions'][0]['indices'][1]);

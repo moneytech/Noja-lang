@@ -1,0 +1,8 @@
+
+import 'json' from 'C' as json;
+
+text = '{"nome": "francesco", "cognome": "cozzuto", "anni": 21, "data di nascita": [9, 7, 1998]}';
+
+info = json.decode(text);
+
+print(info);

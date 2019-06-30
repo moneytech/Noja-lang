@@ -1,0 +1,77 @@
+
+fn hoy(dict, i) {
+
+  return 1;
+}
+
+io = {};
+io['nome'] = 'Francesco';
+io['cognome'] = 'Cozzuto';
+io['anni'] = 20;
+io['shit'] = hoy;
+
+io['shit'] = ['fidofly', 2, 3][0];
+
+print(io['shit']);
+
+print(hoy(io));
+
+class TestObject {
+
+  fn __init__() {
+
+    print(self);
+
+    print('called constructor of TestObject!');
+
+
+    self.name = 'francesco';
+
+  }
+
+  fn __select__(key) {
+
+  }
+
+  fn __insert__(key) {
+
+  }
+
+  fn __print__() {
+
+    print('istance of TestObject with name = ', self.name);
+
+  }
+
+}
+
+class Reader {
+  fn __init__(fname) {
+
+    import 'fs' from 'C' as fs;
+
+    self.handler = fs.FileHandle();
+
+    self.handler.open(fname, 'r');
+
+  }
+
+  fn read(size) {
+
+    return self.handler.read(size);
+
+  }
+}
+
+istance = TestObject();
+
+istance.__init__();
+
+istance.__print__();
+
+print(TestObject);
+
+reader = Reader();
+reader.__init__('samples/sample2.hoy');
+
+print(reader.read(10));

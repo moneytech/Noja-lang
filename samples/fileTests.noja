@@ -1,0 +1,30 @@
+
+
+
+fh = FileHandle()
+
+fh.open('makefile', 'r')
+
+print(fh.tell())
+
+fh.read(10)
+
+print(fh.tell())
+
+fh.seek(0, SEEK_SET)
+
+print(fh.tell())
+
+r = fh.close()
+
+print('returned ', r)
+
+if r {
+
+    print('closed')
+
+} else {
+
+    print('nothing to close')
+
+}

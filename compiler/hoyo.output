@@ -1,0 +1,1975 @@
+Terminals unused in grammar
+
+   R_ARROW
+   NOT
+   FOR
+   DO
+   DOLLA
+
+
+Grammar
+
+    0 $accept: everything $end
+
+    1 everything: statements
+
+    2 statements: %empty
+    3           | statements statement
+
+    4 statement: exp SEMICOLON
+    5          | PRINT BRK_OP exp_list BRK_CL SEMICOLON
+    6          | BREAK SEMICOLON
+    7          | CONTINUE SEMICOLON
+    8          | BREAKPOINT SEMICOLON
+    9          | RETURN exp SEMICOLON
+   10          | ifelse_statement
+   11          | while_statement
+   12          | func_decl
+   13          | import SEMICOLON
+   14          | class_decl
+
+   15 class_decl_inner: %empty
+   16                 | class_decl_inner func_decl
+
+   17 class_decl: CLASS LABEL BRK_C_OP class_decl_inner BRK_C_CL
+
+   18 import: IMPORT STRING
+   19       | IMPORT STRING AS LABEL
+   20       | IMPORT STRING FROM STRING
+   21       | IMPORT STRING FROM STRING AS LABEL
+   22       | IMPORT STRING AS LABEL FROM STRING
+
+   23 label_list: LABEL
+   24           | label_list COMMA LABEL
+
+   25 func_decl: FUNCTION LABEL BRK_OP BRK_CL BRK_C_OP statements BRK_C_CL
+   26          | FUNCTION LABEL BRK_OP label_list BRK_CL BRK_C_OP statements BRK_C_CL
+
+   27 term: INT
+   28     | FLOAT
+   29     | STRING
+   30     | TRUE
+   31     | FALSE
+   32     | BRK_S_OP BRK_S_CL
+   33     | BRK_S_OP exp_list BRK_S_CL
+   34     | BRK_OP exp BRK_CL
+   35     | term BRK_OP BRK_CL
+   36     | term BRK_OP exp_list BRK_CL
+   37     | dict
+   38     | LABEL
+   39     | term DOT LABEL
+   40     | term BRK_S_OP exp BRK_S_CL
+
+   41 exp_multiplicative: term MUL term
+   42                   | term DIV term
+   43                   | term
+
+   44 exp_additive: exp_multiplicative ADD exp_multiplicative
+   45             | exp_multiplicative SUB exp_multiplicative
+   46             | exp_multiplicative
+
+   47 exp_relational: exp_additive LSS exp_additive
+   48               | exp_additive GRT exp_additive
+   49               | exp_additive LEQ exp_additive
+   50               | exp_additive GEQ exp_additive
+   51               | exp_additive EQL exp_additive
+   52               | exp_additive NQL exp_additive
+   53               | exp_additive
+
+   54 exp_logical: exp_relational AND exp_relational
+   55            | exp_relational OR exp_relational
+   56            | exp_relational XOR exp_relational
+   57            | exp_relational
+
+   58 exp: exp_logical ASSIGN exp_logical
+   59    | exp_logical
+
+   60 dict_inner: STRING DDOTS exp
+   61           | LABEL DDOTS exp
+   62           | dict_inner COMMA STRING DDOTS exp
+   63           | dict_inner COMMA LABEL DDOTS exp
+
+   64 dict: BRK_C_OP BRK_C_CL
+   65     | BRK_C_OP dict_inner BRK_C_CL
+
+   66 exp_list: exp
+   67         | exp_list COMMA exp
+
+   68 ifelse_statement: if_statement ELSE BRK_C_OP statements BRK_C_CL
+   69                 | if_statement
+
+   70 if_statement: IF exp BRK_C_OP statements BRK_C_CL
+
+   71 while_statement: WHILE exp BRK_C_OP statements BRK_C_CL
+
+
+Terminals, with rules where they appear
+
+$end (0) 0
+error (256)
+INT <value_i64> (258) 27
+FLOAT <value_f64> (259) 28
+STRING <value_string> (260) 18 19 20 21 22 29 60 62
+LABEL <label> (261) 17 19 21 22 23 24 25 26 38 39 61 63
+ADD (262) 44
+SUB (263) 45
+MUL (264) 41
+DIV (265) 42
+EQL (266) 51
+NQL (267) 52
+LSS (268) 47
+GRT (269) 48
+LEQ (270) 49
+GEQ (271) 50
+AND (272) 54
+OR (273) 55
+XOR (274) 56
+ASSIGN (275) 58
+BRK_OP (276) 5 25 26 34 35 36
+BRK_CL (277) 5 25 26 34 35 36
+R_ARROW (278)
+COMMA (279) 24 62 63 67
+BRK_C_OP (280) 17 25 26 64 65 68 70 71
+BRK_C_CL (281) 17 25 26 64 65 68 70 71
+SEMICOLON (282) 4 5 6 7 8 9 13
+IMPORT (283) 18 19 20 21 22
+FROM (284) 20 21 22
+AS (285) 19 21 22
+CLASS (286) 17
+NOT (287)
+FOR (288)
+WHILE (289) 71
+DO (290)
+IF (291) 70
+ELSE (292) 68
+PRINT (293) 5
+BREAK (294) 6
+CONTINUE (295) 7
+RETURN (296) 9
+BRK_S_OP (297) 32 33 40
+BRK_S_CL (298) 32 33 40
+DOT (299) 39
+DDOTS (300) 60 61 62 63
+FUNCTION (301) 25 26
+DOLLA (302)
+TRUE (303) 30
+FALSE (304) 31
+BREAKPOINT (305) 8
+
+
+Nonterminals, with rules where they appear
+
+$accept (51)
+    on left: 0
+everything (52)
+    on left: 1, on right: 0
+statements <node> (53)
+    on left: 2 3, on right: 1 3 25 26 68 70 71
+statement <node> (54)
+    on left: 4 5 6 7 8 9 10 11 12 13 14, on right: 3
+class_decl_inner <node> (55)
+    on left: 15 16, on right: 16 17
+class_decl <node> (56)
+    on left: 17, on right: 14
+import <node> (57)
+    on left: 18 19 20 21 22, on right: 13
+label_list <node> (58)
+    on left: 23 24, on right: 24 26
+func_decl <node> (59)
+    on left: 25 26, on right: 12 16
+term <node> (60)
+    on left: 27 28 29 30 31 32 33 34 35 36 37 38 39 40, on right: 35
+    36 39 40 41 42 43
+exp_multiplicative <node> (61)
+    on left: 41 42 43, on right: 44 45 46
+exp_additive <node> (62)
+    on left: 44 45 46, on right: 47 48 49 50 51 52 53
+exp_relational <node> (63)
+    on left: 47 48 49 50 51 52 53, on right: 54 55 56 57
+exp_logical <node> (64)
+    on left: 54 55 56 57, on right: 58 59
+exp <node> (65)
+    on left: 58 59, on right: 4 9 34 40 60 61 62 63 66 67 70 71
+dict_inner <node> (66)
+    on left: 60 61 62 63, on right: 62 63 65
+dict <node> (67)
+    on left: 64 65, on right: 37
+exp_list <node> (68)
+    on left: 66 67, on right: 5 33 36 67
+ifelse_statement <node> (69)
+    on left: 68 69, on right: 10
+if_statement <node> (70)
+    on left: 70, on right: 68 69
+while_statement <node> (71)
+    on left: 71, on right: 11
+
+
+State 0
+
+    0 $accept: . everything $end
+
+    $default  reduce using rule 2 (statements)
+
+    everything  go to state 1
+    statements  go to state 2
+
+
+State 1
+
+    0 $accept: everything . $end
+
+    $end  shift, and go to state 3
+
+
+State 2
+
+    1 everything: statements .
+    3 statements: statements . statement
+
+    INT         shift, and go to state 4
+    FLOAT       shift, and go to state 5
+    STRING      shift, and go to state 6
+    LABEL       shift, and go to state 7
+    BRK_OP      shift, and go to state 8
+    BRK_C_OP    shift, and go to state 9
+    IMPORT      shift, and go to state 10
+    CLASS       shift, and go to state 11
+    WHILE       shift, and go to state 12
+    IF          shift, and go to state 13
+    PRINT       shift, and go to state 14
+    BREAK       shift, and go to state 15
+    CONTINUE    shift, and go to state 16
+    RETURN      shift, and go to state 17
+    BRK_S_OP    shift, and go to state 18
+    FUNCTION    shift, and go to state 19
+    TRUE        shift, and go to state 20
+    FALSE       shift, and go to state 21
+    BREAKPOINT  shift, and go to state 22
+
+    $default  reduce using rule 1 (everything)
+
+    statement           go to state 23
+    class_decl          go to state 24
+    import              go to state 25
+    func_decl           go to state 26
+    term                go to state 27
+    exp_multiplicative  go to state 28
+    exp_additive        go to state 29
+    exp_relational      go to state 30
+    exp_logical         go to state 31
+    exp                 go to state 32
+    dict                go to state 33
+    ifelse_statement    go to state 34
+    if_statement        go to state 35
+    while_statement     go to state 36
+
+
+State 3
+
+    0 $accept: everything $end .
+
+    $default  accept
+
+
+State 4
+
+   27 term: INT .
+
+    $default  reduce using rule 27 (term)
+
+
+State 5
+
+   28 term: FLOAT .
+
+    $default  reduce using rule 28 (term)
+
+
+State 6
+
+   29 term: STRING .
+
+    $default  reduce using rule 29 (term)
+
+
+State 7
+
+   38 term: LABEL .
+
+    $default  reduce using rule 38 (term)
+
+
+State 8
+
+   34 term: BRK_OP . exp BRK_CL
+
+    INT       shift, and go to state 4
+    FLOAT     shift, and go to state 5
+    STRING    shift, and go to state 6
+    LABEL     shift, and go to state 7
+    BRK_OP    shift, and go to state 8
+    BRK_C_OP  shift, and go to state 9
+    BRK_S_OP  shift, and go to state 18
+    TRUE      shift, and go to state 20
+    FALSE     shift, and go to state 21
+
+    term                go to state 27
+    exp_multiplicative  go to state 28
+    exp_additive        go to state 29
+    exp_relational      go to state 30
+    exp_logical         go to state 31
+    exp                 go to state 37
+    dict                go to state 33
+
+
+State 9
+
+   64 dict: BRK_C_OP . BRK_C_CL
+   65     | BRK_C_OP . dict_inner BRK_C_CL
+
+    STRING    shift, and go to state 38
+    LABEL     shift, and go to state 39
+    BRK_C_CL  shift, and go to state 40
+
+    dict_inner  go to state 41
+
+
+State 10
+
+   18 import: IMPORT . STRING
+   19       | IMPORT . STRING AS LABEL
+   20       | IMPORT . STRING FROM STRING
+   21       | IMPORT . STRING FROM STRING AS LABEL
+   22       | IMPORT . STRING AS LABEL FROM STRING
+
+    STRING  shift, and go to state 42
+
+
+State 11
+
+   17 class_decl: CLASS . LABEL BRK_C_OP class_decl_inner BRK_C_CL
+
+    LABEL  shift, and go to state 43
+
+
+State 12
+
+   71 while_statement: WHILE . exp BRK_C_OP statements BRK_C_CL
+
+    INT       shift, and go to state 4
+    FLOAT     shift, and go to state 5
+    STRING    shift, and go to state 6
+    LABEL     shift, and go to state 7
+    BRK_OP    shift, and go to state 8
+    BRK_C_OP  shift, and go to state 9
+    BRK_S_OP  shift, and go to state 18
+    TRUE      shift, and go to state 20
+    FALSE     shift, and go to state 21
+
+    term                go to state 27
+    exp_multiplicative  go to state 28
+    exp_additive        go to state 29
+    exp_relational      go to state 30
+    exp_logical         go to state 31
+    exp                 go to state 44
+    dict                go to state 33
+
+
+State 13
+
+   70 if_statement: IF . exp BRK_C_OP statements BRK_C_CL
+
+    INT       shift, and go to state 4
+    FLOAT     shift, and go to state 5
+    STRING    shift, and go to state 6
+    LABEL     shift, and go to state 7
+    BRK_OP    shift, and go to state 8
+    BRK_C_OP  shift, and go to state 9
+    BRK_S_OP  shift, and go to state 18
+    TRUE      shift, and go to state 20
+    FALSE     shift, and go to state 21
+
+    term                go to state 27
+    exp_multiplicative  go to state 28
+    exp_additive        go to state 29
+    exp_relational      go to state 30
+    exp_logical         go to state 31
+    exp                 go to state 45
+    dict                go to state 33
+
+
+State 14
+
+    5 statement: PRINT . BRK_OP exp_list BRK_CL SEMICOLON
+
+    BRK_OP  shift, and go to state 46
+
+
+State 15
+
+    6 statement: BREAK . SEMICOLON
+
+    SEMICOLON  shift, and go to state 47
+
+
+State 16
+
+    7 statement: CONTINUE . SEMICOLON
+
+    SEMICOLON  shift, and go to state 48
+
+
+State 17
+
+    9 statement: RETURN . exp SEMICOLON
+
+    INT       shift, and go to state 4
+    FLOAT     shift, and go to state 5
+    STRING    shift, and go to state 6
+    LABEL     shift, and go to state 7
+    BRK_OP    shift, and go to state 8
+    BRK_C_OP  shift, and go to state 9
+    BRK_S_OP  shift, and go to state 18
+    TRUE      shift, and go to state 20
+    FALSE     shift, and go to state 21
+
+    term                go to state 27
+    exp_multiplicative  go to state 28
+    exp_additive        go to state 29
+    exp_relational      go to state 30
+    exp_logical         go to state 31
+    exp                 go to state 49
+    dict                go to state 33
+
+
+State 18
+
+   32 term: BRK_S_OP . BRK_S_CL
+   33     | BRK_S_OP . exp_list BRK_S_CL
+
+    INT       shift, and go to state 4
+    FLOAT     shift, and go to state 5
+    STRING    shift, and go to state 6
+    LABEL     shift, and go to state 7
+    BRK_OP    shift, and go to state 8
+    BRK_C_OP  shift, and go to state 9
+    BRK_S_OP  shift, and go to state 18
+    BRK_S_CL  shift, and go to state 50
+    TRUE      shift, and go to state 20
+    FALSE     shift, and go to state 21
+
+    term                go to state 27
+    exp_multiplicative  go to state 28
+    exp_additive        go to state 29
+    exp_relational      go to state 30
+    exp_logical         go to state 31
+    exp                 go to state 51
+    dict                go to state 33
+    exp_list            go to state 52
+
+
+State 19
+
+   25 func_decl: FUNCTION . LABEL BRK_OP BRK_CL BRK_C_OP statements BRK_C_CL
+   26          | FUNCTION . LABEL BRK_OP label_list BRK_CL BRK_C_OP statements BRK_C_CL
+
+    LABEL  shift, and go to state 53
+
+
+State 20
+
+   30 term: TRUE .
+
+    $default  reduce using rule 30 (term)
+
+
+State 21
+
+   31 term: FALSE .
+
+    $default  reduce using rule 31 (term)
+
+
+State 22
+
+    8 statement: BREAKPOINT . SEMICOLON
+
+    SEMICOLON  shift, and go to state 54
+
+
+State 23
+
+    3 statements: statements statement .
+
+    $default  reduce using rule 3 (statements)
+
+
+State 24
+
+   14 statement: class_decl .
+
+    $default  reduce using rule 14 (statement)
+
+
+State 25
+
+   13 statement: import . SEMICOLON
+
+    SEMICOLON  shift, and go to state 55
+
+
+State 26
+
+   12 statement: func_decl .
+
+    $default  reduce using rule 12 (statement)
+
+
+State 27
+
+   35 term: term . BRK_OP BRK_CL
+   36     | term . BRK_OP exp_list BRK_CL
+   39     | term . DOT LABEL
+   40     | term . BRK_S_OP exp BRK_S_CL
+   41 exp_multiplicative: term . MUL term
+   42                   | term . DIV term
+   43                   | term .
+
+    MUL       shift, and go to state 56
+    DIV       shift, and go to state 57
+    BRK_OP    shift, and go to state 58
+    BRK_S_OP  shift, and go to state 59
+    DOT       shift, and go to state 60
+
+    $default  reduce using rule 43 (exp_multiplicative)
+
+
+State 28
+
+   44 exp_additive: exp_multiplicative . ADD exp_multiplicative
+   45             | exp_multiplicative . SUB exp_multiplicative
+   46             | exp_multiplicative .
+
+    ADD  shift, and go to state 61
+    SUB  shift, and go to state 62
+
+    $default  reduce using rule 46 (exp_additive)
+
+
+State 29
+
+   47 exp_relational: exp_additive . LSS exp_additive
+   48               | exp_additive . GRT exp_additive
+   49               | exp_additive . LEQ exp_additive
+   50               | exp_additive . GEQ exp_additive
+   51               | exp_additive . EQL exp_additive
+   52               | exp_additive . NQL exp_additive
+   53               | exp_additive .
+
+    EQL  shift, and go to state 63
+    NQL  shift, and go to state 64
+    LSS  shift, and go to state 65
+    GRT  shift, and go to state 66
+    LEQ  shift, and go to state 67
+    GEQ  shift, and go to state 68
+
+    $default  reduce using rule 53 (exp_relational)
+
+
+State 30
+
+   54 exp_logical: exp_relational . AND exp_relational
+   55            | exp_relational . OR exp_relational
+   56            | exp_relational . XOR exp_relational
+   57            | exp_relational .
+
+    AND  shift, and go to state 69
+    OR   shift, and go to state 70
+    XOR  shift, and go to state 71
+
+    $default  reduce using rule 57 (exp_logical)
+
+
+State 31
+
+   58 exp: exp_logical . ASSIGN exp_logical
+   59    | exp_logical .
+
+    ASSIGN  shift, and go to state 72
+
+    $default  reduce using rule 59 (exp)
+
+
+State 32
+
+    4 statement: exp . SEMICOLON
+
+    SEMICOLON  shift, and go to state 73
+
+
+State 33
+
+   37 term: dict .
+
+    $default  reduce using rule 37 (term)
+
+
+State 34
+
+   10 statement: ifelse_statement .
+
+    $default  reduce using rule 10 (statement)
+
+
+State 35
+
+   68 ifelse_statement: if_statement . ELSE BRK_C_OP statements BRK_C_CL
+   69                 | if_statement .
+
+    ELSE  shift, and go to state 74
+
+    $default  reduce using rule 69 (ifelse_statement)
+
+
+State 36
+
+   11 statement: while_statement .
+
+    $default  reduce using rule 11 (statement)
+
+
+State 37
+
+   34 term: BRK_OP exp . BRK_CL
+
+    BRK_CL  shift, and go to state 75
+
+
+State 38
+
+   60 dict_inner: STRING . DDOTS exp
+
+    DDOTS  shift, and go to state 76
+
+
+State 39
+
+   61 dict_inner: LABEL . DDOTS exp
+
+    DDOTS  shift, and go to state 77
+
+
+State 40
+
+   64 dict: BRK_C_OP BRK_C_CL .
+
+    $default  reduce using rule 64 (dict)
+
+
+State 41
+
+   62 dict_inner: dict_inner . COMMA STRING DDOTS exp
+   63           | dict_inner . COMMA LABEL DDOTS exp
+   65 dict: BRK_C_OP dict_inner . BRK_C_CL
+
+    COMMA     shift, and go to state 78
+    BRK_C_CL  shift, and go to state 79
+
+
+State 42
+
+   18 import: IMPORT STRING .
+   19       | IMPORT STRING . AS LABEL
+   20       | IMPORT STRING . FROM STRING
+   21       | IMPORT STRING . FROM STRING AS LABEL
+   22       | IMPORT STRING . AS LABEL FROM STRING
+
+    FROM  shift, and go to state 80
+    AS    shift, and go to state 81
+
+    $default  reduce using rule 18 (import)
+
+
+State 43
+
+   17 class_decl: CLASS LABEL . BRK_C_OP class_decl_inner BRK_C_CL
+
+    BRK_C_OP  shift, and go to state 82
+
+
+State 44
+
+   71 while_statement: WHILE exp . BRK_C_OP statements BRK_C_CL
+
+    BRK_C_OP  shift, and go to state 83
+
+
+State 45
+
+   70 if_statement: IF exp . BRK_C_OP statements BRK_C_CL
+
+    BRK_C_OP  shift, and go to state 84
+
+
+State 46
+
+    5 statement: PRINT BRK_OP . exp_list BRK_CL SEMICOLON
+
+    INT       shift, and go to state 4
+    FLOAT     shift, and go to state 5
+    STRING    shift, and go to state 6
+    LABEL     shift, and go to state 7
+    BRK_OP    shift, and go to state 8
+    BRK_C_OP  shift, and go to state 9
+    BRK_S_OP  shift, and go to state 18
+    TRUE      shift, and go to state 20
+    FALSE     shift, and go to state 21
+
+    term                go to state 27
+    exp_multiplicative  go to state 28
+    exp_additive        go to state 29
+    exp_relational      go to state 30
+    exp_logical         go to state 31
+    exp                 go to state 51
+    dict                go to state 33
+    exp_list            go to state 85
+
+
+State 47
+
+    6 statement: BREAK SEMICOLON .
+
+    $default  reduce using rule 6 (statement)
+
+
+State 48
+
+    7 statement: CONTINUE SEMICOLON .
+
+    $default  reduce using rule 7 (statement)
+
+
+State 49
+
+    9 statement: RETURN exp . SEMICOLON
+
+    SEMICOLON  shift, and go to state 86
+
+
+State 50
+
+   32 term: BRK_S_OP BRK_S_CL .
+
+    $default  reduce using rule 32 (term)
+
+
+State 51
+
+   66 exp_list: exp .
+
+    $default  reduce using rule 66 (exp_list)
+
+
+State 52
+
+   33 term: BRK_S_OP exp_list . BRK_S_CL
+   67 exp_list: exp_list . COMMA exp
+
+    COMMA     shift, and go to state 87
+    BRK_S_CL  shift, and go to state 88
+
+
+State 53
+
+   25 func_decl: FUNCTION LABEL . BRK_OP BRK_CL BRK_C_OP statements BRK_C_CL
+   26          | FUNCTION LABEL . BRK_OP label_list BRK_CL BRK_C_OP statements BRK_C_CL
+
+    BRK_OP  shift, and go to state 89
+
+
+State 54
+
+    8 statement: BREAKPOINT SEMICOLON .
+
+    $default  reduce using rule 8 (statement)
+
+
+State 55
+
+   13 statement: import SEMICOLON .
+
+    $default  reduce using rule 13 (statement)
+
+
+State 56
+
+   41 exp_multiplicative: term MUL . term
+
+    INT       shift, and go to state 4
+    FLOAT     shift, and go to state 5
+    STRING    shift, and go to state 6
+    LABEL     shift, and go to state 7
+    BRK_OP    shift, and go to state 8
+    BRK_C_OP  shift, and go to state 9
+    BRK_S_OP  shift, and go to state 18
+    TRUE      shift, and go to state 20
+    FALSE     shift, and go to state 21
+
+    term  go to state 90
+    dict  go to state 33
+
+
+State 57
+
+   42 exp_multiplicative: term DIV . term
+
+    INT       shift, and go to state 4
+    FLOAT     shift, and go to state 5
+    STRING    shift, and go to state 6
+    LABEL     shift, and go to state 7
+    BRK_OP    shift, and go to state 8
+    BRK_C_OP  shift, and go to state 9
+    BRK_S_OP  shift, and go to state 18
+    TRUE      shift, and go to state 20
+    FALSE     shift, and go to state 21
+
+    term  go to state 91
+    dict  go to state 33
+
+
+State 58
+
+   35 term: term BRK_OP . BRK_CL
+   36     | term BRK_OP . exp_list BRK_CL
+
+    INT       shift, and go to state 4
+    FLOAT     shift, and go to state 5
+    STRING    shift, and go to state 6
+    LABEL     shift, and go to state 7
+    BRK_OP    shift, and go to state 8
+    BRK_CL    shift, and go to state 92
+    BRK_C_OP  shift, and go to state 9
+    BRK_S_OP  shift, and go to state 18
+    TRUE      shift, and go to state 20
+    FALSE     shift, and go to state 21
+
+    term                go to state 27
+    exp_multiplicative  go to state 28
+    exp_additive        go to state 29
+    exp_relational      go to state 30
+    exp_logical         go to state 31
+    exp                 go to state 51
+    dict                go to state 33
+    exp_list            go to state 93
+
+
+State 59
+
+   40 term: term BRK_S_OP . exp BRK_S_CL
+
+    INT       shift, and go to state 4
+    FLOAT     shift, and go to state 5
+    STRING    shift, and go to state 6
+    LABEL     shift, and go to state 7
+    BRK_OP    shift, and go to state 8
+    BRK_C_OP  shift, and go to state 9
+    BRK_S_OP  shift, and go to state 18
+    TRUE      shift, and go to state 20
+    FALSE     shift, and go to state 21
+
+    term                go to state 27
+    exp_multiplicative  go to state 28
+    exp_additive        go to state 29
+    exp_relational      go to state 30
+    exp_logical         go to state 31
+    exp                 go to state 94
+    dict                go to state 33
+
+
+State 60
+
+   39 term: term DOT . LABEL
+
+    LABEL  shift, and go to state 95
+
+
+State 61
+
+   44 exp_additive: exp_multiplicative ADD . exp_multiplicative
+
+    INT       shift, and go to state 4
+    FLOAT     shift, and go to state 5
+    STRING    shift, and go to state 6
+    LABEL     shift, and go to state 7
+    BRK_OP    shift, and go to state 8
+    BRK_C_OP  shift, and go to state 9
+    BRK_S_OP  shift, and go to state 18
+    TRUE      shift, and go to state 20
+    FALSE     shift, and go to state 21
+
+    term                go to state 27
+    exp_multiplicative  go to state 96
+    dict                go to state 33
+
+
+State 62
+
+   45 exp_additive: exp_multiplicative SUB . exp_multiplicative
+
+    INT       shift, and go to state 4
+    FLOAT     shift, and go to state 5
+    STRING    shift, and go to state 6
+    LABEL     shift, and go to state 7
+    BRK_OP    shift, and go to state 8
+    BRK_C_OP  shift, and go to state 9
+    BRK_S_OP  shift, and go to state 18
+    TRUE      shift, and go to state 20
+    FALSE     shift, and go to state 21
+
+    term                go to state 27
+    exp_multiplicative  go to state 97
+    dict                go to state 33
+
+
+State 63
+
+   51 exp_relational: exp_additive EQL . exp_additive
+
+    INT       shift, and go to state 4
+    FLOAT     shift, and go to state 5
+    STRING    shift, and go to state 6
+    LABEL     shift, and go to state 7
+    BRK_OP    shift, and go to state 8
+    BRK_C_OP  shift, and go to state 9
+    BRK_S_OP  shift, and go to state 18
+    TRUE      shift, and go to state 20
+    FALSE     shift, and go to state 21
+
+    term                go to state 27
+    exp_multiplicative  go to state 28
+    exp_additive        go to state 98
+    dict                go to state 33
+
+
+State 64
+
+   52 exp_relational: exp_additive NQL . exp_additive
+
+    INT       shift, and go to state 4
+    FLOAT     shift, and go to state 5
+    STRING    shift, and go to state 6
+    LABEL     shift, and go to state 7
+    BRK_OP    shift, and go to state 8
+    BRK_C_OP  shift, and go to state 9
+    BRK_S_OP  shift, and go to state 18
+    TRUE      shift, and go to state 20
+    FALSE     shift, and go to state 21
+
+    term                go to state 27
+    exp_multiplicative  go to state 28
+    exp_additive        go to state 99
+    dict                go to state 33
+
+
+State 65
+
+   47 exp_relational: exp_additive LSS . exp_additive
+
+    INT       shift, and go to state 4
+    FLOAT     shift, and go to state 5
+    STRING    shift, and go to state 6
+    LABEL     shift, and go to state 7
+    BRK_OP    shift, and go to state 8
+    BRK_C_OP  shift, and go to state 9
+    BRK_S_OP  shift, and go to state 18
+    TRUE      shift, and go to state 20
+    FALSE     shift, and go to state 21
+
+    term                go to state 27
+    exp_multiplicative  go to state 28
+    exp_additive        go to state 100
+    dict                go to state 33
+
+
+State 66
+
+   48 exp_relational: exp_additive GRT . exp_additive
+
+    INT       shift, and go to state 4
+    FLOAT     shift, and go to state 5
+    STRING    shift, and go to state 6
+    LABEL     shift, and go to state 7
+    BRK_OP    shift, and go to state 8
+    BRK_C_OP  shift, and go to state 9
+    BRK_S_OP  shift, and go to state 18
+    TRUE      shift, and go to state 20
+    FALSE     shift, and go to state 21
+
+    term                go to state 27
+    exp_multiplicative  go to state 28
+    exp_additive        go to state 101
+    dict                go to state 33
+
+
+State 67
+
+   49 exp_relational: exp_additive LEQ . exp_additive
+
+    INT       shift, and go to state 4
+    FLOAT     shift, and go to state 5
+    STRING    shift, and go to state 6
+    LABEL     shift, and go to state 7
+    BRK_OP    shift, and go to state 8
+    BRK_C_OP  shift, and go to state 9
+    BRK_S_OP  shift, and go to state 18
+    TRUE      shift, and go to state 20
+    FALSE     shift, and go to state 21
+
+    term                go to state 27
+    exp_multiplicative  go to state 28
+    exp_additive        go to state 102
+    dict                go to state 33
+
+
+State 68
+
+   50 exp_relational: exp_additive GEQ . exp_additive
+
+    INT       shift, and go to state 4
+    FLOAT     shift, and go to state 5
+    STRING    shift, and go to state 6
+    LABEL     shift, and go to state 7
+    BRK_OP    shift, and go to state 8
+    BRK_C_OP  shift, and go to state 9
+    BRK_S_OP  shift, and go to state 18
+    TRUE      shift, and go to state 20
+    FALSE     shift, and go to state 21
+
+    term                go to state 27
+    exp_multiplicative  go to state 28
+    exp_additive        go to state 103
+    dict                go to state 33
+
+
+State 69
+
+   54 exp_logical: exp_relational AND . exp_relational
+
+    INT       shift, and go to state 4
+    FLOAT     shift, and go to state 5
+    STRING    shift, and go to state 6
+    LABEL     shift, and go to state 7
+    BRK_OP    shift, and go to state 8
+    BRK_C_OP  shift, and go to state 9
+    BRK_S_OP  shift, and go to state 18
+    TRUE      shift, and go to state 20
+    FALSE     shift, and go to state 21
+
+    term                go to state 27
+    exp_multiplicative  go to state 28
+    exp_additive        go to state 29
+    exp_relational      go to state 104
+    dict                go to state 33
+
+
+State 70
+
+   55 exp_logical: exp_relational OR . exp_relational
+
+    INT       shift, and go to state 4
+    FLOAT     shift, and go to state 5
+    STRING    shift, and go to state 6
+    LABEL     shift, and go to state 7
+    BRK_OP    shift, and go to state 8
+    BRK_C_OP  shift, and go to state 9
+    BRK_S_OP  shift, and go to state 18
+    TRUE      shift, and go to state 20
+    FALSE     shift, and go to state 21
+
+    term                go to state 27
+    exp_multiplicative  go to state 28
+    exp_additive        go to state 29
+    exp_relational      go to state 105
+    dict                go to state 33
+
+
+State 71
+
+   56 exp_logical: exp_relational XOR . exp_relational
+
+    INT       shift, and go to state 4
+    FLOAT     shift, and go to state 5
+    STRING    shift, and go to state 6
+    LABEL     shift, and go to state 7
+    BRK_OP    shift, and go to state 8
+    BRK_C_OP  shift, and go to state 9
+    BRK_S_OP  shift, and go to state 18
+    TRUE      shift, and go to state 20
+    FALSE     shift, and go to state 21
+
+    term                go to state 27
+    exp_multiplicative  go to state 28
+    exp_additive        go to state 29
+    exp_relational      go to state 106
+    dict                go to state 33
+
+
+State 72
+
+   58 exp: exp_logical ASSIGN . exp_logical
+
+    INT       shift, and go to state 4
+    FLOAT     shift, and go to state 5
+    STRING    shift, and go to state 6
+    LABEL     shift, and go to state 7
+    BRK_OP    shift, and go to state 8
+    BRK_C_OP  shift, and go to state 9
+    BRK_S_OP  shift, and go to state 18
+    TRUE      shift, and go to state 20
+    FALSE     shift, and go to state 21
+
+    term                go to state 27
+    exp_multiplicative  go to state 28
+    exp_additive        go to state 29
+    exp_relational      go to state 30
+    exp_logical         go to state 107
+    dict                go to state 33
+
+
+State 73
+
+    4 statement: exp SEMICOLON .
+
+    $default  reduce using rule 4 (statement)
+
+
+State 74
+
+   68 ifelse_statement: if_statement ELSE . BRK_C_OP statements BRK_C_CL
+
+    BRK_C_OP  shift, and go to state 108
+
+
+State 75
+
+   34 term: BRK_OP exp BRK_CL .
+
+    $default  reduce using rule 34 (term)
+
+
+State 76
+
+   60 dict_inner: STRING DDOTS . exp
+
+    INT       shift, and go to state 4
+    FLOAT     shift, and go to state 5
+    STRING    shift, and go to state 6
+    LABEL     shift, and go to state 7
+    BRK_OP    shift, and go to state 8
+    BRK_C_OP  shift, and go to state 9
+    BRK_S_OP  shift, and go to state 18
+    TRUE      shift, and go to state 20
+    FALSE     shift, and go to state 21
+
+    term                go to state 27
+    exp_multiplicative  go to state 28
+    exp_additive        go to state 29
+    exp_relational      go to state 30
+    exp_logical         go to state 31
+    exp                 go to state 109
+    dict                go to state 33
+
+
+State 77
+
+   61 dict_inner: LABEL DDOTS . exp
+
+    INT       shift, and go to state 4
+    FLOAT     shift, and go to state 5
+    STRING    shift, and go to state 6
+    LABEL     shift, and go to state 7
+    BRK_OP    shift, and go to state 8
+    BRK_C_OP  shift, and go to state 9
+    BRK_S_OP  shift, and go to state 18
+    TRUE      shift, and go to state 20
+    FALSE     shift, and go to state 21
+
+    term                go to state 27
+    exp_multiplicative  go to state 28
+    exp_additive        go to state 29
+    exp_relational      go to state 30
+    exp_logical         go to state 31
+    exp                 go to state 110
+    dict                go to state 33
+
+
+State 78
+
+   62 dict_inner: dict_inner COMMA . STRING DDOTS exp
+   63           | dict_inner COMMA . LABEL DDOTS exp
+
+    STRING  shift, and go to state 111
+    LABEL   shift, and go to state 112
+
+
+State 79
+
+   65 dict: BRK_C_OP dict_inner BRK_C_CL .
+
+    $default  reduce using rule 65 (dict)
+
+
+State 80
+
+   20 import: IMPORT STRING FROM . STRING
+   21       | IMPORT STRING FROM . STRING AS LABEL
+
+    STRING  shift, and go to state 113
+
+
+State 81
+
+   19 import: IMPORT STRING AS . LABEL
+   22       | IMPORT STRING AS . LABEL FROM STRING
+
+    LABEL  shift, and go to state 114
+
+
+State 82
+
+   17 class_decl: CLASS LABEL BRK_C_OP . class_decl_inner BRK_C_CL
+
+    $default  reduce using rule 15 (class_decl_inner)
+
+    class_decl_inner  go to state 115
+
+
+State 83
+
+   71 while_statement: WHILE exp BRK_C_OP . statements BRK_C_CL
+
+    $default  reduce using rule 2 (statements)
+
+    statements  go to state 116
+
+
+State 84
+
+   70 if_statement: IF exp BRK_C_OP . statements BRK_C_CL
+
+    $default  reduce using rule 2 (statements)
+
+    statements  go to state 117
+
+
+State 85
+
+    5 statement: PRINT BRK_OP exp_list . BRK_CL SEMICOLON
+   67 exp_list: exp_list . COMMA exp
+
+    BRK_CL  shift, and go to state 118
+    COMMA   shift, and go to state 87
+
+
+State 86
+
+    9 statement: RETURN exp SEMICOLON .
+
+    $default  reduce using rule 9 (statement)
+
+
+State 87
+
+   67 exp_list: exp_list COMMA . exp
+
+    INT       shift, and go to state 4
+    FLOAT     shift, and go to state 5
+    STRING    shift, and go to state 6
+    LABEL     shift, and go to state 7
+    BRK_OP    shift, and go to state 8
+    BRK_C_OP  shift, and go to state 9
+    BRK_S_OP  shift, and go to state 18
+    TRUE      shift, and go to state 20
+    FALSE     shift, and go to state 21
+
+    term                go to state 27
+    exp_multiplicative  go to state 28
+    exp_additive        go to state 29
+    exp_relational      go to state 30
+    exp_logical         go to state 31
+    exp                 go to state 119
+    dict                go to state 33
+
+
+State 88
+
+   33 term: BRK_S_OP exp_list BRK_S_CL .
+
+    $default  reduce using rule 33 (term)
+
+
+State 89
+
+   25 func_decl: FUNCTION LABEL BRK_OP . BRK_CL BRK_C_OP statements BRK_C_CL
+   26          | FUNCTION LABEL BRK_OP . label_list BRK_CL BRK_C_OP statements BRK_C_CL
+
+    LABEL   shift, and go to state 120
+    BRK_CL  shift, and go to state 121
+
+    label_list  go to state 122
+
+
+State 90
+
+   35 term: term . BRK_OP BRK_CL
+   36     | term . BRK_OP exp_list BRK_CL
+   39     | term . DOT LABEL
+   40     | term . BRK_S_OP exp BRK_S_CL
+   41 exp_multiplicative: term MUL term .
+
+    BRK_OP    shift, and go to state 58
+    BRK_S_OP  shift, and go to state 59
+    DOT       shift, and go to state 60
+
+    $default  reduce using rule 41 (exp_multiplicative)
+
+
+State 91
+
+   35 term: term . BRK_OP BRK_CL
+   36     | term . BRK_OP exp_list BRK_CL
+   39     | term . DOT LABEL
+   40     | term . BRK_S_OP exp BRK_S_CL
+   42 exp_multiplicative: term DIV term .
+
+    BRK_OP    shift, and go to state 58
+    BRK_S_OP  shift, and go to state 59
+    DOT       shift, and go to state 60
+
+    $default  reduce using rule 42 (exp_multiplicative)
+
+
+State 92
+
+   35 term: term BRK_OP BRK_CL .
+
+    $default  reduce using rule 35 (term)
+
+
+State 93
+
+   36 term: term BRK_OP exp_list . BRK_CL
+   67 exp_list: exp_list . COMMA exp
+
+    BRK_CL  shift, and go to state 123
+    COMMA   shift, and go to state 87
+
+
+State 94
+
+   40 term: term BRK_S_OP exp . BRK_S_CL
+
+    BRK_S_CL  shift, and go to state 124
+
+
+State 95
+
+   39 term: term DOT LABEL .
+
+    $default  reduce using rule 39 (term)
+
+
+State 96
+
+   44 exp_additive: exp_multiplicative ADD exp_multiplicative .
+
+    $default  reduce using rule 44 (exp_additive)
+
+
+State 97
+
+   45 exp_additive: exp_multiplicative SUB exp_multiplicative .
+
+    $default  reduce using rule 45 (exp_additive)
+
+
+State 98
+
+   51 exp_relational: exp_additive EQL exp_additive .
+
+    $default  reduce using rule 51 (exp_relational)
+
+
+State 99
+
+   52 exp_relational: exp_additive NQL exp_additive .
+
+    $default  reduce using rule 52 (exp_relational)
+
+
+State 100
+
+   47 exp_relational: exp_additive LSS exp_additive .
+
+    $default  reduce using rule 47 (exp_relational)
+
+
+State 101
+
+   48 exp_relational: exp_additive GRT exp_additive .
+
+    $default  reduce using rule 48 (exp_relational)
+
+
+State 102
+
+   49 exp_relational: exp_additive LEQ exp_additive .
+
+    $default  reduce using rule 49 (exp_relational)
+
+
+State 103
+
+   50 exp_relational: exp_additive GEQ exp_additive .
+
+    $default  reduce using rule 50 (exp_relational)
+
+
+State 104
+
+   54 exp_logical: exp_relational AND exp_relational .
+
+    $default  reduce using rule 54 (exp_logical)
+
+
+State 105
+
+   55 exp_logical: exp_relational OR exp_relational .
+
+    $default  reduce using rule 55 (exp_logical)
+
+
+State 106
+
+   56 exp_logical: exp_relational XOR exp_relational .
+
+    $default  reduce using rule 56 (exp_logical)
+
+
+State 107
+
+   58 exp: exp_logical ASSIGN exp_logical .
+
+    $default  reduce using rule 58 (exp)
+
+
+State 108
+
+   68 ifelse_statement: if_statement ELSE BRK_C_OP . statements BRK_C_CL
+
+    $default  reduce using rule 2 (statements)
+
+    statements  go to state 125
+
+
+State 109
+
+   60 dict_inner: STRING DDOTS exp .
+
+    $default  reduce using rule 60 (dict_inner)
+
+
+State 110
+
+   61 dict_inner: LABEL DDOTS exp .
+
+    $default  reduce using rule 61 (dict_inner)
+
+
+State 111
+
+   62 dict_inner: dict_inner COMMA STRING . DDOTS exp
+
+    DDOTS  shift, and go to state 126
+
+
+State 112
+
+   63 dict_inner: dict_inner COMMA LABEL . DDOTS exp
+
+    DDOTS  shift, and go to state 127
+
+
+State 113
+
+   20 import: IMPORT STRING FROM STRING .
+   21       | IMPORT STRING FROM STRING . AS LABEL
+
+    AS  shift, and go to state 128
+
+    $default  reduce using rule 20 (import)
+
+
+State 114
+
+   19 import: IMPORT STRING AS LABEL .
+   22       | IMPORT STRING AS LABEL . FROM STRING
+
+    FROM  shift, and go to state 129
+
+    $default  reduce using rule 19 (import)
+
+
+State 115
+
+   16 class_decl_inner: class_decl_inner . func_decl
+   17 class_decl: CLASS LABEL BRK_C_OP class_decl_inner . BRK_C_CL
+
+    BRK_C_CL  shift, and go to state 130
+    FUNCTION  shift, and go to state 19
+
+    func_decl  go to state 131
+
+
+State 116
+
+    3 statements: statements . statement
+   71 while_statement: WHILE exp BRK_C_OP statements . BRK_C_CL
+
+    INT         shift, and go to state 4
+    FLOAT       shift, and go to state 5
+    STRING      shift, and go to state 6
+    LABEL       shift, and go to state 7
+    BRK_OP      shift, and go to state 8
+    BRK_C_OP    shift, and go to state 9
+    BRK_C_CL    shift, and go to state 132
+    IMPORT      shift, and go to state 10
+    CLASS       shift, and go to state 11
+    WHILE       shift, and go to state 12
+    IF          shift, and go to state 13
+    PRINT       shift, and go to state 14
+    BREAK       shift, and go to state 15
+    CONTINUE    shift, and go to state 16
+    RETURN      shift, and go to state 17
+    BRK_S_OP    shift, and go to state 18
+    FUNCTION    shift, and go to state 19
+    TRUE        shift, and go to state 20
+    FALSE       shift, and go to state 21
+    BREAKPOINT  shift, and go to state 22
+
+    statement           go to state 23
+    class_decl          go to state 24
+    import              go to state 25
+    func_decl           go to state 26
+    term                go to state 27
+    exp_multiplicative  go to state 28
+    exp_additive        go to state 29
+    exp_relational      go to state 30
+    exp_logical         go to state 31
+    exp                 go to state 32
+    dict                go to state 33
+    ifelse_statement    go to state 34
+    if_statement        go to state 35
+    while_statement     go to state 36
+
+
+State 117
+
+    3 statements: statements . statement
+   70 if_statement: IF exp BRK_C_OP statements . BRK_C_CL
+
+    INT         shift, and go to state 4
+    FLOAT       shift, and go to state 5
+    STRING      shift, and go to state 6
+    LABEL       shift, and go to state 7
+    BRK_OP      shift, and go to state 8
+    BRK_C_OP    shift, and go to state 9
+    BRK_C_CL    shift, and go to state 133
+    IMPORT      shift, and go to state 10
+    CLASS       shift, and go to state 11
+    WHILE       shift, and go to state 12
+    IF          shift, and go to state 13
+    PRINT       shift, and go to state 14
+    BREAK       shift, and go to state 15
+    CONTINUE    shift, and go to state 16
+    RETURN      shift, and go to state 17
+    BRK_S_OP    shift, and go to state 18
+    FUNCTION    shift, and go to state 19
+    TRUE        shift, and go to state 20
+    FALSE       shift, and go to state 21
+    BREAKPOINT  shift, and go to state 22
+
+    statement           go to state 23
+    class_decl          go to state 24
+    import              go to state 25
+    func_decl           go to state 26
+    term                go to state 27
+    exp_multiplicative  go to state 28
+    exp_additive        go to state 29
+    exp_relational      go to state 30
+    exp_logical         go to state 31
+    exp                 go to state 32
+    dict                go to state 33
+    ifelse_statement    go to state 34
+    if_statement        go to state 35
+    while_statement     go to state 36
+
+
+State 118
+
+    5 statement: PRINT BRK_OP exp_list BRK_CL . SEMICOLON
+
+    SEMICOLON  shift, and go to state 134
+
+
+State 119
+
+   67 exp_list: exp_list COMMA exp .
+
+    $default  reduce using rule 67 (exp_list)
+
+
+State 120
+
+   23 label_list: LABEL .
+
+    $default  reduce using rule 23 (label_list)
+
+
+State 121
+
+   25 func_decl: FUNCTION LABEL BRK_OP BRK_CL . BRK_C_OP statements BRK_C_CL
+
+    BRK_C_OP  shift, and go to state 135
+
+
+State 122
+
+   24 label_list: label_list . COMMA LABEL
+   26 func_decl: FUNCTION LABEL BRK_OP label_list . BRK_CL BRK_C_OP statements BRK_C_CL
+
+    BRK_CL  shift, and go to state 136
+    COMMA   shift, and go to state 137
+
+
+State 123
+
+   36 term: term BRK_OP exp_list BRK_CL .
+
+    $default  reduce using rule 36 (term)
+
+
+State 124
+
+   40 term: term BRK_S_OP exp BRK_S_CL .
+
+    $default  reduce using rule 40 (term)
+
+
+State 125
+
+    3 statements: statements . statement
+   68 ifelse_statement: if_statement ELSE BRK_C_OP statements . BRK_C_CL
+
+    INT         shift, and go to state 4
+    FLOAT       shift, and go to state 5
+    STRING      shift, and go to state 6
+    LABEL       shift, and go to state 7
+    BRK_OP      shift, and go to state 8
+    BRK_C_OP    shift, and go to state 9
+    BRK_C_CL    shift, and go to state 138
+    IMPORT      shift, and go to state 10
+    CLASS       shift, and go to state 11
+    WHILE       shift, and go to state 12
+    IF          shift, and go to state 13
+    PRINT       shift, and go to state 14
+    BREAK       shift, and go to state 15
+    CONTINUE    shift, and go to state 16
+    RETURN      shift, and go to state 17
+    BRK_S_OP    shift, and go to state 18
+    FUNCTION    shift, and go to state 19
+    TRUE        shift, and go to state 20
+    FALSE       shift, and go to state 21
+    BREAKPOINT  shift, and go to state 22
+
+    statement           go to state 23
+    class_decl          go to state 24
+    import              go to state 25
+    func_decl           go to state 26
+    term                go to state 27
+    exp_multiplicative  go to state 28
+    exp_additive        go to state 29
+    exp_relational      go to state 30
+    exp_logical         go to state 31
+    exp                 go to state 32
+    dict                go to state 33
+    ifelse_statement    go to state 34
+    if_statement        go to state 35
+    while_statement     go to state 36
+
+
+State 126
+
+   62 dict_inner: dict_inner COMMA STRING DDOTS . exp
+
+    INT       shift, and go to state 4
+    FLOAT     shift, and go to state 5
+    STRING    shift, and go to state 6
+    LABEL     shift, and go to state 7
+    BRK_OP    shift, and go to state 8
+    BRK_C_OP  shift, and go to state 9
+    BRK_S_OP  shift, and go to state 18
+    TRUE      shift, and go to state 20
+    FALSE     shift, and go to state 21
+
+    term                go to state 27
+    exp_multiplicative  go to state 28
+    exp_additive        go to state 29
+    exp_relational      go to state 30
+    exp_logical         go to state 31
+    exp                 go to state 139
+    dict                go to state 33
+
+
+State 127
+
+   63 dict_inner: dict_inner COMMA LABEL DDOTS . exp
+
+    INT       shift, and go to state 4
+    FLOAT     shift, and go to state 5
+    STRING    shift, and go to state 6
+    LABEL     shift, and go to state 7
+    BRK_OP    shift, and go to state 8
+    BRK_C_OP  shift, and go to state 9
+    BRK_S_OP  shift, and go to state 18
+    TRUE      shift, and go to state 20
+    FALSE     shift, and go to state 21
+
+    term                go to state 27
+    exp_multiplicative  go to state 28
+    exp_additive        go to state 29
+    exp_relational      go to state 30
+    exp_logical         go to state 31
+    exp                 go to state 140
+    dict                go to state 33
+
+
+State 128
+
+   21 import: IMPORT STRING FROM STRING AS . LABEL
+
+    LABEL  shift, and go to state 141
+
+
+State 129
+
+   22 import: IMPORT STRING AS LABEL FROM . STRING
+
+    STRING  shift, and go to state 142
+
+
+State 130
+
+   17 class_decl: CLASS LABEL BRK_C_OP class_decl_inner BRK_C_CL .
+
+    $default  reduce using rule 17 (class_decl)
+
+
+State 131
+
+   16 class_decl_inner: class_decl_inner func_decl .
+
+    $default  reduce using rule 16 (class_decl_inner)
+
+
+State 132
+
+   71 while_statement: WHILE exp BRK_C_OP statements BRK_C_CL .
+
+    $default  reduce using rule 71 (while_statement)
+
+
+State 133
+
+   70 if_statement: IF exp BRK_C_OP statements BRK_C_CL .
+
+    $default  reduce using rule 70 (if_statement)
+
+
+State 134
+
+    5 statement: PRINT BRK_OP exp_list BRK_CL SEMICOLON .
+
+    $default  reduce using rule 5 (statement)
+
+
+State 135
+
+   25 func_decl: FUNCTION LABEL BRK_OP BRK_CL BRK_C_OP . statements BRK_C_CL
+
+    $default  reduce using rule 2 (statements)
+
+    statements  go to state 143
+
+
+State 136
+
+   26 func_decl: FUNCTION LABEL BRK_OP label_list BRK_CL . BRK_C_OP statements BRK_C_CL
+
+    BRK_C_OP  shift, and go to state 144
+
+
+State 137
+
+   24 label_list: label_list COMMA . LABEL
+
+    LABEL  shift, and go to state 145
+
+
+State 138
+
+   68 ifelse_statement: if_statement ELSE BRK_C_OP statements BRK_C_CL .
+
+    $default  reduce using rule 68 (ifelse_statement)
+
+
+State 139
+
+   62 dict_inner: dict_inner COMMA STRING DDOTS exp .
+
+    $default  reduce using rule 62 (dict_inner)
+
+
+State 140
+
+   63 dict_inner: dict_inner COMMA LABEL DDOTS exp .
+
+    $default  reduce using rule 63 (dict_inner)
+
+
+State 141
+
+   21 import: IMPORT STRING FROM STRING AS LABEL .
+
+    $default  reduce using rule 21 (import)
+
+
+State 142
+
+   22 import: IMPORT STRING AS LABEL FROM STRING .
+
+    $default  reduce using rule 22 (import)
+
+
+State 143
+
+    3 statements: statements . statement
+   25 func_decl: FUNCTION LABEL BRK_OP BRK_CL BRK_C_OP statements . BRK_C_CL
+
+    INT         shift, and go to state 4
+    FLOAT       shift, and go to state 5
+    STRING      shift, and go to state 6
+    LABEL       shift, and go to state 7
+    BRK_OP      shift, and go to state 8
+    BRK_C_OP    shift, and go to state 9
+    BRK_C_CL    shift, and go to state 146
+    IMPORT      shift, and go to state 10
+    CLASS       shift, and go to state 11
+    WHILE       shift, and go to state 12
+    IF          shift, and go to state 13
+    PRINT       shift, and go to state 14
+    BREAK       shift, and go to state 15
+    CONTINUE    shift, and go to state 16
+    RETURN      shift, and go to state 17
+    BRK_S_OP    shift, and go to state 18
+    FUNCTION    shift, and go to state 19
+    TRUE        shift, and go to state 20
+    FALSE       shift, and go to state 21
+    BREAKPOINT  shift, and go to state 22
+
+    statement           go to state 23
+    class_decl          go to state 24
+    import              go to state 25
+    func_decl           go to state 26
+    term                go to state 27
+    exp_multiplicative  go to state 28
+    exp_additive        go to state 29
+    exp_relational      go to state 30
+    exp_logical         go to state 31
+    exp                 go to state 32
+    dict                go to state 33
+    ifelse_statement    go to state 34
+    if_statement        go to state 35
+    while_statement     go to state 36
+
+
+State 144
+
+   26 func_decl: FUNCTION LABEL BRK_OP label_list BRK_CL BRK_C_OP . statements BRK_C_CL
+
+    $default  reduce using rule 2 (statements)
+
+    statements  go to state 147
+
+
+State 145
+
+   24 label_list: label_list COMMA LABEL .
+
+    $default  reduce using rule 24 (label_list)
+
+
+State 146
+
+   25 func_decl: FUNCTION LABEL BRK_OP BRK_CL BRK_C_OP statements BRK_C_CL .
+
+    $default  reduce using rule 25 (func_decl)
+
+
+State 147
+
+    3 statements: statements . statement
+   26 func_decl: FUNCTION LABEL BRK_OP label_list BRK_CL BRK_C_OP statements . BRK_C_CL
+
+    INT         shift, and go to state 4
+    FLOAT       shift, and go to state 5
+    STRING      shift, and go to state 6
+    LABEL       shift, and go to state 7
+    BRK_OP      shift, and go to state 8
+    BRK_C_OP    shift, and go to state 9
+    BRK_C_CL    shift, and go to state 148
+    IMPORT      shift, and go to state 10
+    CLASS       shift, and go to state 11
+    WHILE       shift, and go to state 12
+    IF          shift, and go to state 13
+    PRINT       shift, and go to state 14
+    BREAK       shift, and go to state 15
+    CONTINUE    shift, and go to state 16
+    RETURN      shift, and go to state 17
+    BRK_S_OP    shift, and go to state 18
+    FUNCTION    shift, and go to state 19
+    TRUE        shift, and go to state 20
+    FALSE       shift, and go to state 21
+    BREAKPOINT  shift, and go to state 22
+
+    statement           go to state 23
+    class_decl          go to state 24
+    import              go to state 25
+    func_decl           go to state 26
+    term                go to state 27
+    exp_multiplicative  go to state 28
+    exp_additive        go to state 29
+    exp_relational      go to state 30
+    exp_logical         go to state 31
+    exp                 go to state 32
+    dict                go to state 33
+    ifelse_statement    go to state 34
+    if_statement        go to state 35
+    while_statement     go to state 36
+
+
+State 148
+
+   26 func_decl: FUNCTION LABEL BRK_OP label_list BRK_CL BRK_C_OP statements BRK_C_CL .
+
+    $default  reduce using rule 26 (func_decl)
