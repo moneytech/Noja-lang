@@ -114,11 +114,9 @@ class_decl
   ;
 
 import
-  : IMPORT STRING                       { $$ = AST_Node_import_create($2, 0, 0); }
-  | IMPORT STRING AS LABEL              { $$ = AST_Node_import_create($2, 0, $4); }
-  | IMPORT STRING FROM STRING           { $$ = AST_Node_import_create($2, $4, 0); }
-  | IMPORT STRING FROM STRING AS LABEL  { $$ = AST_Node_import_create($2, $4, $6); }
-  | IMPORT STRING AS LABEL FROM STRING  { $$ = AST_Node_import_create($2, $6, $4); }
+  : IMPORT STRING                       { $$ = AST_Node_import_create($2, 0);  }
+  | IMPORT STRING AS LABEL              { $$ = AST_Node_import_create($2, $4); }
+  | IMPORT STRING AS LABEL FROM STRING  { $$ = AST_Node_import_create($2, $4); }
   ;
 
 label_list

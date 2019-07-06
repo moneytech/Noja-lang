@@ -649,47 +649,23 @@ void Build_Import(Segment *seg, AST_Node *node) {
   if(import->as)
     as_addr = Segment_insert(&builder.data, import->as, strlen(import->as)+1);
 
-  /*
-  if(import->from)
-    from_addr = Segment_insert(&builder.data, import->from, strlen(import->from)+1);
-  */
-
   name_addr = Segment_insert(&builder.data, import->name, strlen(import->name)+1);
 
-  if(strcmp(import->from, "C") == 0) {
+  if(import->as) {
 
-    if(import->as) {
+    Segment_insert_opcode(seg, OPCODE_IMPORT_AND_NAME);
 
-      Segment_insert_opcode(seg, OPCODE_CIMPORT_AND_NAME);
-
-      Segment_insert(seg, &name_addr, 4);
-      Segment_insert(seg, &  as_addr, 4);
-
-    } else {
-
-      Segment_insert_opcode(seg, OPCODE_CIMPORT);
-
-      Segment_insert(seg, &name_addr, 4);
-
-    }
+    Segment_insert(seg, &name_addr, 4);
+    Segment_insert(seg, &  as_addr, 4);
 
   } else {
 
-    if(import->as) {
+    Segment_insert_opcode(seg, OPCODE_IMPORT);
 
-      Segment_insert_opcode(seg, OPCODE_IMPORT_AND_NAME);
+    Segment_insert(seg, &name_addr, 4);
 
-      Segment_insert(seg, &name_addr, 4);
-      Segment_insert(seg, &  as_addr, 4);
-
-    } else {
-
-      Segment_insert_opcode(seg, OPCODE_IMPORT);
-
-      Segment_insert(seg, &name_addr, 4);
-
-    }
   }
+
 }
 
 void Build_Class(Segment *seg, AST_Node *node) {

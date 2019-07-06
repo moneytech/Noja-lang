@@ -18,7 +18,7 @@ typedef struct AST_Node_Class AST_Node_Class;
 
 
 AST_Node *AST_Node_Return_create(AST_Node *value);
-AST_Node *AST_Node_import_create(char *name, char *from, char *as);
+AST_Node *AST_Node_import_create(char *name, char *as);
 
 enum {
 
@@ -96,7 +96,7 @@ struct AST_Node {
 
 struct AST_Node_Import {
   AST_NODE_HEAD;
-  char *name, *from, *as;
+  char *name, *as;
 };
 
 struct AST_Node_Return {
@@ -581,12 +581,11 @@ AST_Node *AST_Node_label(char *label) {
 
 /* Node Import */
 
-AST_Node *AST_Node_import_create(char *name, char *from, char *as) {
+AST_Node *AST_Node_import_create(char *name, char *as) {
 
   AST_Node_Import *node = (AST_Node_Import*) AST_Node_create(NODE_IMPORT);
 
   node->name = name;
-  node->from = from;
   node->as = as;
   node->flags = 0;
 

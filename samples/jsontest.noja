@@ -1,5 +1,5 @@
 
-import 'json' from 'C' as json;
+import 'json' as json;
 
 text = '{"nome": "francesco", "cognome": "cozzuto", "anni": 21, "data di nascita": [9, 7, 1998]}';
 

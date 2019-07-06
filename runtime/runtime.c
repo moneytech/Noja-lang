@@ -100,7 +100,10 @@ void NOJA_run() {
 
               reg0._str = ctx_read_string(&context); // path
 
+              import_shared_library(reg0._str, context.frames[context.frame_depth-1]);
+
               // TODO
+
 
             } break;
 
@@ -108,24 +111,6 @@ void NOJA_run() {
             case OPCODE_IMPORT_AND_NAME: {
 
               reg0._str = ctx_read_string(&context); // path
-              reg1._str = ctx_read_string(&context); // name
-
-
-              // TODO
-
-            } break;
-
-            case OPCODE_CIMPORT: {
-
-              reg0._str = ctx_read_string(&context); // module name
-
-              import_shared_library(reg0._str, context.frames[context.frame_depth-1]);
-
-            } break;
-
-            case OPCODE_CIMPORT_AND_NAME: {
-
-              reg0._str = ctx_read_string(&context); // module name
               reg1._str = ctx_read_string(&context); // name
 
               reg2._obj = Object_create(&TypeTable_Module, 0, 0);
@@ -138,7 +123,6 @@ void NOJA_run() {
               }
 
               Dict_cinsert(context.frames[context.frame_depth-1], reg1._str, reg2._obj);
-
 
               // TODO
 

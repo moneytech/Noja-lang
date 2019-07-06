@@ -1,6 +1,6 @@
 
-import 'fs' from 'C' as fs;
-import 'json' from 'C' as json;
+import 'fs'   as fs;
+import 'json' as json;
 
 fh = fs.FileHandle();
 

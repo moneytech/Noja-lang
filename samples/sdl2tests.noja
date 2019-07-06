@@ -1,46 +1,38 @@
 
+import 'sdl2' from 'C' as sdl;
 
-fn do_shit() {
+sdl.init();
 
-  import 'sdl2' from 'C' as sdl;
+ctx = sdl.Context();
 
-  sdl.init();
+ctx.createWindow('Holaa come va amigoss', 300, 300);
 
-  ctx = sdl.Context();
+ctx.clear();
 
-  ctx.createWindow('Holaa come va amigoss', 300, 300);
+ctx.fillRect(20, 20, 10, 10, 255, 0, 0, 0);
 
-  ctx.clear();
+ctx.update();
 
-  ctx.fillRect(20, 20, 10, 10, 255, 0, 0, 0);
+running = true;
 
-  ctx.update();
+while running {
 
-  running = true;
+  event = ctx.catchEvent();
 
-  while running {
+  if event['name'] == 'quit' {
 
-    event = ctx.catchEvent();
+    running = false;
 
-    if event['name'] == 'quit' {
+  } else {
 
-      running = false;
+    if event['name'] == 'keydown' {
 
-    } else {
-
-      if event['name'] == 'keydown' {
-
-        print(event['code']);
-
-      }
+      print(event['code']);
 
     }
-
   }
-
-
-  sdl.quit();
 
 }
 
-do_shit();
+
+sdl.quit();

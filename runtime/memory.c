@@ -19,6 +19,7 @@ Heap *Mem_Heap_create(u32 size) {
 }
 
 void Mem_init(u32 size) {
+
     Heap *heap = Mem_Heap_create(size);
 
     if(!heap) {
@@ -26,10 +27,11 @@ void Mem_init(u32 size) {
       return;
     }
 
-    memory_man.current_head = heap;
-    memory_man.current_tail = heap;
-    memory_man.temp         = 0;
+    memory_man.current_head     = heap;
+    memory_man.current_tail     = heap;
+    memory_man.temp             = 0;
     memory_man.total_heaps_size = size;
+
 }
 
 void Mem_release() {
