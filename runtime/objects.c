@@ -666,16 +666,14 @@ void Dict_resize(Object *self) {
     ObjectDict *dict = (ObjectDict*) self;
 
     ObjectBucket *old_buckets  = dict->buckets;
-    u32        old_size     = dict->size;
+    u32           old_size     = dict->size;
 
     dict->buckets = calloc(dict->size*2, sizeof(ObjectBucket));
     dict->size *= 2;
 
-    for(u32 i = 0; i < old_size; i++) {
-        if(old_buckets[i].state == BUCKET_USED) {
+    for(u32 i = 0; i < old_size; i++)
+        if(old_buckets[i].state == BUCKET_USED)
             Dict_cinsert(self, old_buckets[i].name, old_buckets[i].ref);
-        }
-    }
 
     free(old_buckets);
 
@@ -699,6 +697,7 @@ void Dict_cinsert(Object *object, char *name, Object *child) {
         if(dict->buckets[i].state == BUCKET_UNUSED) {
 
             // empty
+
             break;
 
         } else if(dict->buckets[i].state == BUCKET_CLEARED) {
@@ -728,6 +727,7 @@ void Dict_cinsert(Object *object, char *name, Object *child) {
 
     if(!bucket_already_there)
         dict->used++;
+
 }
 
 Object *Dict_select(Object *self, Object *key) {
@@ -748,6 +748,7 @@ Object *Dict_cselect(Object *object, char *name) {
         if(dict->buckets[i].state == BUCKET_UNUSED) {
 
             // empty
+
             return 0;
 
         } else {
@@ -759,7 +760,9 @@ Object *Dict_cselect(Object *object, char *name) {
                 // Found it!
 
                 return dict->buckets[i].ref;
+
             }
+
         }
 
         p >>= 1;
@@ -970,7 +973,6 @@ char ObjectArray_cinsert(Object *self, u32 index, Object *elem) {
 
         ctx_throw_exception(&context, Exception_IndexError);
 
-
         return 0;
     }
 
@@ -998,11 +1000,13 @@ Object *ObjectArray_cselect(Object *self, u32 index) {
 char ObjectArray_insert(Object *self, Object *key, Object *value) {
 
     return ObjectArray_cinsert(self, ((ObjectInt*) key)->value, value);
+
 }
 
 Object *ObjectArray_select(Object *self, Object *key) {
 
     return ObjectArray_cselect(self, ((ObjectInt*) key)->value);
+
 }
 
 /* === Class === */

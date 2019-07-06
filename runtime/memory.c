@@ -46,7 +46,7 @@ void Mem_HeapList_destroy(Heap *head) {
     Object *object;
     Heap *next;
 
-    Heap *heap  = head;
+    Heap *heap = head;
 
     while(heap) {
 
@@ -147,6 +147,8 @@ void Mem_cycle() {
 
     for(u32 i = 0; i < context.frame_depth; i++)
         Mem_collect(&context.frames[i]);
+
+    context.root_frame = context.frames[0];
 
     for(u32 i = 0; i < context.stack_size; i++)
         Mem_collect(&context.stack[i]);

@@ -154,6 +154,7 @@ void NOJA_run() {
               );
 
             }
+
             break;
 
             case OPCODE_SET_ATTR:

@@ -11,9 +11,7 @@ class Node {
 
 class List {
 
-  fn __init__(Node) {
-
-    self.Node = Node;
+  fn __init__() {
 
     self.head = 0;
     self.tail = 0;
@@ -38,7 +36,7 @@ class List {
 
   fn append(v) {
 
-    node = self.Node(v);
+    node = Node(v);
 
     if self.size == 0 {
 
@@ -57,7 +55,7 @@ class List {
 
 }
 
-list = List(Node);
+list = List();
 
 i = 0;
 while i < 10000 {

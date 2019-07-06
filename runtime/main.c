@@ -32,7 +32,6 @@ int NOJA_init(char *path) {
 
   TypeTable_ObjectArray.methods = Object_create(__ObjectDict__, 0, 0);
 
-
     Dict_cinsert(TypeTable_ObjectArray.methods, "reverse"  , ObjectCFunction_create(&ObjectArray_reverse));
     Dict_cinsert(TypeTable_ObjectArray.methods, "append"   , ObjectCFunction_create(&ObjectArray_append));
     Dict_cinsert(TypeTable_ObjectArray.methods, "pop"      , ObjectCFunction_create(&ObjectArray_pop));
@@ -168,7 +167,6 @@ int NOJA_init(char *path) {
 
   Dict_cinsert(context.root_frame, "proto_attributes_of", ObjectCFunction_create(&proto_attributes_of));
   Dict_cinsert(context.root_frame, "typename_of", ObjectCFunction_create(&typename_of));
-
 
     return 1;
 }
