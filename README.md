@@ -4,7 +4,7 @@
 
 ```javascript
 
-import 'sdl2' from 'C' as sdl;
+import 'sdl2' as sdl;
 
 sdl.init();
 
