@@ -1,0 +1,19 @@
+
+
+nome = 'pane';
+
+i = 0;
+
+while i < nome.length() {
+
+  c = nome[i];
+
+  print(c);
+
+  nome[i] = 'Quora';
+
+  i = i + 1;
+
+}
+
+print(nome);

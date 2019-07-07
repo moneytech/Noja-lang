@@ -1,0 +1,9 @@
+
+
+nome = 'francesco';
+
+needle = 'nces';
+
+index = nome.find(needle);
+
+print(nome.sub(index, index + needle.length()));

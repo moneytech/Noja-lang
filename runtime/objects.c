@@ -397,7 +397,7 @@ char ObjectString_to_cbool(Object *self) {
 
 Object *ObjectString_select(Object *self, Object *key) {
 
-    if(key->type == &TypeTable_ObjectInt) {
+    if(key->type != &TypeTable_ObjectInt) {
       ctx_throw_exception(&context, Exception_TypeError);
       return 0;
     }
@@ -426,6 +426,16 @@ Object *ObjectString_select(Object *self, Object *key) {
 }
 
 char ObjectString_insert(Object *self, Object *key, Object *value) {
+
+    if(key->type != &TypeTable_ObjectInt) {
+      ctx_throw_exception(&context, Exception_IndexError);
+      return 0;
+    }
+
+    if(value->type != &TypeTable_ObjectString) {
+      ctx_throw_exception(&context, Exception_TypeError);
+      return 0;
+    }
 
     ObjectString *string       = (ObjectString*) self,
                  *substring    = (ObjectString*) value;
@@ -456,8 +466,96 @@ char ObjectString_insert(Object *self, Object *key, Object *value) {
 }
 
 Object *ObjectString_reverse(Object *parent, Object **argv, u32 argc) {}
-Object *ObjectString_sub(Object *parent, Object **argv, u32 argc) {}
-Object *ObjectString_find(Object *parent, Object **argv, u32 argc) {}
+
+Object *ObjectString_sub(Object *parent, Object **argv, u32 argc) {
+
+  int from, to;
+
+  if(argc == 0) {
+    // meh
+  }
+
+  char *source = ((ObjectString*) parent)->value;
+
+  from = ((ObjectInt*) argv[0])->value;
+
+  if(argc == 2) {
+
+    to = ((ObjectInt*) argv[1])->value;
+
+    if(to < 0) {
+      to = ((ObjectString*) parent)->size + to + 1;
+    }
+
+  } else {
+
+    to = ((ObjectString*) parent)->size - 1;
+
+  }
+
+  if(to <= from) {
+
+    // return empty string
+
+    return ObjectString_from_cstring("");
+
+  }
+
+  char *sub = malloc(to - from + 1); // +1?
+
+  strncpy(sub, source + from, to - from + 1);
+
+  sub[to-from] = 0;
+
+  return ObjectString_wrap_cstring(sub, from - to + 1);
+
+}
+
+Object *ObjectString_find(Object *parent, Object **argv, u32 argc) {
+
+  if(argc == 0)
+    return ObjectInt_from_cint(-1);
+
+  if(argv[0]->type != &TypeTable_ObjectString) {
+    ctx_throw_exception(&context, Exception_TypeError);
+    return 0;
+  }
+
+  char *needle = ((ObjectString*) argv[0])->value;
+  char *text   = ((ObjectString*) parent)->value;
+  int   needle_len = ((ObjectString*) argv[0])->size;
+  int   text_len = ((ObjectString*) parent)->size;
+
+  if(needle_len >= text_len)
+
+    return ObjectInt_from_cint(-1);
+
+  int index = -1;
+
+  for(int i = 0, j = 0; i < text_len; i++) {
+
+    if(text[i] == needle[j]) {
+
+      if(j == 0) index = i;
+
+      j++;
+
+      if(j == needle_len) {
+
+        break;
+
+      }
+
+    } else {
+
+      j = 0;
+
+    }
+
+  }
+
+  return ObjectInt_from_cint(index);
+}
 
 Object *ObjectString_length(Object *parent, Object **argv, u32 argc) {
   return ObjectInt_from_cint(((ObjectString*) parent)->size);
