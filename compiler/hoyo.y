@@ -80,6 +80,10 @@
 
 %type <node> statement class_decl class_decl_inner import exp func_decl label_list if_statement statements while_statement ifelse_statement exp_list dict dict_inner term exp_logical exp_relational exp_additive exp_multiplicative
 
+%left T_ADD T_SUB
+%left T_MUL T_DIV
+%left T_MOD
+
 %%
 
 everything: statements {*root = $1;};
@@ -130,20 +134,20 @@ func_decl
   ;
 
 term
-  : INT                           { $$ = AST_Node_i64($1);}
-  | FLOAT                         { $$ = AST_Node_f64($1);}
-  | STRING                        { $$ = AST_Node_string($1);}
-  | TRUE                          { $$ = AST_Node_true();}
-  | FALSE                         { $$ = AST_Node_false();}
-  | BRK_S_OP BRK_S_CL             { $$ = AST_Node_array(0); }
-  | BRK_S_OP exp_list BRK_S_CL    { $$ = AST_Node_array($2); }
-  | BRK_OP exp BRK_CL             { $$ = $2; }
-  | term BRK_OP BRK_CL               {$$ = AST_Node_operator(EXP_CALL, $1, 0);}
-  | term BRK_OP exp_list BRK_CL      {$$ = AST_Node_operator(EXP_CALL, $1, $3);}
-  | dict                          { $$ = AST_Node_dict($1);}
-  | LABEL                         {$$ = AST_Node_label($1);}
-  | term DOT LABEL                {$$ = AST_Node_operator(EXP_SELECT_ATTR, $1, AST_Node_label($3));}
-  | term BRK_S_OP exp BRK_S_CL    {$$ = AST_Node_operator(EXP_SELECT, $1, $3);}
+  : INT                           { $$ = AST_Node_i64($1);    }
+  | FLOAT                         { $$ = AST_Node_f64($1);    }
+  | STRING                        { $$ = AST_Node_string($1); }
+  | TRUE                          { $$ = AST_Node_true();     }
+  | FALSE                         { $$ = AST_Node_false();    }
+  | BRK_S_OP          BRK_S_CL    { $$ = AST_Node_array(0);   }
+  | BRK_S_OP exp_list BRK_S_CL    { $$ = AST_Node_array($2);  }
+  | BRK_OP   exp      BRK_CL      { $$ = $2;                  }
+  | term BRK_OP BRK_CL            { $$ = AST_Node_operator(EXP_CALL, $1, 0);  }
+  | term BRK_OP exp_list BRK_CL   { $$ = AST_Node_operator(EXP_CALL, $1, $3); }
+  | dict                          { $$ = AST_Node_dict($1);   }
+  | LABEL                         { $$ = AST_Node_label($1);  }
+  | term DOT LABEL                { $$ = AST_Node_operator(EXP_SELECT_ATTR, $1, AST_Node_label($3));  }
+  | term BRK_S_OP exp BRK_S_CL    { $$ = AST_Node_operator(EXP_SELECT, $1, $3); }
   ;
 
 exp_multiplicative

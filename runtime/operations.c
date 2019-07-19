@@ -47,15 +47,6 @@ Object *Dict_eql(Object *a, Object *b) {
     return NOJA_False;
 }
 
-Object *ObjectInt_nql(Object *a, Object *b) {
-    return ((ObjectInt*) a)->value != ((ObjectInt*) b)->value ? NOJA_True : NOJA_False;
-}
-
-Object *ObjectFloat_nql(Object *a, Object *b) {
-    return ((ObjectFloat*) a)->value != ((ObjectFloat*) b)->value ? NOJA_True : NOJA_False;
-}
-
-
 Object *ObjectInt_lss(Object *a, Object *b) {
     return ((ObjectInt*) a)->value < ((ObjectInt*) b)->value ? NOJA_True : NOJA_False;
 }

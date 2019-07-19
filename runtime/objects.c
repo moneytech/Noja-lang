@@ -403,7 +403,7 @@ Object *ObjectString_select(Object *self, Object *key) {
     }
 
     ObjectString *string = (ObjectString*) self;
-    ObjectInt *index = (ObjectInt*) key;
+    ObjectInt    *index  = (ObjectInt*) key;
 
     char c[2];
 
@@ -441,10 +441,15 @@ char ObjectString_insert(Object *self, Object *key, Object *value) {
                  *substring    = (ObjectString*) value;
     ObjectInt    *index        = (ObjectInt*)    key;
 
-    u32   new_length = string->size + substring->size - 1;
-    char *new_value = malloc(new_length+1);
+    if(index->value >= string->size) {
+      ctx_throw_exception(&context, Exception_IndexError);
+      return 0;
+    }
 
-    u32 n = index->value;
+    u32   new_length = string->size + substring->size - 1;
+    char *new_value  = malloc(new_length + 1);
+
+    u32    n = index->value;
     char *s1 = string->value;
     char *s2 = substring->value;
 
@@ -452,10 +457,15 @@ char ObjectString_insert(Object *self, Object *key, Object *value) {
         new_value[i] = s1[i];
 
     for(u32 i = 0; i < substring->size; i++)
-        new_value[i+n] = s2[i];
+        new_value[i + n] = s2[i];
 
-    for(u32 i = 0; i < string->size-(n+substring->size); i++)
-        new_value[i+n+substring->size] = s1[i+n+1];
+    for(u32 i = 0; i < string->size - n; i++) {
+    
+        new_value[i + n + substring->size] = s1[i + n + 1];
+    
+    }
+
+    printf("new value: [%s]\n", new_value);
 
     free(string->value);
 
@@ -467,19 +477,33 @@ char ObjectString_insert(Object *self, Object *key, Object *value) {
 
 Object *ObjectString_reverse(Object *parent, Object **argv, u32 argc) {}
 
+Object *ObjectString_findAll(Object *parent, Object **argv, u32 argc) {}
+
+
 Object *ObjectString_sub(Object *parent, Object **argv, u32 argc) {
 
   int from, to;
 
   if(argc == 0) {
     // meh
+    return NOJA_False;
   }
 
   char *source = ((ObjectString*) parent)->value;
 
+  if(argv[0]->type != &TypeTable_ObjectInt) {
+    ctx_throw_exception(&context, Exception_TypeError);
+    return 0;
+  }
+
   from = ((ObjectInt*) argv[0])->value;
 
   if(argc == 2) {
+
+    if(argv[1]->type != &TypeTable_ObjectInt) {
+      ctx_throw_exception(&context, Exception_TypeError);
+      return 0;
+    }
 
     to = ((ObjectInt*) argv[1])->value;
 

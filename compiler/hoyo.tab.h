@@ -96,7 +96,12 @@ extern int yydebug;
     DOLLA = 302,
     TRUE = 303,
     FALSE = 304,
-    BREAKPOINT = 305
+    BREAKPOINT = 305,
+    T_ADD = 306,
+    T_SUB = 307,
+    T_MUL = 308,
+    T_DIV = 309,
+    T_MOD = 310
   };
 #endif
 
@@ -114,7 +119,7 @@ union YYSTYPE
 
   AST_Node *node;
 
-#line 118 "hoyo.tab.h" /* yacc.c:1921  */
+#line 123 "hoyo.tab.h" /* yacc.c:1921  */
 };
 
 typedef union YYSTYPE YYSTYPE;

@@ -575,6 +575,7 @@ void NOJA_run() {
             case OPCODE_GEQ:
             case OPCODE_LEQ:
             case OPCODE_EQL:
+            case OPCODE_NQL:
 
             if(context.stack_size < 2) {
               ctx_throw_exception(&context, InternalException_6);
@@ -594,6 +595,7 @@ void NOJA_run() {
               case OPCODE_GEQ: reg2._obj = Object_geq(reg0._obj, reg1._obj); break;
               case OPCODE_LEQ: reg2._obj = Object_leq(reg0._obj, reg1._obj); break;
               case OPCODE_EQL: reg2._obj = Object_eql(reg0._obj, reg1._obj); break;
+              case OPCODE_NQL: reg2._obj = (Object_eql(reg0._obj, reg1._obj) == NOJA_True) ? NOJA_False : NOJA_True; break;
             }
 
             if(!reg2._obj) {

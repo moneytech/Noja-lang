@@ -5,6 +5,11 @@ Terminals unused in grammar
    FOR
    DO
    DOLLA
+   T_ADD
+   T_SUB
+   T_MUL
+   T_DIV
+   T_MOD
 
 
 Grammar
@@ -153,52 +158,57 @@ DOLLA (302)
 TRUE (303) 28
 FALSE (304) 29
 BREAKPOINT (305) 8
+T_ADD (306)
+T_SUB (307)
+T_MUL (308)
+T_DIV (309)
+T_MOD (310)
 
 
 Nonterminals, with rules where they appear
 
-$accept (51)
+$accept (56)
     on left: 0
-everything (52)
+everything (57)
     on left: 1, on right: 0
-statements <node> (53)
+statements <node> (58)
     on left: 2 3, on right: 1 3 23 24 66 68 69
-statement <node> (54)
+statement <node> (59)
     on left: 4 5 6 7 8 9 10 11 12 13 14, on right: 3
-class_decl_inner <node> (55)
+class_decl_inner <node> (60)
     on left: 15 16, on right: 16 17
-class_decl <node> (56)
+class_decl <node> (61)
     on left: 17, on right: 14
-import <node> (57)
+import <node> (62)
     on left: 18 19 20, on right: 13
-label_list <node> (58)
+label_list <node> (63)
     on left: 21 22, on right: 22 24
-func_decl <node> (59)
+func_decl <node> (64)
     on left: 23 24, on right: 12 16
-term <node> (60)
+term <node> (65)
     on left: 25 26 27 28 29 30 31 32 33 34 35 36 37 38, on right: 33
     34 37 38 39 40 41
-exp_multiplicative <node> (61)
+exp_multiplicative <node> (66)
     on left: 39 40 41, on right: 42 43 44
-exp_additive <node> (62)
+exp_additive <node> (67)
     on left: 42 43 44, on right: 45 46 47 48 49 50 51
-exp_relational <node> (63)
+exp_relational <node> (68)
     on left: 45 46 47 48 49 50 51, on right: 52 53 54 55
-exp_logical <node> (64)
+exp_logical <node> (69)
     on left: 52 53 54 55, on right: 56 57
-exp <node> (65)
+exp <node> (70)
     on left: 56 57, on right: 4 9 32 38 58 59 60 61 64 65 68 69
-dict_inner <node> (66)
+dict_inner <node> (71)
     on left: 58 59 60 61, on right: 60 61 63
-dict <node> (67)
+dict <node> (72)
     on left: 62 63, on right: 35
-exp_list <node> (68)
+exp_list <node> (73)
     on left: 64 65, on right: 5 31 34 65
-ifelse_statement <node> (69)
+ifelse_statement <node> (74)
     on left: 66 67, on right: 10
-if_statement <node> (70)
+if_statement <node> (75)
     on left: 68, on right: 66 67
-while_statement <node> (71)
+while_statement <node> (76)
     on left: 69, on right: 11
 
 
