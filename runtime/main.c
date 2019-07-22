@@ -9,7 +9,6 @@ int NOJA_init(char *path) {
       return 0;
   }
 
-
   Mem_init(4096);
 
   context.source_stack[0] = &sources[0];
@@ -162,6 +161,18 @@ int NOJA_init(char *path) {
     */
 
     Dict_cinsert(context.frames[0], "Module", &TypeTable_Module);
+
+  }
+
+  /* Init Iterator object class */ {
+
+    TypeTable_ObjectIterator.methods = Object_create(__ObjectDict__, 0, 0);
+
+    Dict_cinsert(TypeTable_ObjectIterator.methods, "next", ObjectCFunction_create(&ObjectIterator_next));
+    Dict_cinsert(TypeTable_ObjectIterator.methods, "ended", ObjectCFunction_create(&ObjectIterator_ended));
+    Dict_cinsert(TypeTable_ObjectIterator.methods, "index", ObjectCFunction_create(&ObjectIterator_index));
+
+    Dict_cinsert(context.frames[0], "Iterator", &TypeTable_ObjectIterator);
 
   }
 

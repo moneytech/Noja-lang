@@ -1,17 +1,16 @@
 
-import 'fs'   as fs;
+import 'fs2'  as fs;
 import 'json' as json;
 
-fh = fs.FileHandle();
+handle = fs.open('samples/twitter.json');
 
-fh.open('samples/twitter.json', 'r');
+text = handle.read();
 
-text = fh.read();
+handle.close();
 
 n = text.length();
-
-fh.close();
 
 info = json.decode(text);
 
 print(info['statuses'][0]['entities']['user_mentions'][0]['indices'][1]);
+

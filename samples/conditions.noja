@@ -1,0 +1,88 @@
+
+a = 5;
+b = 6;
+
+if a < b {
+
+  print('ok 1');
+
+} else {
+
+  print('non ok 1');
+
+}
+
+a = 7;
+b = 7;
+
+if a == b {
+
+  print('ok 2');
+
+} else {
+
+  print('non ok 2');
+
+}
+
+a = 0.6;
+b = 0.7;
+
+if a < b {
+
+  print('ok 3');
+
+} else {
+
+  print('non ok 3');
+
+}
+
+if a != b {
+
+  print('ok 4');
+
+} else {
+
+  print('non ok 4');
+
+}
+
+a = 0.5;
+b = 0.5;
+
+if a == b {
+
+  print('ok 5');
+
+} else {
+
+  print('non ok 5');
+
+}
+
+a = 'ciao bello';
+b = 'ciao bello';
+
+if a == b {
+
+  print('ok 5');
+
+} else {
+
+  print('non ok 5');
+
+}
+
+a = 'ciao bello';
+b = 'ciao bella';
+
+if a != b {
+
+  print('ok 5');
+
+} else {
+
+  print('non ok 5');
+
+}

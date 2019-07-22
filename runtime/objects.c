@@ -7,6 +7,24 @@ char return_1(Object *o) {
     return 1;
 }
 
+u32 Object_get_raw_repr_size(Object *self) {
+
+  if(self->type->get_raw_repr_size == NULL)
+
+    return 0;
+
+  return self->type->get_raw_repr_size(self);
+}
+
+void Object_get_raw_repr(Object *self, void *addr, u32 max_size) {
+  
+  if(self->type->get_raw_repr == NULL)
+    return;
+
+  self->type->get_raw_repr(self, addr, max_size);
+
+}
+
 void Object_destroy(Object *self) {
 
     if(self->type->free) {
@@ -15,6 +33,9 @@ void Object_destroy(Object *self) {
 }
 
 Object *Object_create(ObjectType *type, Object **argv, u32 argc) {
+
+    if(type == __ObjectBool__)
+      return NOJA_True;
 
     Object *object = (Object*) Mem_allocate(type->size);
 
@@ -355,6 +376,19 @@ void ObjectString_init(Object *self, Object *argv, u32 argc) {
 
 }
 
+void ObjectString_get_raw_repr(Object *self, void *addr, u32 max_size) {
+    
+  ObjectString *string = (ObjectString*) self;
+
+  for(u32 i = 0; i < MIN(string->size, max_size); i++)
+      ((char*) addr)[i] = string->value[i];
+
+}
+
+u32 ObjectString_get_raw_repr_size(Object *self) {
+  return ((ObjectString*) self)->size;
+}
+
 Object *ObjectString_wrap_cstring(char *value, u32 size) {
 
     ObjectString *string = (ObjectString*) Object_create(__ObjectString__, 0, 0);
@@ -460,12 +494,10 @@ char ObjectString_insert(Object *self, Object *key, Object *value) {
         new_value[i + n] = s2[i];
 
     for(u32 i = 0; i < string->size - n; i++) {
-    
-        new_value[i + n + substring->size] = s1[i + n + 1];
-    
-    }
 
-    printf("new value: [%s]\n", new_value);
+        new_value[i + n + substring->size] = s1[i + n + 1];
+
+    }
 
     free(string->value);
 
@@ -654,6 +686,52 @@ Object *ObjectString_split(Object *parent, Object **argv, u32 argc) {
 
 Object *ObjectString_replace(Object *parent, Object **argv, u32 argc) {}
 Object *ObjectString_format(Object *parent, Object **argv, u32 argc) {}
+
+void ObjectString_iter(Object *self, Object *iter) {
+
+
+  ObjectString *string = (ObjectString*) self;
+  ObjectIterator *iterator = (ObjectIterator*) iter;
+
+}
+
+Object *ObjectString_next(Object *self, Object *iter) {
+
+  /*
+    returning 0 will end the iteration
+  */
+
+  ObjectString *string = (ObjectString*) self;
+  ObjectIterator *iterator = (ObjectIterator*) iter;
+
+  i64 index;
+
+  if(iterator->ended == 1)
+    return NOJA_False;
+
+  if(iterator->index->type == __ObjectInt__) {
+
+    index = ((ObjectInt*) iterator->index)->value + 1;
+
+  } else {
+
+    index = 0;
+
+  }
+
+  char buffer[2];
+
+  buffer[0] = string->value[index];
+  buffer[1] = 0;
+
+  iterator->index = ObjectInt_from_cint(index);
+
+  if(index+1 == string->size)
+    iterator->ended = 1;
+
+  return ObjectString_from_cstring(buffer);
+
+}
 
 /* === ObjectInt === */
 
@@ -969,6 +1047,43 @@ void ObjectBool_print(Object *self) {
 
 /* === ObjectArray === */
 
+void ObjectArray_iter(Object *self, Object *iter) {
+
+  ObjectArray *array = (ObjectArray*) self;
+  ObjectIterator *iterator = (ObjectIterator*) iter;
+
+
+}
+
+Object *ObjectArray_next(Object *self, Object *iter) {
+
+  ObjectArray *array = (ObjectArray*) self;
+  ObjectIterator *iterator = (ObjectIterator*) iter;
+
+  i64 index;
+
+  if(iterator->ended)
+    return NOJA_False;
+
+  if(iterator->index->type == __ObjectInt__) {
+    
+    index = ((ObjectInt*) iterator->index)->value + 1;
+
+  } else {
+
+    index = 0;
+
+  }
+
+  iterator->index = ObjectInt_from_cint(index);
+
+  Object *object = array->block[index];
+
+  if(index+1 == array->used)
+    iterator->ended = 1;
+
+  return object;
+}
 
 char ObjectArray_to_cbool(Object *self) {
     return ((ObjectArray*) self)->used;
@@ -1282,5 +1397,63 @@ void Class_collectChildren(Object *self) {
   ObjectIstance *istance = (ObjectIstance*) self;
 
   Mem_collect(&istance->members);
+
+}
+
+/* === Iterator === */
+
+
+void ObjectIterator_init(Object *self, Object **argv, u32 argc) {
+
+  assert(argc != 0);
+
+  ObjectIterator *iterator = (ObjectIterator*) self;
+
+  Object *iterated = argv[0];
+
+  if(iterated->type->iter == NULL) {
+    // object can't be iterated
+    ctx_throw_exception(&context, Exception_UniterableIterated);
+    return;
+  }
+
+  iterator->iterated = iterated;
+  iterator->index = NOJA_False;
+
+  iterated->type->iter(iterated, (Object*) iterator);
+
+}
+
+Object *ObjectIterator_ended(Object *self, Object **argv, u32 argc) {
+  return ((ObjectIterator*) self)->ended ? NOJA_True : NOJA_False;
+}
+
+Object *ObjectIterator_next(Object *self, Object **argv, u32 argc) {
+
+  ObjectIterator *iterator = (ObjectIterator*) self;
+
+  Object *object = iterator->iterated->type->next(iterator->iterated, self);
+
+  return object;
+}
+
+Object *ObjectIterator_index(Object *self, Object **argv, u32 argc) {
+  return ((ObjectIterator*) self)->index;
+}
+
+void ObjectIterator_print(Object *self) {
+
+  ObjectIterator *iterator = (ObjectIterator*) self;
+
+  printf("<Iterator on %s>", iterator->iterated->type->name);
+
+}
+
+void ObjectIterator_collectChildren(Object *self) {
+
+  ObjectIterator *iterator = (ObjectIterator*) self;
+
+  Mem_collect(&iterator->iterated);
+  Mem_collect(&iterator->index);
 
 }

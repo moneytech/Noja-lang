@@ -1,6 +1,8 @@
 
 #include "../common/common.h"
 
+#define MIN(a, b) ((a < b) ? a : b)
+#define MAX(a, b) ((a > b) ? a : b)
 
 #define __ObjectType__          &TypeTable_ObjectType
 #define __ObjectInt__           &TypeTable_ObjectInt
@@ -11,7 +13,8 @@
 #define __ObjectArray__         &TypeTable_ObjectArray
 #define __ObjectFunction__      &TypeTable_ObjectFunction
 #define __ObjectCFunction__     &TypeTable_ObjectCFunction
-#define __ObjectBool___         &TypeTable_ObjectBool
+#define __ObjectBool__          &TypeTable_ObjectBool
+#define __ObjectIterator___     &TypeTable_ObjectIterator
 
 
 typedef struct Source Source;
@@ -62,6 +65,7 @@ typedef struct ObjectCFunction ObjectCFunction;
 typedef struct ObjectBool ObjectBool;
 typedef struct ObjectModule ObjectModule;
 typedef struct ObjectIstance ObjectIstance;
+typedef struct ObjectIterator ObjectIterator;
 
 typedef struct Offset Offset;
 
@@ -80,7 +84,7 @@ extern Operator operator_matrix_lss[6][6];
 extern Operator operator_matrix_leq[6][6];
 extern Operator operator_matrix_grt[6][6];
 extern Operator operator_matrix_geq[6][6];
-extern Operator operator_matrix_eql[6][6];
+extern Operator operator_matrix_eql[7][7];
 
 char import_shared_library(char *name, Object *dest);
 
@@ -143,6 +147,7 @@ struct ObjectType {
     /* Methods */
 
     Object *methods;
+
     void    (*free)(Object *self);
     void    (*init)(Object *self, Object **argv, u32 argc);
     char    (*insert)(Object *self, Object *key, Object *value);
@@ -150,8 +155,13 @@ struct ObjectType {
     void    (*setAttr)(Object *self, char *name, Object *value);
     Object *(*getAttr)(Object *self, char *name);
     Object *(*call)(Object *self, Object *parent, Object **argv, u32 argc);
+    void    (*print)(Object *self);
 
-    void  (*print)(Object *self);
+    void    (*iter)(Object *self, Object *iterator);
+    Object *(*next)(Object *self, Object *iterator);
+
+    u32     (*get_raw_repr_size)(Object *self);
+    void    (*get_raw_repr)(Object *self, void *addr, u32 max_size);
 
     /* Casters */
 
@@ -165,6 +175,13 @@ struct ObjectType {
 
     void (*collectChildren)(Object *self);
 
+};
+
+struct ObjectIterator {
+  OBJECT_HEAD;
+  Object *iterated;
+  Object *index;
+  char ended;
 };
 
 struct ObjectBool {
@@ -248,6 +265,7 @@ extern ObjectType TypeTable_ObjectFunction;
 extern ObjectType TypeTable_ObjectCFunction;
 extern ObjectType TypeTable_Module;
 extern ObjectType TypeTable_ObjectBool;
+extern ObjectType TypeTable_ObjectIterator;
 extern Object *NOJA_True;
 extern Object *NOJA_False;
 
@@ -274,6 +292,9 @@ Object *Object_sub(Object *a, Object *b);
 Object *Object_mul(Object *a, Object *b);
 Object *Object_div(Object *a, Object *b);
 void    Object_print(Object *a);
+u32 Object_get_raw_repr_size(Object *self);
+void Object_get_raw_repr(Object *self, void *addr, u32 max_size);
+
 
 /* === Dict === */
 
@@ -303,7 +324,7 @@ char    ObjectFloat_to_cbool(Object *self);
 
 /* === ObjectString === */
 
-void ObjectString_init(Object *self, Object *argv, u32 argc);
+void    ObjectString_init(Object *self, Object *argv, u32 argc);
 Object *ObjectString_from_cstring(char *s);
 Object *ObjectString_wrap_cstring(char *value, u32 size);
 void    ObjectString_print(Object *self);
@@ -312,6 +333,12 @@ void    ObjectString_collectChildren(Object *self);
 void    ObjectString_destroy(Object *self);
 char    ObjectString_insert(Object *self, Object *key, Object *value);
 Object *ObjectString_select(Object *self, Object *key);
+void    ObjectString_iter(Object *self, Object *iter);
+Object *ObjectString_next(Object *self, Object *iter);
+void    ObjectString_get_raw_repr(Object *self, void *addr, u32 max_size);
+u32     ObjectString_get_raw_repr_size(Object *self);
+
+
 
 /* Methods */
 
@@ -332,7 +359,8 @@ Object *ObjectType_from_stackd(ObjectType *e_type);
 
 
 /* === ObjectArray === */
-
+void ObjectArray_iter(Object *self, Object *iter);
+Object *ObjectArray_next(Object *self, Object *iter);
 void    ObjectArray_init(Object *self, Object **argv, u32 argc);
 void    ObjectArray_destroy(Object *self);
 void    ObjectArray_resize(Object *self);
@@ -383,6 +411,14 @@ void    Class_delete(Object *self);
 Object *Class_select(Object *self, Object *key);
 char Class_insert(Object *self, Object *key, Object *value);
 
+/* === Iterator === */
+
+void ObjectIterator_init(Object *self, Object **argv, u32 argc);
+Object *ObjectIterator_ended(Object *self, Object **argv, u32 argc);
+Object *ObjectIterator_next(Object *self, Object **argv, u32 argc);
+Object *ObjectIterator_index(Object *self, Object **argv, u32 argc);
+void ObjectIterator_print(Object *self);
+void ObjectIterator_collectChildren(Object *self);
 
 /* === Operations === */
 
@@ -391,6 +427,7 @@ Object *ObjectArray_eql(Object *a, Object *b);
 Object *ObjectInt_eql(Object *a, Object *b);
 Object *ObjectFloat_eql(Object *a, Object *b);
 Object *ObjectString_eql(Object *a, Object *b);
+Object *ObjectBool_eql(Object *a, Object *b);
 
 // int R int
 
@@ -535,6 +572,7 @@ enum {
   Exception_InsertError,
   Exception_SelectError,
   Exception_badOperation,
+  Exception_UniterableIterated,
   InternalException_0 = 21, // FUNC_END not in function
   InternalException_1, // PUSH_ARG on an empty stack
   InternalException_2, // INSERT with not enough elements on the stack

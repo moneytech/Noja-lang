@@ -1,0 +1,23 @@
+
+import 'fs2' as fs;
+
+main_source = fs.open('samples/compiler/main.noja');
+
+if main_source {
+
+	print('file opened!');
+
+} else {
+
+	print('couldnt open file!');
+
+}
+
+print('size: ', main_source.size());
+
+s = main_source.read();
+
+print('[', s, ']');
+
+print('byee');
+

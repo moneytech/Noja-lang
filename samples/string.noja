@@ -1,19 +1,52 @@
 
-
 nome = 'pane';
 
 i = 0;
+index = 0;
 
-while i < nome.length() {
+nome[2] = 'Quora';
 
-  c = nome[i];
+print(nome);
 
-  print(c);
+if (1 + 2) + 3 {
 
-  nome[i] = 'Quora';
+	print('1 + 2 + 3 is evaluated as true!');
 
-  i = i + 1;
+} else {
+
+	print('1 + 2 + 3 is evaluated as false!');
+}
+
+import 'fs2' as fs;
+
+fn deep_list_files(path, depth) {
+
+	list = fs.readDir(path);
+
+	i = 0;
+
+	while i < list.size() {
+
+		k = 0;
+		s = '';
+		while k < depth {
+			s = s + '--- ';
+			k = k + 1;
+		}
+
+		print(s, list[i]['name'], ' :: ', list[i]['type']);
+
+		type = list[i]['type'];
+
+		if type == 4 {
+
+			deep_list_files((path + '/') + list[i]['name'], depth + 1);
+
+		}
+
+		i = i + 1;
+	}
 
 }
 
-print(nome);
+deep_list_files('.', 0);

@@ -1,6 +1,11 @@
 
 #include "header.h"
 
+Object *ObjectBool_eql(Object *a, Object *b) {
+    // calling Bool() would create a new istance of a bool object, so pointer comparison wouldn't work.
+    return a == b ? NOJA_True : NOJA_False;
+}
+
 Object *ObjectInt_eql(Object *a, Object *b) {
     return ((ObjectInt*) a)->value == ((ObjectInt*) b)->value ? NOJA_True : NOJA_False;
 }

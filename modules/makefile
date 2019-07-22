@@ -1,8 +1,11 @@
 
-all: fs socket sdl2 json fs2 mongoose libmicrohttpd
+all: fs socket sdl2 json fs2 mongoose libmicrohttpd lowLevel
+
+lowLevel: cmodules/lowLevel.c
+	gcc -shared -fPIC cmodules/lowLevel.c -o liblowLevel.so -lc -g
 
 libmicrohttpd: cmodules/libmicrohttpd.c
-	gcc -shared -fPIC cmodules/mongoose.c -o libmicrohttpd.so -lc -g
+	gcc -shared -fPIC cmodules/libmicrohttpd.c -o libmicrohttpd.so -lc -g
 
 mongoose: cmodules/mongoose.c
 	gcc -shared -fPIC cmodules/mongoose.c -o libmongoose.so -lc -g

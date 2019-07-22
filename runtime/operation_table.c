@@ -759,96 +759,123 @@ Operator operator_matrix_geq[6][6] = {
 
 
 
-Operator operator_matrix_eql[6][6] = {
+Operator operator_matrix_eql[7][7] = {
 
     {
-        // ObjectType + ObjectType
+        // ObjectType == ObjectType
         0,
-        // ObjectType + ObjectInt
+        // ObjectType == ObjectInt
         0,
-        // ObjectType + ObjectFloat
+        // ObjectType == ObjectFloat
         0,
-        // ObjectType + ObjectString
+        // ObjectType == ObjectString
         0,
-        // ObjectType + Dict
+        // ObjectType == Dict
         0,
-        // ObjectArray + ObjectArray
+        // ObjectType == ObjectArray
+        0,
+        // ObjectType == ObjectBool
         0
 
     }, {
 
-        // ObjectInt + ObjectType
+        // ObjectInt == ObjectType
         0,
-        // ObjectInt + ObjectInt
+        // ObjectInt == ObjectInt
         ObjectInt_eql,
-        // ObjectInt + ObjectFloat
+        // ObjectInt == ObjectFloat
         0,
-        // ObjectInt + ObjectString
+        // ObjectInt == ObjectString
         0,
-        // ObjectInt + Dict
+        // ObjectInt == ObjectDict
         0,
-        // ObjectArray + ObjectArray
+        // ObjectInt == ObjectArray
+        0,
+        // ObjectInt == ObjectBool
         0
 
     }, {
 
-        // ObjectFloat + ObjectType
+        // ObjectFloat == ObjectType
         0,
-        // ObjectFloat + ObjectInt
+        // ObjectFloat == ObjectInt
         0,
-        // ObjectFloat + ObjectFloat
+        // ObjectFloat == ObjectFloat
         ObjectFloat_eql,
-        // ObjectFloat + ObjectString
+        // ObjectFloat == ObjectString
         0,
-        // ObjectFloat + Dict
+        // ObjectFloat == Dict
         0,
-        // ObjectArray + ObjectArray
+        // ObjectFloat == ObjectArray
+        0,
+        // ObjectFloat == ObjectBool
         0
 
     }, {
 
-        // ObjectString + ObjectType
+        // ObjectString == ObjectType
         0,
-        // ObjectString + ObjectInt
+        // ObjectString == ObjectInt
         0,
-        // ObjectString + ObjectFloat
+        // ObjectString == ObjectFloat
         0,
-        // ObjectString + ObjectString
+        // ObjectString == ObjectString
         ObjectString_eql,
-        // ObjectString + Dict
+        // ObjectString == Dict
         0,
-        // ObjectArray + ObjectArray
+        // ObjectString == ObjectArray
+        0,
+        // ObjectString == ObjectBool
         0
 
     }, {
 
-        // Dict + ObjectType
+        // ObjectDict == ObjectType
         0,
-        // Dict + ObjectInt
+        // ObjectDict == ObjectInt
         0,
-        // Dict + ObjectFloat
+        // ObjectDict == ObjectFloat
         0,
-        // Dict + ObjectString
+        // ObjectDict == ObjectString
         0,
-        // Dict + Dict
+        // ObjectDict == Dict
         Dict_eql,
-        // ObjectArray + ObjectArray
+        // ObjectDict == ObjectArray
+        0,
+        // ObjectDict + ObjectBool
         0
 
     }, {
 
-        // ObjectArray + ObjectType
+        // ObjectArray == ObjectType
         0,
-        // ObjectArray + ObjectInt
+        // ObjectArray == ObjectInt
         0,
-        // ObjectArray + ObjectFloat
+        // ObjectArray == ObjectFloat
         0,
-        // ObjectArray + ObjectString
+        // ObjectArray == ObjectString
         0,
-        // ObjectArray + Dict
+        // ObjectArray == Dict
         0,
-        // ObjectArray + ObjectArray
-        ObjectArray_eql
+        // ObjectArray == ObjectArray
+        ObjectArray_eql,
+        // ObjectArray == ObjectBool
+        0
 
+    }, {
+        // ObjectBool == ObjectType
+        0,
+        // ObjectBool == ObjectInt
+        0,
+        // ObjectBool == ObjectFloat
+        0,
+        // ObjectBool == ObjectString
+        0,
+        // ObjectBool == Dict
+        0,
+        // ObjectBool == ObjectArray
+        0,
+        // ObjectBool == ObjectBool
+        ObjectBool_eql
     }
 };

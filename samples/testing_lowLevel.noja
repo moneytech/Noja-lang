@@ -1,0 +1,28 @@
+
+import 'lowLevel' as low;
+
+chunk = low.Pointer(16);
+
+if chunk {
+	
+	print('Ok, chunk of size ', chunk.size(), ' allocated at ', chunk);
+
+} else {
+	
+	print('failed!');
+
+}
+
+print('write result: ', chunk.write('Ciao'));
+
+iter = Iterator(chunk);
+
+while iter.ended() == false {
+	
+	c = iter.next();
+
+	print(iter.index(), ': ', c);
+
+}
+
+chunk.free();

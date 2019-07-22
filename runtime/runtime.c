@@ -70,6 +70,8 @@ void NOJA_run() {
             ((ObjectType*) reg0._obj)->init = Class_init;
             ((ObjectType*) reg0._obj)->call = Class_call;
             ((ObjectType*) reg0._obj)->print = Class_print;
+            ((ObjectType*) reg0._obj)->iter = 0;
+            ((ObjectType*) reg0._obj)->next = 0;
             ((ObjectType*) reg0._obj)->expid = 0;
             ((ObjectType*) reg0._obj)->to_cbool = return_1;
             ((ObjectType*) reg0._obj)->collectChildren = Class_collectChildren;
@@ -442,7 +444,9 @@ void NOJA_run() {
             case OPCODE_BIFFP:
 
             if(!Object_to_cbool(context.stack[context.stack_size - 1])) {
-                // am i sure i'm in a while block?    u32
+                
+                // am i sure i'm in a while block?
+
                 context.pc = context.blocks[context.block_depth-1].end;
                 context.block_depth--;
             }
@@ -649,8 +653,8 @@ void NOJA_run() {
         case Exception_NameError: printf("undeclared variable"); break;
         case Exception_InsertError: printf("bad insertion"); break;
         case Exception_SelectError: printf("bad selection"); break;
-        case Exception_badOperation: printf("bad operation");
-
+        case Exception_badOperation: printf("bad operation"); break;
+        case Exception_UniterableIterated: printf("Uniterable iterated"); break;
         case InternalException_0: printf("instruction FUNC_END not in a function"); break;
         case InternalException_1: printf("instruction PUSH_ARG on empty stack"); break;
         case InternalException_2: printf("instruction INSERT on stack with size < 3"); break;
