@@ -315,6 +315,9 @@ void    Dict_destroy(Object *self);
 Object *ObjectInt_from_cint(i64 n);
 void    ObjectInt_print(Object *self);
 char    ObjectInt_to_cbool(Object *self);
+void    ObjectInt_get_raw_repr(Object *self, void *addr, u32 max_size);
+u32     ObjectInt_get_raw_repr_size(Object *self);
+
 
 /* === ObjectFloat === */
 
@@ -352,6 +355,8 @@ Object *ObjectString_format(Object *parent, Object **argv, u32 argc);
 
 /* === ObjectType === */
 
+void    ObjectType_setAttr(Object *self, char *s, Object *child);
+Object *ObjectType_getAttr(Object *self, char *s);
 void    ObjectType_print(Object *self);
 void    ObjectType_collectChildren(Object *self);
 Object *ObjectType_call(Object *self, Object *parent, Object **argv, u32 argc);
@@ -359,7 +364,8 @@ Object *ObjectType_from_stackd(ObjectType *e_type);
 
 
 /* === ObjectArray === */
-void ObjectArray_iter(Object *self, Object *iter);
+
+void    ObjectArray_iter(Object *self, Object *iter);
 Object *ObjectArray_next(Object *self, Object *iter);
 void    ObjectArray_init(Object *self, Object **argv, u32 argc);
 void    ObjectArray_destroy(Object *self);
@@ -409,16 +415,17 @@ void    Class_print(Object *self);
 void    Class_collectChildren(Object *self);
 void    Class_delete(Object *self);
 Object *Class_select(Object *self, Object *key);
-char Class_insert(Object *self, Object *key, Object *value);
+char    Class_insert(Object *self, Object *key, Object *value);
 
 /* === Iterator === */
 
-void ObjectIterator_init(Object *self, Object **argv, u32 argc);
+void    ObjectIterator_init(Object *self, Object **argv, u32 argc);
 Object *ObjectIterator_ended(Object *self, Object **argv, u32 argc);
 Object *ObjectIterator_next(Object *self, Object **argv, u32 argc);
 Object *ObjectIterator_index(Object *self, Object **argv, u32 argc);
-void ObjectIterator_print(Object *self);
-void ObjectIterator_collectChildren(Object *self);
+Object *ObjectIterator_iterated(Object *self, Object **argv, u32 argc);
+void    ObjectIterator_print(Object *self);
+void    ObjectIterator_collectChildren(Object *self);
 
 /* === Operations === */
 
@@ -467,6 +474,7 @@ Object *ObjectString_add(Object *a, Object *b);
 
 Object *typename_of(Object *parent, Object **argv, u32 argc);
 Object *proto_attributes_of(Object *parent, Object **argv, u32 argc);
+Object *bi_exit(Object *parent, Object **argv, u32 argc);
 
 /* === Runtime === */
 
@@ -573,6 +581,7 @@ enum {
   Exception_SelectError,
   Exception_badOperation,
   Exception_UniterableIterated,
+  Exception_ExplicitAbort,
   InternalException_0 = 21, // FUNC_END not in function
   InternalException_1, // PUSH_ARG on an empty stack
   InternalException_2, // INSERT with not enough elements on the stack

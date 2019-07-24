@@ -76,6 +76,8 @@ void NOJA_run() {
             ((ObjectType*) reg0._obj)->to_cbool = return_1;
             ((ObjectType*) reg0._obj)->collectChildren = Class_collectChildren;
 
+            Dict_cinsert(((ObjectType*) reg0._obj)->methods, "__prototype__", reg0._obj);
+
             context.stack[context.stack_size++] = reg0._obj;
 
             // does ASSIGN pop?
@@ -655,6 +657,7 @@ void NOJA_run() {
         case Exception_SelectError: printf("bad selection"); break;
         case Exception_badOperation: printf("bad operation"); break;
         case Exception_UniterableIterated: printf("Uniterable iterated"); break;
+        case Exception_ExplicitAbort: printf("exit() was called"); break;
         case InternalException_0: printf("instruction FUNC_END not in a function"); break;
         case InternalException_1: printf("instruction PUSH_ARG on empty stack"); break;
         case InternalException_2: printf("instruction INSERT on stack with size < 3"); break;

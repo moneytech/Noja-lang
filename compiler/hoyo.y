@@ -73,7 +73,7 @@
   AST_Node *node;
 }
 
-%expect 0
+%expect 1
 %locations
 %define parse.trace
 %debug
@@ -215,7 +215,7 @@ ifelse_statement
 
 if_statement
     : IF exp BRK_C_OP statements BRK_C_CL { $$ = AST_Node_If_create($2, $4, 0); }
-    /*| IF exp statement { $$ = AST_Node_If_create($2, AST_Node_Block_create($3), 0); }*/
+    | IF exp DDOTS statement { $$ = AST_Node_If_create($2, AST_Node_Block_create($4), 0); }
     ;
 
 while_statement

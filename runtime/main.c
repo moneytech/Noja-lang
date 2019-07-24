@@ -31,10 +31,11 @@ int NOJA_init(char *path) {
 
   TypeTable_ObjectArray.methods = Object_create(__ObjectDict__, 0, 0);
 
-    Dict_cinsert(TypeTable_ObjectArray.methods, "reverse"  , ObjectCFunction_create(&ObjectArray_reverse));
-    Dict_cinsert(TypeTable_ObjectArray.methods, "append"   , ObjectCFunction_create(&ObjectArray_append));
-    Dict_cinsert(TypeTable_ObjectArray.methods, "pop"      , ObjectCFunction_create(&ObjectArray_pop));
-    Dict_cinsert(TypeTable_ObjectArray.methods, "size"     , ObjectCFunction_create(&ObjectArray_size));
+    Dict_cinsert(TypeTable_ObjectArray.methods, "__prototype__", &TypeTable_ObjectArray);
+    Dict_cinsert(TypeTable_ObjectArray.methods, "reverse", ObjectCFunction_create(&ObjectArray_reverse));
+    Dict_cinsert(TypeTable_ObjectArray.methods, "append" , ObjectCFunction_create(&ObjectArray_append));
+    Dict_cinsert(TypeTable_ObjectArray.methods, "pop"    , ObjectCFunction_create(&ObjectArray_pop));
+    Dict_cinsert(TypeTable_ObjectArray.methods, "size"   , ObjectCFunction_create(&ObjectArray_size));
 
     Dict_cinsert(context.frames[0], "ObjectArray", &TypeTable_ObjectArray);
 
@@ -44,6 +45,7 @@ int NOJA_init(char *path) {
 
     TypeTable_ObjectString.methods = Object_create(__ObjectDict__, 0, 0);
 
+    Dict_cinsert(TypeTable_ObjectString.methods, "__prototype__", &TypeTable_ObjectString);
     Dict_cinsert(TypeTable_ObjectString.methods, "format"       , ObjectCFunction_create(&ObjectString_format));
     Dict_cinsert(TypeTable_ObjectString.methods, "reverse"      , ObjectCFunction_create(&ObjectString_reverse));
     Dict_cinsert(TypeTable_ObjectString.methods, "sub"          , ObjectCFunction_create(&ObjectString_sub));
@@ -59,6 +61,9 @@ int NOJA_init(char *path) {
   /* Init Dict object class */ {
 
     TypeTable_Dict.methods = Object_create(__ObjectDict__, 0, 0);
+
+    Dict_cinsert(TypeTable_Dict.methods, "__prototype__", &TypeTable_Dict);
+
 
     /*
     Dict_cinsert(TypeTable_Dict.methods, "format"       , ObjectCFunction_create(&ObjectString_format));
@@ -78,6 +83,9 @@ int NOJA_init(char *path) {
 
     TypeTable_ObjectInt.methods = Object_create(__ObjectDict__, 0, 0);
 
+    Dict_cinsert(TypeTable_ObjectInt.methods, "__prototype__", &TypeTable_ObjectInt);
+    
+
     /*
     Dict_cinsert(TypeTable_Dict.methods, "format"       , ObjectCFunction_create(&ObjectString_format));
     Dict_cinsert(TypeTable_Dict.methods, "reverse"      , ObjectCFunction_create(&ObjectString_reverse));
@@ -95,6 +103,9 @@ int NOJA_init(char *path) {
   /* Init ObjectFloat object class */ {
 
     TypeTable_ObjectFloat.methods = Object_create(__ObjectDict__, 0, 0);
+
+    Dict_cinsert(TypeTable_ObjectFloat.methods, "__prototype__", &TypeTable_ObjectFloat);
+    
 
     /*
     Dict_cinsert(TypeTable_ObjectFloat.methods, "format"       , ObjectCFunction_create(&ObjectString_format));
@@ -114,6 +125,9 @@ int NOJA_init(char *path) {
 
     TypeTable_ObjectBool.methods = Object_create(__ObjectDict__, 0, 0);
 
+    Dict_cinsert(TypeTable_ObjectBool.methods, "__prototype__", &TypeTable_ObjectBool);
+    
+
     /*
     Dict_cinsert(TypeTable_Dict.methods, "format"       , ObjectCFunction_create(&ObjectString_format));
     Dict_cinsert(TypeTable_Dict.methods, "reverse"      , ObjectCFunction_create(&ObjectString_reverse));
@@ -131,6 +145,9 @@ int NOJA_init(char *path) {
   /* Init ObjectType object class */ {
 
     TypeTable_ObjectType.methods = Object_create(__ObjectDict__, 0, 0);
+
+    Dict_cinsert(TypeTable_ObjectType.methods, "__prototype__", &TypeTable_ObjectType);
+    
 
     /*
     Dict_cinsert(TypeTable_Dict.methods, "format"       , ObjectCFunction_create(&ObjectString_format));
@@ -150,6 +167,9 @@ int NOJA_init(char *path) {
 
     TypeTable_Module.methods = Object_create(__ObjectDict__, 0, 0);
 
+    Dict_cinsert(TypeTable_Module.methods, "__prototype__", &TypeTable_Module);
+    
+
     /*
     Dict_cinsert(TypeTable_Dict.methods, "format"       , ObjectCFunction_create(&ObjectString_format));
     Dict_cinsert(TypeTable_Dict.methods, "reverse"      , ObjectCFunction_create(&ObjectString_reverse));
@@ -168,6 +188,9 @@ int NOJA_init(char *path) {
 
     TypeTable_ObjectIterator.methods = Object_create(__ObjectDict__, 0, 0);
 
+    Dict_cinsert(TypeTable_ObjectIterator.methods, "__prototype__", &TypeTable_ObjectIterator);
+
+    Dict_cinsert(TypeTable_ObjectIterator.methods, "iterated", ObjectCFunction_create(&ObjectIterator_iterated));
     Dict_cinsert(TypeTable_ObjectIterator.methods, "next", ObjectCFunction_create(&ObjectIterator_next));
     Dict_cinsert(TypeTable_ObjectIterator.methods, "ended", ObjectCFunction_create(&ObjectIterator_ended));
     Dict_cinsert(TypeTable_ObjectIterator.methods, "index", ObjectCFunction_create(&ObjectIterator_index));
@@ -178,6 +201,7 @@ int NOJA_init(char *path) {
 
   Dict_cinsert(context.root_frame, "proto_attributes_of", ObjectCFunction_create(&proto_attributes_of));
   Dict_cinsert(context.root_frame, "typename_of", ObjectCFunction_create(&typename_of));
+  Dict_cinsert(context.root_frame, "exit", ObjectCFunction_create(&bi_exit));
 
     return 1;
 }

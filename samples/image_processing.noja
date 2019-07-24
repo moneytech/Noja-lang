@@ -1,0 +1,82 @@
+
+import 'fs2' as fs;
+import 'lowLevel' as low;
+
+class ImageJPG {
+
+	fn __init__(path) {
+		self.path = path;
+		self.size = 0;
+		self.chunk = false;
+	}
+
+	fn __print__() {
+
+		iter = Iterator(self.chunk);
+
+		while iter.ended() == false {
+
+			print(iter.next());
+		
+		}
+	}
+
+	fn free() {
+
+		self.chunk.free();
+	
+	}
+
+	fn loaded() {
+
+		return self.chunk;
+	
+	}
+
+	fn load() {
+
+		handle = fs.open(self.path);
+
+		if typename_of(handle) == 'Bool':
+
+			return false;
+
+		self.chunk = low.Pointer(handle.size());
+
+		if self.chunk {
+
+		} else {
+		
+			return false;
+
+		}
+
+		written = self.chunk.write(handle.read());
+
+		if typename_of(written) == 'Bool': return false;
+
+		if written != handle.size(): return false;
+
+		handle.close();
+
+		return true;
+	}
+}
+
+
+image = ImageJPG('samples/Moon.jpg');
+
+image.load();
+
+if image.loaded() {
+
+	print('Image loaded');
+
+} else {
+
+	print('Failed to load image');
+
+	exit();
+}
+
+image.free();

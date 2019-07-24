@@ -303,6 +303,22 @@ void Object_print(Object *a) {
 
 /* === ObjectType === */
 
+void ObjectType_setAttr(Object *self, char *s, Object *child) {
+
+  ObjectType *type = (ObjectType*) self;
+
+  Dict_cinsert(type->methods, s, child);
+
+}
+
+Object *ObjectType_getAttr(Object *self, char *s) {
+
+  ObjectType *type = (ObjectType*) self;
+
+  return Dict_cselect(type->methods, s);
+
+}
+
 void ObjectType_print(Object *self) {
     printf("<type %s>", ((ObjectType*) self)->name);
 }
@@ -735,6 +751,20 @@ Object *ObjectString_next(Object *self, Object *iter) {
 
 /* === ObjectInt === */
 
+void ObjectInt_get_raw_repr(Object *self, void *addr, u32 max_size) {
+    
+  ObjectInt *integer = (ObjectInt*) self;
+
+  for(u32 i = 0; i < MIN(sizeof(i64), max_size); i++)
+      ((char*) addr)[i] = ((char*) &integer->value)[i];
+
+}
+
+u32 ObjectInt_get_raw_repr_size(Object *self) {
+  return sizeof(i64);
+}
+
+
 void ObjectInt_print(Object *self) {
     printf("%ld", ((ObjectInt*) self)->value);
 }
@@ -772,7 +802,7 @@ Object *ObjectFunction_create(u32 addr, Source *source) {
 /* === ObjectFloat === */
 
 void ObjectFloat_print(Object *self) {
-    printf("%lf", ((ObjectFloat*) self)->value);
+    printf("%g", ((ObjectFloat*) self)->value);
 }
 
 Object *ObjectFloat_from_cdouble(f64 n) {
@@ -1439,6 +1469,10 @@ Object *ObjectIterator_next(Object *self, Object **argv, u32 argc) {
 
 Object *ObjectIterator_index(Object *self, Object **argv, u32 argc) {
   return ((ObjectIterator*) self)->index;
+}
+
+Object *ObjectIterator_iterated(Object *self, Object **argv, u32 argc) {
+  return ((ObjectIterator*) self)->iterated;
 }
 
 void ObjectIterator_print(Object *self) {

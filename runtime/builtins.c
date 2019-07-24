@@ -1,6 +1,11 @@
 
 #include "header.h"
 
+Object *bi_exit(Object *parent, Object **argv, u32 argc) {
+  ctx_throw_exception(&context, Exception_ExplicitAbort);
+  return NOJA_False;
+}
+
 Object *typename_of(Object *parent, Object **argv, u32 argc) {
 
   if(argc == 0)

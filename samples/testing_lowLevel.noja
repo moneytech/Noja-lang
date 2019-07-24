@@ -1,7 +1,12 @@
 
 import 'lowLevel' as low;
 
-chunk = low.Pointer(16);
+chunk = low.Pointer(32);
+
+print(typename_of(low));
+print(typename_of(low.Pointer));
+print(typename_of(chunk));
+print(typename_of(chunk.size));
 
 if chunk {
 	
@@ -14,6 +19,7 @@ if chunk {
 }
 
 print('write result: ', chunk.write('Ciao'));
+print('write result: ', chunk.write(7, 4));
 
 iter = Iterator(chunk);
 

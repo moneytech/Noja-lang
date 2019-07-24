@@ -1,0 +1,44 @@
+
+import 'math' as math;
+
+m1 = math.Matrix(2, 2);
+m2 = math.Matrix(2, 2);
+
+m1.set(1.0);
+m1[1][1] = 7.0;
+
+m2.set(13.0);
+
+m1.add(m2);
+
+print(m1);
+
+fn matrix_copy() {
+	new_matrix = math.Matrix(self.width(), self.height());
+	new_matrix.set(0.0);
+	new_matrix.add(self);
+	return new_matrix;
+}
+
+m1.__prototype__.copy = matrix_copy;
+
+m3 = m1.copy();
+
+print(m1);
+print(m3);
+
+m1[0][0] = 5.0;
+
+print(m1);
+print(m3);
+
+fn abs() {
+	if self > 0: 
+		return self;
+	return 0-self;
+}
+
+7.__prototype__.abs = abs;
+
+print('3.abs() == ', 3.abs());
+print('(-3).abs() == ', (0-3).abs());
