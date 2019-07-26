@@ -21,11 +21,13 @@ int NOJA_init(Context *context, char *path) {
   context->pending_call_offset.addr = 0;
   context->pending_call_offset.source = 0;
   context->exception_code = 0;
+  context->module = (ObjectModule*) Object_create(context, __ObjectModule__, 0, 0);
+  context->frames[0] = (Object*) context->module->members;
+  context->root_frame = context->frames[0]; // don't need it anymore. The root frame can be found at context->module->methods
 
-  context->frames[0] = Object_create(context, __ObjectDict__, 0, 0);
-  context->root_frame = context->frames[0];
 
-  Dict_cinsert(context->frames[0], "self", context->frames[0]);
+
+  Dict_cinsert(context->frames[0], "__module__", (Object*) context->module);
 
   /* Init ObjectArray object class */ {
 

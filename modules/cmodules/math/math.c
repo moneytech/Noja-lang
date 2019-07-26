@@ -14,11 +14,11 @@ char Module_math_init(Object *dest) {
     Dict_cinsert(methods, "scale" , ObjectCFunction_create(dest->context, &Matrix_scale));
     Dict_cinsert(methods, "equals" , ObjectCFunction_create(dest->context, &Matrix_equals));
 
-    TypeTable_Matrix.methods = methods;
+    ptable_Matrix.methods = methods;
 
     Dict_cinsert(dest, "PI", ObjectFloat_from_cdouble(dest->context, M_PI));
 
-    Dict_cinsert(dest, "Matrix", (Object*) &TypeTable_Matrix);
+    Dict_cinsert(dest, "Matrix", (Object*) &ptable_Matrix);
     Dict_cinsert(dest, "arccos", ObjectCFunction_create(dest->context, &Math_arccos));
     Dict_cinsert(dest, "arcsin", ObjectCFunction_create(dest->context, &Math_arcsin));
     Dict_cinsert(dest, "arctan", ObjectCFunction_create(dest->context, &Math_arctan));

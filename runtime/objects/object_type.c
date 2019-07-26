@@ -43,13 +43,21 @@ Object *ObjectType_getAttr(Object *self, char *s) {
 }
 
 void ObjectType_print(Object *self) {
+
     printf("<type %s>", ((ObjectType*) self)->name);
 }
 
 
 Object *ObjectType_call(Object *self, Object *parent, Object **argv, u32 argc) {
 
-    return Object_create(parent->context, (ObjectType*) self, argv, argc); // parent or self?
+    // IMPORTANT: self could refer to a built-in stack-allocated type structure.
+    // such structures don't contain references to the context (since they are 
+    // shared between contexts).
+
+    // Since parent could be null (it's not null only when the object is called
+    // after the dot operator), the context reference can't be provided by parent.
+
+    return Object_create(parent->context, (ObjectType*) self, argv, argc);
 }
 
 void ObjectType_collectChildren(Object *self) {

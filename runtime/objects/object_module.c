@@ -59,6 +59,6 @@ void Module_init(Object *self, Object **argv, u32 argc) {
 
   ObjectModule *module = (ObjectModule*) self;
 
-  module->members = Object_create(self->context, __ObjectDict__, argv, argc);
+  module->members = Object_create(self->context, __ObjectDict__, 0, 0);
 
 }

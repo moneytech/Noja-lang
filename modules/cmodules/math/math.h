@@ -48,7 +48,7 @@ Object *Math_sigmoid_deriv(Object *self, Object **argv, u32 argc);
 
 /* === Matrix === */
 
-extern ObjectType TypeTable_Matrix;
+extern ObjectType ptable_Matrix;
 
 char build_transposed(Matrix *m);
 

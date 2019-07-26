@@ -291,8 +291,10 @@ struct Builder {
     u32 lineno;
 };
 
+void Segment_free(Segment *seg);
+char Segment_merge(Segment *a, Segment *b);
 char Segment_resize(Segment *seg);
-u32 Segment_insert_at(Segment *seg, u32 addr, void *s, u32 length);
+u32  Segment_insert_at(Segment *seg, u32 addr, void *s, u32 length);
 u32 Segment_insert(Segment *seg, void *s, u32 length);
 u32 Segment_insert_opcode(Segment *seg, char opcode);
 u32 Segment_insert_padding(Segment *seg, u32 size);
@@ -320,7 +322,5 @@ void Compile(char *path, AST_Node *root);
 
 extern int yylineno;
 extern Builder builder;
-
-
 
 char* duplicate_segment(const char *token, int size);

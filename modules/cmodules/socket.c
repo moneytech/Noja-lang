@@ -22,8 +22,8 @@ typedef struct Connection {
   int fd;
 } Connection;
 
-extern ObjectType TypeTable_Connection;
-extern ObjectType TypeTable_Socket;
+extern ObjectType ptable_Connection;
+extern ObjectType ptable_Socket;
 
 void Socket_init(Object *self, Object **argv, u32 argc) {
 
@@ -136,7 +136,7 @@ Object *Socket_accept(Object *self, Object **argv, u32 argc) {
     return NOJA_False;
   }
 
-  Connection *conn = (Connection*) Object_create(self->context, &TypeTable_Connection, 0, 0);
+  Connection *conn = (Connection*) Object_create(self->context, &ptable_Connection, 0, 0);
   conn->fd = new_socket;
 
   return (Object*) conn;
@@ -226,8 +226,8 @@ char Connection_to_cbool(Object *self) {
 }
 
 
-ObjectType TypeTable_Connection = {
-  .type = &TypeTable_ObjectType,
+ObjectType ptable_Connection = {
+  .type = &ptable_ObjectType,
   .flags = 0,
   .methods = 0,
   .name  = "Connection",
@@ -245,8 +245,8 @@ ObjectType TypeTable_Connection = {
   .collectChildren = 0
 };
 
-ObjectType TypeTable_Socket = {
-    .type = &TypeTable_ObjectType,
+ObjectType ptable_Socket = {
+    .type = &ptable_ObjectType,
     .flags = 0,
     .methods = 0,
     .name  = "Socket",
@@ -273,7 +273,7 @@ char Module_socket_init(Object *dest) {
     Dict_cinsert(methods, "listen", ObjectCFunction_create(dest->context, &Socket_listen));
     Dict_cinsert(methods, "accept", ObjectCFunction_create(dest->context, &Socket_accept));
 
-    TypeTable_Socket.methods = methods;
+    ptable_Socket.methods = methods;
 
   }
 
@@ -285,7 +285,7 @@ char Module_socket_init(Object *dest) {
     Dict_cinsert(methods, "read", ObjectCFunction_create(dest->context, &Connection_read));
     Dict_cinsert(methods, "write", ObjectCFunction_create(dest->context, &Connection_write));
 
-    TypeTable_Connection.methods = methods;
+    ptable_Connection.methods = methods;
 
   }
 
@@ -321,8 +321,8 @@ char Module_socket_init(Object *dest) {
   Dict_cinsert(dest, "SOCK_CLOEXEC" , ObjectInt_from_cint(dest->context, (i64) SOCK_CLOEXEC));
   Dict_cinsert(dest, "SOCK_STREAM"  , ObjectInt_from_cint(dest->context, (i64) SOCK_STREAM));
   Dict_cinsert(dest, "SOCK_DGRAM"   , ObjectInt_from_cint(dest->context, (i64) SOCK_DGRAM));
-  Dict_cinsert(dest, "Socket"       , (Object*) &TypeTable_Socket);
-  Dict_cinsert(dest, "Connection"   , (Object*) &TypeTable_Connection);
+  Dict_cinsert(dest, "Socket"       , (Object*) &ptable_Socket);
+  Dict_cinsert(dest, "Connection"   , (Object*) &ptable_Connection);
 
   return 1;
 }

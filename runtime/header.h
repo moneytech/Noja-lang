@@ -15,7 +15,7 @@
 #define __ObjectCFunction__     &ptable_ObjectCFunction
 #define __ObjectBool__          &ptable_ObjectBool
 #define __ObjectIterator___     &ptable_ObjectIterator
-#define __ObjectModule__           &ptable_ObjectModule
+#define __ObjectModule__        &ptable_ObjectModule
 
 typedef struct Context Context;
 
@@ -558,8 +558,12 @@ struct Context {
 
   Object *root_frame;
 
+  /*
   Object **roots[128];
   u32 root_count;
+  */
+  
+  ObjectModule *module;
 
   u32 pc;
   u32 lineno;

@@ -143,6 +143,8 @@ void Mem_cycle(Context *context) {
 
     context->memory_man.total_heaps_size = new_size;
 
+    Mem_collect(&context->module);
+
     for(u32 i = 0; i < context->frame_depth; i++)
         Mem_collect(&context->frames[i]);
 
@@ -156,9 +158,6 @@ void Mem_cycle(Context *context) {
         for(u32 i = context->activation_records[j].bot; i < context->activation_records[j].top + 1; i++)
             Mem_collect(&context->activation_records[j].args[i]);
     }
-
-    for(u32 j = 0; j < context->root_count; j++)
-        Mem_collect(context->roots[j]);
 
     Mem_HeapList_destroy(context->memory_man.current_head);
 

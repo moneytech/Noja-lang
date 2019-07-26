@@ -3,6 +3,21 @@
 
 Builder builder;
 
+void Segment_free(Segment *seg) {
+	free(seg->content);
+}
+
+char Segment_merge(Segment *a, Segment *b) {
+
+	while(a->size - a->used < b->used) // MMMMEEEHHH
+		assert(Segment_resize(a));
+
+	memcpy(a->content + a->used, b->content, b->used);
+
+	a->used += b->used;
+
+}
+
 char Segment_resize(Segment *seg) {
 
     u32 size = 16; // base

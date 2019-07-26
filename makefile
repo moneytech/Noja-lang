@@ -4,7 +4,12 @@ COMPILER_DIR = compiler
 DISASSEMBLER_DIR = disassembler
 COMMON_DIR = common
 
-COMPILER_FILES = $(COMPILER_DIR)/main.c
+COMPILER_FILES = $(COMPILER_DIR)/main.c 	\
+				 $(COMPILER_DIR)/builder.c 	\
+				 $(COMPILER_DIR)/segment.c 	\
+				 $(COMPILER_DIR)/ast.c 		\
+				 $(COMPILER_DIR)/lex.yy.c
+
 DISASSEMBLER_FILES = $(DISASSEMBLER_DIR)/main.c
 RUNTIME_FILES = $(RUNTIME_DIR)/builtins.c 					\
 				$(RUNTIME_DIR)/context.c 					\
@@ -27,7 +32,7 @@ RUNTIME_FILES = $(RUNTIME_DIR)/builtins.c 					\
 				$(RUNTIME_DIR)/main.c 						
 
 COMMON_FILES = $(COMMON_DIR)/common.c $(COMMON_DIR)/utils.c
-COMPILER_FLAGS = -lfl -g -Wall -Wextra
+COMPILER_FLAGS = -lfl -g #-Wall -Wextra
 RUNTIME_FLAGS = -rdynamic -g -pthread -ldl -Wall -Wextra
 COMPILER_BISON_FLAGS = -d --verbose
 COMPILER_FLEX_FLAGS =

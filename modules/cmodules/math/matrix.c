@@ -1,8 +1,8 @@
 
 #include "math.h"
 
-ObjectType TypeTable_Matrix = {
-    .type = &TypeTable_ObjectType,
+ObjectType ptable_Matrix = {
+    .type = &ptable_ObjectType,
     .flags = 0,
     .name  = "Matrix",
     .size = sizeof(Matrix),
@@ -17,7 +17,6 @@ ObjectType TypeTable_Matrix = {
     .next = 0,
     .get_raw_repr = 0,
     .get_raw_repr_size = 0,
-    .expid  = 0,
     .to_cbool = &return_1,
     .collectChildren = 0
 };
@@ -208,7 +207,7 @@ Object *Matrix_select(Object *self, Object *key_obj) {
 		if(key < 0)
 			key = m->h + key;
 
-		Matrix *child = (Matrix*) Object_create(self->context, &TypeTable_Matrix, 0, 0);
+		Matrix *child = (Matrix*) Object_create(self->context, &ptable_Matrix, 0, 0);
 
 		child->inner = m->inner;
 		child->displacement = m->rw * key;
@@ -293,7 +292,7 @@ char Matrix_insert(Object *self, Object *key_obj, Object *value_obj) {
 
 		Matrix *m2;
 
-		if(value_obj->type != &TypeTable_Matrix) {
+		if(value_obj->type != &ptable_Matrix) {
 			ctx_throw_exception(self->context, Exception_TypeError);
 			return 0;
 		}
@@ -332,7 +331,7 @@ Object *Matrix_mul(Object *self, Object **argv, u32 argc) {
 	if(argc == 0)
 		return NOJA_False;
 
-	if(argv[0]->type != &TypeTable_Matrix)
+	if(argv[0]->type != &ptable_Matrix)
 		return NOJA_False;
 
 	m2 = (Matrix*) argv[0];
@@ -365,7 +364,7 @@ Object *Matrix_mul(Object *self, Object **argv, u32 argc) {
 		}
 	}
 
-	Matrix *m3 = (Matrix*) Object_create(self->context, &TypeTable_Matrix, 0, 0);
+	Matrix *m3 = (Matrix*) Object_create(self->context, &ptable_Matrix, 0, 0);
 
 	m3->w = m2->w;
 	m3->h = m1->h;
@@ -481,7 +480,7 @@ Object *Matrix_add(Object *self, Object **argv, u32 argc) {
 	if(argc == 0)
 		return NOJA_False;
 
-	if(argv[0]->type != &TypeTable_Matrix) {
+	if(argv[0]->type != &ptable_Matrix) {
 		ctx_throw_exception(self->context, Exception_TypeError);
 		return NOJA_False;
 	}
@@ -529,7 +528,7 @@ Object *Matrix_sub(Object *self, Object **argv, u32 argc) {
 	if(argc == 0)
 		return NOJA_False;
 
-	if(argv[0]->type != &TypeTable_Matrix) {
+	if(argv[0]->type != &ptable_Matrix) {
 		ctx_throw_exception(self->context, Exception_TypeError);
 		return NOJA_False;
 	}
@@ -577,7 +576,7 @@ Object *Matrix_equals(Object *self, Object **argv, u32 argc) {
 	if(argc == 0)
 		return NOJA_False;
 
-	if(argv[0]->type != &TypeTable_Matrix) {
+	if(argv[0]->type != &ptable_Matrix) {
 		ctx_throw_exception(self->context, Exception_TypeError);
 		return NOJA_False;
 	}

@@ -17,9 +17,9 @@ char Module_gsl_init(Object *dest) {
     Dict_cinsert(methods, "setAll" , ObjectCFunction_create(dest->context, &GSLVector_setAll));
     Dict_cinsert(methods, "equal" , ObjectCFunction_create(dest->context, &GSLVector_equal));
 
-    TypeTable_GSLVector.methods = methods;
+    ptable_GSLVector.methods = methods;
 
-    Dict_cinsert(dest, "Vector"		      , (Object*) &TypeTable_GSLVector);
+    Dict_cinsert(dest, "Vector"		      , (Object*) &ptable_GSLVector);
     //Dict_cinsert(dest, "readDir"		  , ObjectCFunction_create(&FS_readDir));
 
     return 1;

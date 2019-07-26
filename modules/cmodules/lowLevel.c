@@ -187,8 +187,8 @@ void Pointer_print(Object *self) {
 	printf("%p", ((Pointer*) self)->addr);
 }
 
-ObjectType TypeTable_Pointer = {
-    .type = &TypeTable_ObjectType,
+ObjectType ptable_Pointer = {
+    .type = &ptable_ObjectType,
     .flags = 0,
     .methods = 0,
     .name  = "Pointer",
@@ -219,9 +219,9 @@ char Module_lowLevel_init(Object *dest) {
     Dict_cinsert(methods, "free" , ObjectCFunction_create(dest->context, &Pointer_free));
     Dict_cinsert(methods, "write" , ObjectCFunction_create(dest->context, &Pointer_write));
 
-    TypeTable_Pointer.methods = methods;
+    ptable_Pointer.methods = methods;
 
-    Dict_cinsert(dest, "Pointer", (Object*) &TypeTable_Pointer);
+    Dict_cinsert(dest, "Pointer", (Object*) &ptable_Pointer);
 
     return 1;
 }

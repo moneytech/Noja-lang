@@ -224,8 +224,8 @@ Object *FileHandle_size(Object *parent, Object **argv, u32 argc) {
     return ObjectInt_from_cint(parent->context, (i64) fh->size);
 }
 
-ObjectType TypeTable_FileHandle = {
-    .type = &TypeTable_ObjectType,
+ObjectType ptable_FileHandle = {
+    .type = &ptable_ObjectType,
     .flags = 0,
     .methods = 0,
     .name  = "FileHandle",
@@ -250,7 +250,7 @@ Object *FS_open(Object *parent, Object **argv, u32 argc) {
     char *path = 0;
     int   path_size = -1;
 
-    FileHandle  *handle = (FileHandle*) Object_create(parent->context, &TypeTable_FileHandle, 0, 0);
+    FileHandle  *handle = (FileHandle*) Object_create(parent->context, &ptable_FileHandle, 0, 0);
 
     switch(argc) {
 
@@ -312,7 +312,7 @@ char Module_fs2_init(Object *dest) {
     Dict_cinsert(methods, "read" , ObjectCFunction_create(dest->context, &FileHandle_read));
     Dict_cinsert(methods, "write", ObjectCFunction_create(dest->context, &FileHandle_write));
 
-    TypeTable_FileHandle.methods = methods;
+    ptable_FileHandle.methods = methods;
 
     Dict_cinsert(dest, "open"		      , ObjectCFunction_create(dest->context, &FS_open));
     Dict_cinsert(dest, "readDir"		  , ObjectCFunction_create(dest->context, &FS_readDir));

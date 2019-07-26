@@ -141,6 +141,7 @@ void Object_collectChildren(Object *self) {
   if(self->type->collectChildren) {
     self->type->collectChildren(self);
   }
+
 }
 
 char Object_to_cbool(Object *self) {

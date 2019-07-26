@@ -14,7 +14,7 @@ struct GSLVector {
 
 /* === Vectors === */
 
-extern ObjectType TypeTable_GSLVector;
+extern ObjectType ptable_GSLVector;
 
 void 	GSLVector_init(Object *self, Object **argv, u32 argc);
 void 	GSLVector_destroy(Object *self);

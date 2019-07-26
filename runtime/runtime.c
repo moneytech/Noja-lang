@@ -287,6 +287,10 @@ void NOJA_run(Context *context) {
 
             case OPCODE_CALL:
 
+            if(context->activation_records[context->activation_records_count-1].self == NULL) {
+                context->activation_records[context->activation_records_count-1].self = (Object*) context->module;
+            }
+
             reg0._obj = Object_call(
               ctx_top(context),
               context->activation_records[context->activation_records_count-1].self,

@@ -467,8 +467,8 @@ Object *SDL2Context_update(Object *self, Object **argv, u32 argc) {
   return NOJA_True;
 }
 
-ObjectType TypeTable_SDL2Context = {
-  .type = &TypeTable_ObjectType,
+ObjectType ptable_SDL2Context = {
+  .type = &ptable_ObjectType,
   .flags = 0,
   .methods = 0,
   .name = "SDL2Context",
@@ -510,11 +510,11 @@ char Module_sdl2_init(Object *dest) {
     Dict_cinsert(methods, "createWindow", ObjectCFunction_create(dest->context, &SDL2Context_createWindow));
     Dict_cinsert(methods, "catchEvent", ObjectCFunction_create(dest->context, &SDL2Context_catchEvent));
 
-    TypeTable_SDL2Context.methods = methods;
+    ptable_SDL2Context.methods = methods;
 
     Dict_cinsert(dest, "init", ObjectCFunction_create(dest->context, &start));
     Dict_cinsert(dest, "quit", ObjectCFunction_create(dest->context, &quit));
-    Dict_cinsert(dest, "Context", (Object*) &TypeTable_SDL2Context);
+    Dict_cinsert(dest, "Context", (Object*) &ptable_SDL2Context);
 
     return 1;
 }

@@ -100,11 +100,43 @@ void Build_Dict(Segment *seg, AST_Node_Exp *exp) {
     }
 }
 
+void build_function_head(Segment *seg, AST_Node_ObjectFunction *func) {
+
+    // builds the segment of function that pushes the arguments onto the context frame
+
+    u32 arg_name_data_addr;
+
+    AST_Node_LabelList *args = (AST_Node_LabelList*) func->args;
+
+    Segment_insert_opcode(seg, OPCODE_TRY_ASSIGN_SELF);
+
+    if(args) {
+
+        for(u32 i = 0, a; i < args->count; i++) {
+
+            Segment_insert_opcode(seg, OPCODE_TRY_ASSIGN_ARG);
+
+            arg_name_data_addr = Segment_insert(&builder.data, args->labels[i], strlen(args->labels[i])+1);
+
+            Segment_insert(seg, &arg_name_data_addr, 4);
+        }
+    }
+
+}
+
 void Build_Method(Segment *seg, AST_Node *node) {
 
   AST_Node_ObjectFunction *func = (AST_Node_ObjectFunction*) node;
 
-  u32 n;
+  u32 func_name_data_addr;
+  u32 func_block_addr;
+  int build_block_flags;
+
+  Segment function_block_segment;
+
+  function_block_segment.content = 0;
+  function_block_segment.size = 0;
+  function_block_segment.used = 0;
 
   /* Instruction to build the method object */
 
@@ -114,49 +146,26 @@ void Build_Method(Segment *seg, AST_Node *node) {
 
   // insert method name into the data segment
 
-  n = Segment_insert(&builder.data, func->name, strlen(func->name)+1);
+  func_name_data_addr = Segment_insert(&builder.data, func->name, strlen(func->name)+1);
 
   // insert the addr of the name in the data segment onto the code segment
   // as operand 1 of OPCODE_PUSH_METHOD
 
-  Segment_insert(&builder.code, &n, 4);
-
-  // save the address of the actual function block on the function space segment
-
-  n = Segment_addr(&builder.function_space);
-
-  // insert it onto the code segment as
-  // operand 2 of OPCODE_PUSH_METHOD
-
-  Segment_insert(&builder.code, &n, 4);
+  Segment_insert(&builder.code, &func_name_data_addr, 4);
 
   // start writing the method onto the function space
 
   // OPCODE_FUNC_BEG
 
-  Segment_insert_opcode(&builder.function_space, OPCODE_FUNC_BEG);
+  Segment_insert_opcode(&function_block_segment, OPCODE_FUNC_BEG);
 
   // instructions to load the arguments into the stack
 
-  AST_Node_LabelList *args = (AST_Node_LabelList*) func->args;
-
-  Segment_insert_opcode(&builder.function_space, OPCODE_TRY_ASSIGN_SELF);
-
-  if(args) {
-
-      for(u32 i = 0, a; i < args->count; i++) {
-
-          Segment_insert_opcode(&builder.function_space, OPCODE_TRY_ASSIGN_ARG);
-
-          a = Segment_insert(&builder.data, args->labels[i], strlen(args->labels[i])+1);
-
-          Segment_insert(&builder.function_space, &a, 4);
-      }
-  }
+  build_function_head(&function_block_segment, func);
 
   /* build the method block */
 
-  int build_block_flags = 0;
+  build_block_flags = 0;
 
   // check if this method can return a value
 
@@ -168,29 +177,49 @@ void Build_Method(Segment *seg, AST_Node *node) {
 
   // build the block onto the function space
 
-  Build_Block(&builder.function_space, func->block, build_block_flags);
+  Build_Block(&function_block_segment, func->block, build_block_flags);
 
-  if(strcmp(func->name, "__print__") != 0 &&
-     strcmp(func->name, "__init__") != 0) {
+  if(strcmp(func->name, "__print__") != 0 && strcmp(func->name, "__init__") != 0) {
 
     // if the method can return, return a true just in case the method didn't return
 
-    Segment_insert_opcode(&builder.function_space, OPCODE_PUSH_TRUE);
+    Segment_insert_opcode(&function_block_segment, OPCODE_PUSH_TRUE);
 
   } else if(strcmp(func->name, "__init__") == 0) {
 
     // if its che constructor, return self
 
-    Segment_insert_opcode(&builder.function_space, OPCODE_PUSH_NAMED);
+    Segment_insert_opcode(&function_block_segment, OPCODE_PUSH_NAMED);
     u32 n = Segment_insert(&builder.data, "self", sizeof("self"));
-    Segment_insert(&builder.function_space, &n, 4);
+    Segment_insert(&function_block_segment, &n, 4);
 
   }
 
   // write OPCODE_FUNC_END
 
-  Segment_insert_opcode(&builder.function_space, OPCODE_FUNC_END);
+  Segment_insert_opcode(&function_block_segment, OPCODE_FUNC_END);
 
+  // Built.
+
+  // save the address of the actual function block on the function space segment
+
+  func_block_addr = Segment_addr(&builder.function_space);
+
+  // IMPORTANT NOTE: This must be done AFTER building the function block.
+  // Lambdas could be built and pushed onto the function space
+  // BEFORE this function was fully built, so the actual function block address
+  // would be the size of the function_space segment after the block was built.
+
+  // insert it onto the code segment as
+  // operand 2 of OPCODE_PUSH_METHOD
+
+  Segment_insert(&builder.code, &func_block_addr, 4);
+
+  // copy the function segment onto the function space.
+
+  Segment_merge(&builder.function_space, &function_block_segment);
+
+  Segment_free(&function_block_segment);
 }
 
 void Build_ObjectFunction(Segment *seg, AST_Node *node) {
@@ -199,41 +228,36 @@ void Build_ObjectFunction(Segment *seg, AST_Node *node) {
 
   emit_lineno_of(seg, node);
 
-  u32 n;
+  u32 func_name_data_addr;
+  u32 func_block_addr;
+  Segment function_block_segment;
+  function_block_segment.content = 0;
+  function_block_segment.size = 0;
+  function_block_segment.used = 0;
 
   Segment_insert_opcode(&builder.code, OPCODE_PUSH_FUNC);
 
-  n = Segment_insert(&builder.data, func->name, strlen(func->name)+1);
+  func_name_data_addr = Segment_insert(&builder.data, func->name, strlen(func->name)+1);
 
-  Segment_insert(&builder.code, &n, 4);
+  Segment_insert(&builder.code, &func_name_data_addr, 4);
 
-  n = Segment_addr(&builder.function_space);
+  Segment_insert_opcode(&function_block_segment, OPCODE_FUNC_BEG);
 
-  Segment_insert(&builder.code, &n, 4);
+  
+  build_function_head(&function_block_segment, func);
 
-  Segment_insert_opcode(&builder.function_space, OPCODE_FUNC_BEG);
+  Build_Block(&function_block_segment, func->block, 0);
 
-  AST_Node_LabelList *args = (AST_Node_LabelList*) func->args;
+  Segment_insert_opcode(&function_block_segment, OPCODE_PUSH_TRUE);
+  Segment_insert_opcode(&function_block_segment, OPCODE_FUNC_END);
 
-  Segment_insert_opcode(&builder.function_space, OPCODE_TRY_ASSIGN_SELF);
+  func_block_addr = Segment_addr(&builder.function_space);
 
-  if(args) {
+  Segment_insert(&builder.code, &func_block_addr, 4);
 
-      for(u32 i = 0, a; i < args->count; i++) {
+  Segment_merge(&builder.function_space, &function_block_segment);
 
-          Segment_insert_opcode(&builder.function_space, OPCODE_TRY_ASSIGN_ARG);
-
-          a = Segment_insert(&builder.data, args->labels[i], strlen(args->labels[i])+1);
-
-          Segment_insert(&builder.function_space, &a, 4);
-      }
-  }
-
-  Build_Block(&builder.function_space, func->block, 0);
-
-
-  Segment_insert_opcode(&builder.function_space, OPCODE_PUSH_TRUE);
-  Segment_insert_opcode(&builder.function_space, OPCODE_FUNC_END);
+  Segment_free(&function_block_segment);
 
 }
 

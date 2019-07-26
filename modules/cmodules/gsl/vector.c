@@ -1,8 +1,8 @@
 
 #include "gsl.h"
 
-ObjectType TypeTable_GSLVector = {
-    .type = &TypeTable_ObjectType,
+ObjectType ptable_GSLVector = {
+    .type = &ptable_ObjectType,
     .flags = 0,
     .name  = "GSLVector",
     .size = sizeof(GSLVector),
@@ -17,7 +17,6 @@ ObjectType TypeTable_GSLVector = {
     .next = GSLVector_next,
     .get_raw_repr = &GSLVector_get_raw_repr,
     .get_raw_repr_size = &GSLVector_get_raw_repr_size,
-    .expid  = 2,
     .to_cbool = &return_1,
     .collectChildren = 0
 };
@@ -213,7 +212,7 @@ Object *GSLVector_add(Object *self, Object **argv, u32 argc) {
 
 	for(u32 i = 0; i < argc; i++) {
 
-		if(argv[i]->type != &TypeTable_GSLVector) {
+		if(argv[i]->type != &ptable_GSLVector) {
 			ctx_throw_exception(self->context, Exception_TypeError);
 			return NOJA_False;
 		}
@@ -239,7 +238,7 @@ Object *GSLVector_sub(Object *self, Object **argv, u32 argc) {
 
 	for(u32 i = 0; i < argc; i++) {
 
-		if(argv[i]->type != &TypeTable_GSLVector) {
+		if(argv[i]->type != &ptable_GSLVector) {
 			ctx_throw_exception(self->context, Exception_TypeError);
 			return NOJA_False;
 		}
@@ -267,7 +266,7 @@ Object *GSLVector_mul(Object *self, Object **argv, u32 argc) {
 
 	for(u32 i = 0; i < argc; i++) {
 
-		if(argv[i]->type != &TypeTable_GSLVector) {
+		if(argv[i]->type != &ptable_GSLVector) {
 			ctx_throw_exception(self->context, Exception_TypeError);
 			return NOJA_False;
 		}
@@ -297,7 +296,7 @@ Object *GSLVector_div(Object *self, Object **argv, u32 argc) {
 
 	for(u32 i = 0; i < argc; i++) {
 
-		if(argv[i]->type != &TypeTable_GSLVector) {
+		if(argv[i]->type != &ptable_GSLVector) {
 			ctx_throw_exception(self->context, Exception_TypeError);
 			return NOJA_False;
 		}
@@ -399,7 +398,7 @@ Object *GSLVector_equal(Object *self, Object **argv, u32 argc) {
 	if(argc == 0)
 		return NOJA_False;
 
-	if(argv[0]->type != &TypeTable_GSLVector)
+	if(argv[0]->type != &ptable_GSLVector)
 		return NOJA_False;
 
 	return gsl_vector_equal(vector->addr, ((GSLVector*) argv[0])->addr) ? NOJA_True : NOJA_False;
