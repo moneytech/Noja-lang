@@ -5,11 +5,10 @@
 #include <assert.h>
 #include <unistd.h>
 
-#include "../common/common.h"
+#include "header.h"
 
 char *getcwd(char *buf, size_t size);
 
-extern int yylineno;
 
 char* duplicate_segment(const char *token, int size) {
 
@@ -32,11 +31,6 @@ char* duplicate_segment(const char *token, int size) {
   return dup;
 }
 
-#include "ast.c"
-
-#include "lex.yy.c"
-
-#include "builder.c"
 
 int main(int argc, char **argv) {
     

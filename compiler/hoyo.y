@@ -1,6 +1,8 @@
 
 
 %{
+  
+  #include "header.h"
 
   extern int yylex();
   extern int yyparse(AST_Node**);
@@ -10,6 +12,7 @@
   #ifdef YYDEBUG
   yydebug = 1;
   #endif
+
 %}
 
 %parse-param {AST_Node **root}
@@ -227,6 +230,7 @@ while_statement
 %%
 
 AST_Node *AST_Build(char *path) {
+
   // lex through the input:
 
   FILE *fp = fopen(path, "r");

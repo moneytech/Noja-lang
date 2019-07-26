@@ -110,7 +110,7 @@ extern int yydebug;
 
 union YYSTYPE
 {
-#line 67 "hoyo.y" /* yacc.c:1921  */
+#line 70 "hoyo.y" /* yacc.c:1921  */
 
   i64 value_i64;
   f64 value_f64;

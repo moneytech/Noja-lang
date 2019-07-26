@@ -68,6 +68,8 @@
 /* First part of user prologue.  */
 #line 3 "hoyo.y" /* yacc.c:337  */
 
+  
+  #include "header.h"
 
   extern int yylex();
   extern int yyparse(AST_Node**);
@@ -78,7 +80,8 @@
   yydebug = 1;
   #endif
 
-#line 82 "hoyo.tab.c" /* yacc.c:337  */
+
+#line 85 "hoyo.tab.c" /* yacc.c:337  */
 # ifndef YY_NULLPTR
 #  if defined __cplusplus
 #   if 201103L <= __cplusplus
@@ -177,7 +180,7 @@ extern int yydebug;
 
 union YYSTYPE
 {
-#line 67 "hoyo.y" /* yacc.c:352  */
+#line 70 "hoyo.y" /* yacc.c:352  */
 
   i64 value_i64;
   f64 value_f64;
@@ -186,7 +189,7 @@ union YYSTYPE
 
   AST_Node *node;
 
-#line 190 "hoyo.tab.c" /* yacc.c:352  */
+#line 193 "hoyo.tab.c" /* yacc.c:352  */
 };
 
 typedef union YYSTYPE YYSTYPE;
@@ -511,14 +514,14 @@ static const yytype_uint8 yytranslate[] =
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,    89,    89,    92,    93,    98,    99,   100,   101,   102,
-     103,   104,   105,   106,   107,   108,   112,   113,   117,   121,
-     122,   123,   127,   128,   132,   133,   137,   138,   139,   140,
-     141,   142,   143,   144,   145,   146,   147,   148,   149,   150,
-     154,   155,   156,   160,   161,   162,   166,   167,   168,   169,
-     170,   171,   172,   176,   177,   178,   179,   183,   192,   196,
-     197,   198,   199,   202,   203,   206,   207,   211,   213,   217,
-     218,   222
+       0,    92,    92,    95,    96,   101,   102,   103,   104,   105,
+     106,   107,   108,   109,   110,   111,   115,   116,   120,   124,
+     125,   126,   130,   131,   135,   136,   140,   141,   142,   143,
+     144,   145,   146,   147,   148,   149,   150,   151,   152,   153,
+     157,   158,   159,   163,   164,   165,   169,   170,   171,   172,
+     173,   174,   175,   179,   180,   181,   182,   186,   195,   199,
+     200,   201,   202,   205,   206,   209,   210,   214,   216,   220,
+     221,   225
 };
 #endif
 
@@ -1542,331 +1545,331 @@ yyreduce:
   switch (yyn)
     {
         case 2:
-#line 89 "hoyo.y" /* yacc.c:1652  */
+#line 92 "hoyo.y" /* yacc.c:1652  */
     {*root = (yyvsp[0].node);}
-#line 1548 "hoyo.tab.c" /* yacc.c:1652  */
+#line 1551 "hoyo.tab.c" /* yacc.c:1652  */
     break;
 
   case 3:
-#line 92 "hoyo.y" /* yacc.c:1652  */
+#line 95 "hoyo.y" /* yacc.c:1652  */
     { (yyval.node) = AST_Node_Block_create(0); }
-#line 1554 "hoyo.tab.c" /* yacc.c:1652  */
+#line 1557 "hoyo.tab.c" /* yacc.c:1652  */
     break;
 
   case 4:
-#line 93 "hoyo.y" /* yacc.c:1652  */
+#line 96 "hoyo.y" /* yacc.c:1652  */
     { (yyval.node) = (yyvsp[-1].node); AST_Node_append((yyval.node), (yyvsp[0].node)); }
-#line 1560 "hoyo.tab.c" /* yacc.c:1652  */
+#line 1563 "hoyo.tab.c" /* yacc.c:1652  */
     break;
 
   case 5:
-#line 98 "hoyo.y" /* yacc.c:1652  */
+#line 101 "hoyo.y" /* yacc.c:1652  */
     { (yyval.node) = (yyvsp[-1].node); }
-#line 1566 "hoyo.tab.c" /* yacc.c:1652  */
+#line 1569 "hoyo.tab.c" /* yacc.c:1652  */
     break;
 
   case 6:
-#line 99 "hoyo.y" /* yacc.c:1652  */
+#line 102 "hoyo.y" /* yacc.c:1652  */
     { (yyval.node) = AST_Node_Print_create((yyvsp[-2].node)); }
-#line 1572 "hoyo.tab.c" /* yacc.c:1652  */
+#line 1575 "hoyo.tab.c" /* yacc.c:1652  */
     break;
 
   case 7:
-#line 100 "hoyo.y" /* yacc.c:1652  */
+#line 103 "hoyo.y" /* yacc.c:1652  */
     { (yyval.node) = AST_Node_create(NODE_BREAK); }
-#line 1578 "hoyo.tab.c" /* yacc.c:1652  */
+#line 1581 "hoyo.tab.c" /* yacc.c:1652  */
     break;
 
   case 8:
-#line 101 "hoyo.y" /* yacc.c:1652  */
+#line 104 "hoyo.y" /* yacc.c:1652  */
     { (yyval.node) = AST_Node_create(NODE_CONTINUE); }
-#line 1584 "hoyo.tab.c" /* yacc.c:1652  */
+#line 1587 "hoyo.tab.c" /* yacc.c:1652  */
     break;
 
   case 9:
-#line 102 "hoyo.y" /* yacc.c:1652  */
+#line 105 "hoyo.y" /* yacc.c:1652  */
     { (yyval.node) = AST_Node_create(NODE_BREAKPOINT); }
-#line 1590 "hoyo.tab.c" /* yacc.c:1652  */
+#line 1593 "hoyo.tab.c" /* yacc.c:1652  */
     break;
 
   case 10:
-#line 103 "hoyo.y" /* yacc.c:1652  */
+#line 106 "hoyo.y" /* yacc.c:1652  */
     { (yyval.node) = AST_Node_Return_create((yyvsp[-1].node)); }
-#line 1596 "hoyo.tab.c" /* yacc.c:1652  */
+#line 1599 "hoyo.tab.c" /* yacc.c:1652  */
     break;
 
   case 11:
-#line 104 "hoyo.y" /* yacc.c:1652  */
+#line 107 "hoyo.y" /* yacc.c:1652  */
     { (yyval.node) = (yyvsp[0].node); }
-#line 1602 "hoyo.tab.c" /* yacc.c:1652  */
+#line 1605 "hoyo.tab.c" /* yacc.c:1652  */
     break;
 
   case 12:
-#line 105 "hoyo.y" /* yacc.c:1652  */
+#line 108 "hoyo.y" /* yacc.c:1652  */
     { (yyval.node) = (yyvsp[0].node); }
-#line 1608 "hoyo.tab.c" /* yacc.c:1652  */
+#line 1611 "hoyo.tab.c" /* yacc.c:1652  */
     break;
 
   case 13:
-#line 106 "hoyo.y" /* yacc.c:1652  */
+#line 109 "hoyo.y" /* yacc.c:1652  */
     { (yyval.node) = (yyvsp[0].node); }
-#line 1614 "hoyo.tab.c" /* yacc.c:1652  */
+#line 1617 "hoyo.tab.c" /* yacc.c:1652  */
     break;
 
   case 14:
-#line 107 "hoyo.y" /* yacc.c:1652  */
+#line 110 "hoyo.y" /* yacc.c:1652  */
     { (yyval.node) = (yyvsp[-1].node); }
-#line 1620 "hoyo.tab.c" /* yacc.c:1652  */
+#line 1623 "hoyo.tab.c" /* yacc.c:1652  */
     break;
 
   case 16:
-#line 112 "hoyo.y" /* yacc.c:1652  */
+#line 115 "hoyo.y" /* yacc.c:1652  */
     { (yyval.node) = AST_Node_Block_create(0); }
-#line 1626 "hoyo.tab.c" /* yacc.c:1652  */
+#line 1629 "hoyo.tab.c" /* yacc.c:1652  */
     break;
 
   case 17:
-#line 113 "hoyo.y" /* yacc.c:1652  */
+#line 116 "hoyo.y" /* yacc.c:1652  */
     { (yyval.node) = (yyvsp[-1].node); AST_Node_append((yyvsp[-1].node), (yyvsp[0].node)); }
-#line 1632 "hoyo.tab.c" /* yacc.c:1652  */
+#line 1635 "hoyo.tab.c" /* yacc.c:1652  */
     break;
 
   case 18:
-#line 117 "hoyo.y" /* yacc.c:1652  */
+#line 120 "hoyo.y" /* yacc.c:1652  */
     { (yyval.node) = AST_Node_Class_create((yyvsp[-3].label), (yyvsp[-1].node)); }
-#line 1638 "hoyo.tab.c" /* yacc.c:1652  */
+#line 1641 "hoyo.tab.c" /* yacc.c:1652  */
     break;
 
   case 19:
-#line 121 "hoyo.y" /* yacc.c:1652  */
+#line 124 "hoyo.y" /* yacc.c:1652  */
     { (yyval.node) = AST_Node_import_create((yyvsp[0].value_string), 0);  }
-#line 1644 "hoyo.tab.c" /* yacc.c:1652  */
+#line 1647 "hoyo.tab.c" /* yacc.c:1652  */
     break;
 
   case 20:
-#line 122 "hoyo.y" /* yacc.c:1652  */
+#line 125 "hoyo.y" /* yacc.c:1652  */
     { (yyval.node) = AST_Node_import_create((yyvsp[-2].value_string), (yyvsp[0].label)); }
-#line 1650 "hoyo.tab.c" /* yacc.c:1652  */
+#line 1653 "hoyo.tab.c" /* yacc.c:1652  */
     break;
 
   case 21:
-#line 123 "hoyo.y" /* yacc.c:1652  */
+#line 126 "hoyo.y" /* yacc.c:1652  */
     { (yyval.node) = AST_Node_import_create((yyvsp[-4].value_string), (yyvsp[-2].label)); }
-#line 1656 "hoyo.tab.c" /* yacc.c:1652  */
+#line 1659 "hoyo.tab.c" /* yacc.c:1652  */
     break;
 
   case 22:
-#line 127 "hoyo.y" /* yacc.c:1652  */
+#line 130 "hoyo.y" /* yacc.c:1652  */
     {(yyval.node) = AST_Node_LabelList_create(); AST_Node_LabelList_append((yyval.node), (yyvsp[0].label)); }
-#line 1662 "hoyo.tab.c" /* yacc.c:1652  */
+#line 1665 "hoyo.tab.c" /* yacc.c:1652  */
     break;
 
   case 23:
-#line 128 "hoyo.y" /* yacc.c:1652  */
+#line 131 "hoyo.y" /* yacc.c:1652  */
     { (yyval.node) = (yyvsp[-2].node); AST_Node_LabelList_append((yyval.node), (yyvsp[0].label)); }
-#line 1668 "hoyo.tab.c" /* yacc.c:1652  */
+#line 1671 "hoyo.tab.c" /* yacc.c:1652  */
     break;
 
   case 24:
-#line 132 "hoyo.y" /* yacc.c:1652  */
+#line 135 "hoyo.y" /* yacc.c:1652  */
     {(yyval.node) = AST_Node_ObjectFunction_create((yyvsp[-5].label), 0, (yyvsp[-1].node));}
-#line 1674 "hoyo.tab.c" /* yacc.c:1652  */
+#line 1677 "hoyo.tab.c" /* yacc.c:1652  */
     break;
 
   case 25:
-#line 133 "hoyo.y" /* yacc.c:1652  */
+#line 136 "hoyo.y" /* yacc.c:1652  */
     {(yyval.node) = AST_Node_ObjectFunction_create((yyvsp[-6].label), (yyvsp[-4].node), (yyvsp[-1].node));}
-#line 1680 "hoyo.tab.c" /* yacc.c:1652  */
+#line 1683 "hoyo.tab.c" /* yacc.c:1652  */
     break;
 
   case 26:
-#line 137 "hoyo.y" /* yacc.c:1652  */
+#line 140 "hoyo.y" /* yacc.c:1652  */
     { (yyval.node) = AST_Node_i64((yyvsp[0].value_i64));    }
-#line 1686 "hoyo.tab.c" /* yacc.c:1652  */
+#line 1689 "hoyo.tab.c" /* yacc.c:1652  */
     break;
 
   case 27:
-#line 138 "hoyo.y" /* yacc.c:1652  */
+#line 141 "hoyo.y" /* yacc.c:1652  */
     { (yyval.node) = AST_Node_f64((yyvsp[0].value_f64));    }
-#line 1692 "hoyo.tab.c" /* yacc.c:1652  */
+#line 1695 "hoyo.tab.c" /* yacc.c:1652  */
     break;
 
   case 28:
-#line 139 "hoyo.y" /* yacc.c:1652  */
+#line 142 "hoyo.y" /* yacc.c:1652  */
     { (yyval.node) = AST_Node_string((yyvsp[0].value_string)); }
-#line 1698 "hoyo.tab.c" /* yacc.c:1652  */
+#line 1701 "hoyo.tab.c" /* yacc.c:1652  */
     break;
 
   case 29:
-#line 140 "hoyo.y" /* yacc.c:1652  */
+#line 143 "hoyo.y" /* yacc.c:1652  */
     { (yyval.node) = AST_Node_true();     }
-#line 1704 "hoyo.tab.c" /* yacc.c:1652  */
+#line 1707 "hoyo.tab.c" /* yacc.c:1652  */
     break;
 
   case 30:
-#line 141 "hoyo.y" /* yacc.c:1652  */
+#line 144 "hoyo.y" /* yacc.c:1652  */
     { (yyval.node) = AST_Node_false();    }
-#line 1710 "hoyo.tab.c" /* yacc.c:1652  */
+#line 1713 "hoyo.tab.c" /* yacc.c:1652  */
     break;
 
   case 31:
-#line 142 "hoyo.y" /* yacc.c:1652  */
+#line 145 "hoyo.y" /* yacc.c:1652  */
     { (yyval.node) = AST_Node_array(0);   }
-#line 1716 "hoyo.tab.c" /* yacc.c:1652  */
+#line 1719 "hoyo.tab.c" /* yacc.c:1652  */
     break;
 
   case 32:
-#line 143 "hoyo.y" /* yacc.c:1652  */
+#line 146 "hoyo.y" /* yacc.c:1652  */
     { (yyval.node) = AST_Node_array((yyvsp[-1].node));  }
-#line 1722 "hoyo.tab.c" /* yacc.c:1652  */
+#line 1725 "hoyo.tab.c" /* yacc.c:1652  */
     break;
 
   case 33:
-#line 144 "hoyo.y" /* yacc.c:1652  */
+#line 147 "hoyo.y" /* yacc.c:1652  */
     { (yyval.node) = (yyvsp[-1].node);                  }
-#line 1728 "hoyo.tab.c" /* yacc.c:1652  */
+#line 1731 "hoyo.tab.c" /* yacc.c:1652  */
     break;
 
   case 34:
-#line 145 "hoyo.y" /* yacc.c:1652  */
+#line 148 "hoyo.y" /* yacc.c:1652  */
     { (yyval.node) = AST_Node_operator(EXP_CALL, (yyvsp[-2].node), 0);  }
-#line 1734 "hoyo.tab.c" /* yacc.c:1652  */
+#line 1737 "hoyo.tab.c" /* yacc.c:1652  */
     break;
 
   case 35:
-#line 146 "hoyo.y" /* yacc.c:1652  */
+#line 149 "hoyo.y" /* yacc.c:1652  */
     { (yyval.node) = AST_Node_operator(EXP_CALL, (yyvsp[-3].node), (yyvsp[-1].node)); }
-#line 1740 "hoyo.tab.c" /* yacc.c:1652  */
+#line 1743 "hoyo.tab.c" /* yacc.c:1652  */
     break;
 
   case 36:
-#line 147 "hoyo.y" /* yacc.c:1652  */
+#line 150 "hoyo.y" /* yacc.c:1652  */
     { (yyval.node) = AST_Node_dict((yyvsp[0].node));   }
-#line 1746 "hoyo.tab.c" /* yacc.c:1652  */
+#line 1749 "hoyo.tab.c" /* yacc.c:1652  */
     break;
 
   case 37:
-#line 148 "hoyo.y" /* yacc.c:1652  */
+#line 151 "hoyo.y" /* yacc.c:1652  */
     { (yyval.node) = AST_Node_label((yyvsp[0].label));  }
-#line 1752 "hoyo.tab.c" /* yacc.c:1652  */
+#line 1755 "hoyo.tab.c" /* yacc.c:1652  */
     break;
 
   case 38:
-#line 149 "hoyo.y" /* yacc.c:1652  */
+#line 152 "hoyo.y" /* yacc.c:1652  */
     { (yyval.node) = AST_Node_operator(EXP_SELECT_ATTR, (yyvsp[-2].node), AST_Node_label((yyvsp[0].label)));  }
-#line 1758 "hoyo.tab.c" /* yacc.c:1652  */
+#line 1761 "hoyo.tab.c" /* yacc.c:1652  */
     break;
 
   case 39:
-#line 150 "hoyo.y" /* yacc.c:1652  */
+#line 153 "hoyo.y" /* yacc.c:1652  */
     { (yyval.node) = AST_Node_operator(EXP_SELECT, (yyvsp[-3].node), (yyvsp[-1].node)); }
-#line 1764 "hoyo.tab.c" /* yacc.c:1652  */
+#line 1767 "hoyo.tab.c" /* yacc.c:1652  */
     break;
 
   case 40:
-#line 154 "hoyo.y" /* yacc.c:1652  */
+#line 157 "hoyo.y" /* yacc.c:1652  */
     { (yyval.node) = AST_Node_operator(EXP_MUL, (yyvsp[-2].node), (yyvsp[0].node)); }
-#line 1770 "hoyo.tab.c" /* yacc.c:1652  */
+#line 1773 "hoyo.tab.c" /* yacc.c:1652  */
     break;
 
   case 41:
-#line 155 "hoyo.y" /* yacc.c:1652  */
+#line 158 "hoyo.y" /* yacc.c:1652  */
     { (yyval.node) = AST_Node_operator(EXP_DIV, (yyvsp[-2].node), (yyvsp[0].node)); }
-#line 1776 "hoyo.tab.c" /* yacc.c:1652  */
+#line 1779 "hoyo.tab.c" /* yacc.c:1652  */
     break;
 
   case 42:
-#line 156 "hoyo.y" /* yacc.c:1652  */
+#line 159 "hoyo.y" /* yacc.c:1652  */
     { (yyval.node) = (yyvsp[0].node); }
-#line 1782 "hoyo.tab.c" /* yacc.c:1652  */
+#line 1785 "hoyo.tab.c" /* yacc.c:1652  */
     break;
 
   case 43:
-#line 160 "hoyo.y" /* yacc.c:1652  */
+#line 163 "hoyo.y" /* yacc.c:1652  */
     { (yyval.node) = AST_Node_operator(EXP_ADD, (yyvsp[-2].node), (yyvsp[0].node)); }
-#line 1788 "hoyo.tab.c" /* yacc.c:1652  */
+#line 1791 "hoyo.tab.c" /* yacc.c:1652  */
     break;
 
   case 44:
-#line 161 "hoyo.y" /* yacc.c:1652  */
+#line 164 "hoyo.y" /* yacc.c:1652  */
     { (yyval.node) = AST_Node_operator(EXP_SUB, (yyvsp[-2].node), (yyvsp[0].node)); }
-#line 1794 "hoyo.tab.c" /* yacc.c:1652  */
+#line 1797 "hoyo.tab.c" /* yacc.c:1652  */
     break;
 
   case 45:
-#line 162 "hoyo.y" /* yacc.c:1652  */
+#line 165 "hoyo.y" /* yacc.c:1652  */
     { (yyval.node) = (yyvsp[0].node); }
-#line 1800 "hoyo.tab.c" /* yacc.c:1652  */
+#line 1803 "hoyo.tab.c" /* yacc.c:1652  */
     break;
 
   case 46:
-#line 166 "hoyo.y" /* yacc.c:1652  */
+#line 169 "hoyo.y" /* yacc.c:1652  */
     { (yyval.node) = AST_Node_operator(EXP_LSS, (yyvsp[-2].node), (yyvsp[0].node)); }
-#line 1806 "hoyo.tab.c" /* yacc.c:1652  */
+#line 1809 "hoyo.tab.c" /* yacc.c:1652  */
     break;
 
   case 47:
-#line 167 "hoyo.y" /* yacc.c:1652  */
+#line 170 "hoyo.y" /* yacc.c:1652  */
     { (yyval.node) = AST_Node_operator(EXP_GRT, (yyvsp[-2].node), (yyvsp[0].node)); }
-#line 1812 "hoyo.tab.c" /* yacc.c:1652  */
+#line 1815 "hoyo.tab.c" /* yacc.c:1652  */
     break;
 
   case 48:
-#line 168 "hoyo.y" /* yacc.c:1652  */
+#line 171 "hoyo.y" /* yacc.c:1652  */
     { (yyval.node) = AST_Node_operator(EXP_LEQ, (yyvsp[-2].node), (yyvsp[0].node)); }
-#line 1818 "hoyo.tab.c" /* yacc.c:1652  */
+#line 1821 "hoyo.tab.c" /* yacc.c:1652  */
     break;
 
   case 49:
-#line 169 "hoyo.y" /* yacc.c:1652  */
+#line 172 "hoyo.y" /* yacc.c:1652  */
     { (yyval.node) = AST_Node_operator(EXP_GEQ, (yyvsp[-2].node), (yyvsp[0].node)); }
-#line 1824 "hoyo.tab.c" /* yacc.c:1652  */
+#line 1827 "hoyo.tab.c" /* yacc.c:1652  */
     break;
 
   case 50:
-#line 170 "hoyo.y" /* yacc.c:1652  */
+#line 173 "hoyo.y" /* yacc.c:1652  */
     { (yyval.node) = AST_Node_operator(EXP_EQL, (yyvsp[-2].node), (yyvsp[0].node)); }
-#line 1830 "hoyo.tab.c" /* yacc.c:1652  */
+#line 1833 "hoyo.tab.c" /* yacc.c:1652  */
     break;
 
   case 51:
-#line 171 "hoyo.y" /* yacc.c:1652  */
+#line 174 "hoyo.y" /* yacc.c:1652  */
     { (yyval.node) = AST_Node_operator(EXP_NQL, (yyvsp[-2].node), (yyvsp[0].node)); }
-#line 1836 "hoyo.tab.c" /* yacc.c:1652  */
+#line 1839 "hoyo.tab.c" /* yacc.c:1652  */
     break;
 
   case 52:
-#line 172 "hoyo.y" /* yacc.c:1652  */
+#line 175 "hoyo.y" /* yacc.c:1652  */
     { (yyval.node) = (yyvsp[0].node); }
-#line 1842 "hoyo.tab.c" /* yacc.c:1652  */
+#line 1845 "hoyo.tab.c" /* yacc.c:1652  */
     break;
 
   case 53:
-#line 176 "hoyo.y" /* yacc.c:1652  */
+#line 179 "hoyo.y" /* yacc.c:1652  */
     { (yyval.node) = AST_Node_operator(EXP_AND, (yyvsp[-2].node), (yyvsp[0].node)); }
-#line 1848 "hoyo.tab.c" /* yacc.c:1652  */
+#line 1851 "hoyo.tab.c" /* yacc.c:1652  */
     break;
 
   case 54:
-#line 177 "hoyo.y" /* yacc.c:1652  */
+#line 180 "hoyo.y" /* yacc.c:1652  */
     { (yyval.node) = AST_Node_operator(EXP_OR , (yyvsp[-2].node), (yyvsp[0].node)); }
-#line 1854 "hoyo.tab.c" /* yacc.c:1652  */
+#line 1857 "hoyo.tab.c" /* yacc.c:1652  */
     break;
 
   case 55:
-#line 178 "hoyo.y" /* yacc.c:1652  */
+#line 181 "hoyo.y" /* yacc.c:1652  */
     { (yyval.node) = AST_Node_operator(EXP_XOR, (yyvsp[-2].node), (yyvsp[0].node)); }
-#line 1860 "hoyo.tab.c" /* yacc.c:1652  */
+#line 1863 "hoyo.tab.c" /* yacc.c:1652  */
     break;
 
   case 56:
-#line 179 "hoyo.y" /* yacc.c:1652  */
+#line 182 "hoyo.y" /* yacc.c:1652  */
     { (yyval.node) = (yyvsp[0].node); }
-#line 1866 "hoyo.tab.c" /* yacc.c:1652  */
+#line 1869 "hoyo.tab.c" /* yacc.c:1652  */
     break;
 
   case 57:
-#line 183 "hoyo.y" /* yacc.c:1652  */
+#line 186 "hoyo.y" /* yacc.c:1652  */
     {
 
     if((yyvsp[-2].node)->flags & EXP_ASSIGNABLE) {
@@ -1876,95 +1879,95 @@ yyreduce:
 
     (yyval.node) = AST_Node_operator(EXP_ASSIGN , (yyvsp[-2].node), (yyvsp[0].node));
   }
-#line 1880 "hoyo.tab.c" /* yacc.c:1652  */
+#line 1883 "hoyo.tab.c" /* yacc.c:1652  */
     break;
 
   case 58:
-#line 192 "hoyo.y" /* yacc.c:1652  */
+#line 195 "hoyo.y" /* yacc.c:1652  */
     { (yyval.node) = (yyvsp[0].node); }
-#line 1886 "hoyo.tab.c" /* yacc.c:1652  */
+#line 1889 "hoyo.tab.c" /* yacc.c:1652  */
     break;
 
   case 59:
-#line 196 "hoyo.y" /* yacc.c:1652  */
+#line 199 "hoyo.y" /* yacc.c:1652  */
     {(yyval.node) = AST_Node_Dict_create(); AST_Node_Dict_append((yyval.node), (yyvsp[-2].value_string), (yyvsp[0].node)); }
-#line 1892 "hoyo.tab.c" /* yacc.c:1652  */
+#line 1895 "hoyo.tab.c" /* yacc.c:1652  */
     break;
 
   case 60:
-#line 197 "hoyo.y" /* yacc.c:1652  */
+#line 200 "hoyo.y" /* yacc.c:1652  */
     {(yyval.node) = AST_Node_Dict_create(); AST_Node_Dict_append((yyval.node), (yyvsp[-2].label), (yyvsp[0].node)); }
-#line 1898 "hoyo.tab.c" /* yacc.c:1652  */
+#line 1901 "hoyo.tab.c" /* yacc.c:1652  */
     break;
 
   case 61:
-#line 198 "hoyo.y" /* yacc.c:1652  */
+#line 201 "hoyo.y" /* yacc.c:1652  */
     {(yyval.node) = (yyvsp[-4].node);                     AST_Node_Dict_append((yyval.node), (yyvsp[-2].value_string), (yyvsp[0].node)); }
-#line 1904 "hoyo.tab.c" /* yacc.c:1652  */
+#line 1907 "hoyo.tab.c" /* yacc.c:1652  */
     break;
 
   case 62:
-#line 199 "hoyo.y" /* yacc.c:1652  */
+#line 202 "hoyo.y" /* yacc.c:1652  */
     {(yyval.node) = (yyvsp[-4].node);                     AST_Node_Dict_append((yyval.node), (yyvsp[-2].label), (yyvsp[0].node)); }
-#line 1910 "hoyo.tab.c" /* yacc.c:1652  */
+#line 1913 "hoyo.tab.c" /* yacc.c:1652  */
     break;
 
   case 63:
-#line 202 "hoyo.y" /* yacc.c:1652  */
+#line 205 "hoyo.y" /* yacc.c:1652  */
     {(yyval.node) = AST_Node_Dict_create();}
-#line 1916 "hoyo.tab.c" /* yacc.c:1652  */
+#line 1919 "hoyo.tab.c" /* yacc.c:1652  */
     break;
 
   case 64:
-#line 203 "hoyo.y" /* yacc.c:1652  */
+#line 206 "hoyo.y" /* yacc.c:1652  */
     {(yyval.node) = (yyvsp[-1].node);}
-#line 1922 "hoyo.tab.c" /* yacc.c:1652  */
+#line 1925 "hoyo.tab.c" /* yacc.c:1652  */
     break;
 
   case 65:
-#line 206 "hoyo.y" /* yacc.c:1652  */
+#line 209 "hoyo.y" /* yacc.c:1652  */
     {(yyval.node)=AST_Node_ExpList_create();AST_Node_ExpList_append((yyval.node), (yyvsp[0].node));}
-#line 1928 "hoyo.tab.c" /* yacc.c:1652  */
+#line 1931 "hoyo.tab.c" /* yacc.c:1652  */
     break;
 
   case 66:
-#line 207 "hoyo.y" /* yacc.c:1652  */
+#line 210 "hoyo.y" /* yacc.c:1652  */
     {(yyval.node)= (yyvsp[-2].node); AST_Node_ExpList_append((yyvsp[-2].node), (yyvsp[0].node));}
-#line 1934 "hoyo.tab.c" /* yacc.c:1652  */
+#line 1937 "hoyo.tab.c" /* yacc.c:1652  */
     break;
 
   case 67:
-#line 211 "hoyo.y" /* yacc.c:1652  */
+#line 214 "hoyo.y" /* yacc.c:1652  */
     { (yyval.node) = (yyvsp[-4].node); AST_Node_If_append_else((yyval.node), (yyvsp[-1].node)); }
-#line 1940 "hoyo.tab.c" /* yacc.c:1652  */
+#line 1943 "hoyo.tab.c" /* yacc.c:1652  */
     break;
 
   case 68:
-#line 213 "hoyo.y" /* yacc.c:1652  */
+#line 216 "hoyo.y" /* yacc.c:1652  */
     {(yyval.node) = (yyvsp[0].node);}
-#line 1946 "hoyo.tab.c" /* yacc.c:1652  */
+#line 1949 "hoyo.tab.c" /* yacc.c:1652  */
     break;
 
   case 69:
-#line 217 "hoyo.y" /* yacc.c:1652  */
+#line 220 "hoyo.y" /* yacc.c:1652  */
     { (yyval.node) = AST_Node_If_create((yyvsp[-3].node), (yyvsp[-1].node), 0); }
-#line 1952 "hoyo.tab.c" /* yacc.c:1652  */
+#line 1955 "hoyo.tab.c" /* yacc.c:1652  */
     break;
 
   case 70:
-#line 218 "hoyo.y" /* yacc.c:1652  */
+#line 221 "hoyo.y" /* yacc.c:1652  */
     { (yyval.node) = AST_Node_If_create((yyvsp[-2].node), AST_Node_Block_create((yyvsp[0].node)), 0); }
-#line 1958 "hoyo.tab.c" /* yacc.c:1652  */
+#line 1961 "hoyo.tab.c" /* yacc.c:1652  */
     break;
 
   case 71:
-#line 222 "hoyo.y" /* yacc.c:1652  */
+#line 225 "hoyo.y" /* yacc.c:1652  */
     { (yyval.node) = AST_Node_While_create((yyvsp[-3].node), (yyvsp[-1].node)); }
-#line 1964 "hoyo.tab.c" /* yacc.c:1652  */
+#line 1967 "hoyo.tab.c" /* yacc.c:1652  */
     break;
 
 
-#line 1968 "hoyo.tab.c" /* yacc.c:1652  */
+#line 1971 "hoyo.tab.c" /* yacc.c:1652  */
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
@@ -2201,10 +2204,11 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 227 "hoyo.y" /* yacc.c:1918  */
+#line 230 "hoyo.y" /* yacc.c:1918  */
 
 
 AST_Node *AST_Build(char *path) {
+
   // lex through the input:
 
   FILE *fp = fopen(path, "r");

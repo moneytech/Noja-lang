@@ -1,141 +1,5 @@
 
-typedef struct Builder Builder;
-typedef struct Segment Segment;
-
-enum {
-  BLOCK_CANT_RETURN = 1,
-  BLOCK_IS_ROOT = 2
-};
-
-struct Segment {
-    char *content;
-    u32 size, used;
-};
-
-struct Builder {
-    Segment data;
-    Segment code;
-    Segment code_start;
-    Segment function_space;
-    u32 lineno;
-};
-
-char Segment_resize(Segment *seg) {
-
-    u32 size = 16; // base
-
-    if(seg->size)
-        size = seg->size*2;
-
-    char *content = malloc(size);
-
-    if(!content)
-        return 0;
-
-    memset(content, 0, size); // @TEMP
-
-    memcpy(content, seg->content, seg->size);
-
-    free(seg->content);
-
-    seg->content = content;
-    seg->size = size;
-
-    return 1;
-}
-
-u32 Segment_insert_at(Segment *seg, u32 addr, void *s, u32 length) {
-
-    memcpy(seg->content+addr, s, length);
-
-}
-
-u32 Segment_insert(Segment *seg, void *s, u32 length) {
-
-    while(seg->size - seg->used <= length) {
-
-        // the data segment needs to be resized. The string doesn't fit!
-
-        if(!Segment_resize(seg)) {
-            // couldn't resize data segment!
-            // handle error @TODO
-            assert(0);
-            break;
-        }
-
-    }
-
-    // offset if the string about to be inserted in the data segment relative to its start
-    u32 offset = seg->used;
-
-    memcpy(seg->content + offset, s, length);
-
-    seg->used += length;
-
-    return offset;
-}
-
-u32 Segment_insert_opcode(Segment *seg, char opcode) {
-
-    while(seg->size - seg->used <= 1) {
-
-        // the data segment needs to be resized. The string doesn't fit!
-
-        if(!Segment_resize(seg)) {
-            // couldn't resize data segment!
-            // handle error @TODO
-            assert(0);
-            break;
-        }
-
-    }
-
-    // offset if the string about to be inserted in the data segment relative to its start
-    u32 offset = seg->used;
-
-    seg->content[offset] = opcode;
-
-    seg->used++;
-
-    return offset;
-}
-
-u32 Segment_insert_padding(Segment *seg, u32 size) {
-
-    char zero = 0;
-
-    u32 offset = seg->used;
-
-    for(u32 i = 0; i < size; i++)
-        Segment_insert(seg, &zero, 1);
-
-    return offset;
-}
-
-u32 Segment_addr(Segment *seg) {
-    return seg->used;
-}
-
-Builder builder; // init @TODO
-
-void Build_Exp(Segment *seg, AST_Node *node);
-void Build_If(Segment *seg, AST_Node *node, int flags);
-void Build_While(Segment *seg, AST_Node *node, int flags);
-
-void emit_lineno_of(Segment *seg, void *addr) {
-
-  if(!addr) return;
-
-  AST_Node *node = addr;
-  u32 lineno = node->lineno;
-
-  if(lineno == builder.lineno) return;
-
-  Segment_insert_opcode(seg, OPCODE_LINENO);
-  Segment_insert(seg, &node->lineno, 4);
-
-  builder.lineno = lineno;
-}
+#include "header.h"
 
 void Build_Exp_call(Segment *seg, AST_Node_Exp *exp) {
 
@@ -236,25 +100,43 @@ void Build_Dict(Segment *seg, AST_Node_Exp *exp) {
     }
 }
 
-void Build_Block(Segment *seg, AST_Node *node, int flags);
-
 void Build_Method(Segment *seg, AST_Node *node) {
 
   AST_Node_ObjectFunction *func = (AST_Node_ObjectFunction*) node;
 
   u32 n;
 
+  /* Instruction to build the method object */
+
+  // opcode
+
   Segment_insert_opcode(&builder.code, OPCODE_PUSH_METHOD);
+
+  // insert method name into the data segment
 
   n = Segment_insert(&builder.data, func->name, strlen(func->name)+1);
 
+  // insert the addr of the name in the data segment onto the code segment
+  // as operand 1 of OPCODE_PUSH_METHOD
+
   Segment_insert(&builder.code, &n, 4);
+
+  // save the address of the actual function block on the function space segment
 
   n = Segment_addr(&builder.function_space);
 
+  // insert it onto the code segment as
+  // operand 2 of OPCODE_PUSH_METHOD
+
   Segment_insert(&builder.code, &n, 4);
 
+  // start writing the method onto the function space
+
+  // OPCODE_FUNC_BEG
+
   Segment_insert_opcode(&builder.function_space, OPCODE_FUNC_BEG);
+
+  // instructions to load the arguments into the stack
 
   AST_Node_LabelList *args = (AST_Node_LabelList*) func->args;
 
@@ -272,7 +154,11 @@ void Build_Method(Segment *seg, AST_Node *node) {
       }
   }
 
+  /* build the method block */
+
   int build_block_flags = 0;
+
+  // check if this method can return a value
 
   if(strcmp(func->name, "__print__") == 0 ||
      strcmp(func->name, "__init__") == 0) {
@@ -280,21 +166,28 @@ void Build_Method(Segment *seg, AST_Node *node) {
     build_block_flags = BLOCK_CANT_RETURN;
   }
 
+  // build the block onto the function space
 
   Build_Block(&builder.function_space, func->block, build_block_flags);
 
   if(strcmp(func->name, "__print__") != 0 &&
      strcmp(func->name, "__init__") != 0) {
 
+    // if the method can return, return a true just in case the method didn't return
+
     Segment_insert_opcode(&builder.function_space, OPCODE_PUSH_TRUE);
 
   } else if(strcmp(func->name, "__init__") == 0) {
+
+    // if its che constructor, return self
 
     Segment_insert_opcode(&builder.function_space, OPCODE_PUSH_NAMED);
     u32 n = Segment_insert(&builder.data, "self", sizeof("self"));
     Segment_insert(&builder.function_space, &n, 4);
 
   }
+
+  // write OPCODE_FUNC_END
 
   Segment_insert_opcode(&builder.function_space, OPCODE_FUNC_END);
 
@@ -510,6 +403,7 @@ void Build_Exp(Segment *seg, AST_Node *node) {
             lr = (AST_Node_Exp*) l->r_exp;
 
             switch(l->type) {
+
                 case EXP_LABEL:
 
                 Build_Exp(seg, (AST_Node*) r);
@@ -854,10 +748,12 @@ char *Build(AST_Node *root, u32 *e_size) {
 
     Segment_insert_opcode(&builder.code, OPCODE_END);
 
+    /*
     printf("data....................%d / %d\n", builder.data.used, builder.data.size);
     printf("code_start..............%d / %d\n", builder.code_start.used, builder.code_start.size);
     printf("code....................%d / %d\n", builder.code.used, builder.code.size);
     printf("function_space..........%d / %d\n", builder.function_space.used, builder.function_space.size);
+    */
 
     u32 size = builder.function_space.used + builder.data.used + builder.code.used + 12;
 
@@ -887,8 +783,6 @@ char *Build(AST_Node *root, u32 *e_size) {
 }
 
 void Compile(char *path, AST_Node *root) {
-
-    printf("compiling\n");
 
     u32 size;
     char *content;
