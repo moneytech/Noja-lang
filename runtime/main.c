@@ -36,7 +36,7 @@ int NOJA_init(Context *context, char *path) {
     Dict_cinsert(ptable_ObjectArray.methods, "pop"    , ObjectCFunction_create(context, &ObjectArray_pop));
     Dict_cinsert(ptable_ObjectArray.methods, "size"   , ObjectCFunction_create(context, &ObjectArray_size));
 
-    Dict_cinsert(context->frames[0], "ObjectArray", (Object*) &ptable_ObjectArray);
+    Dict_cinsert(context->frames[0], "Array", (Object*) &ptable_ObjectArray);
 
   }
 
@@ -52,7 +52,7 @@ int NOJA_init(Context *context, char *path) {
     Dict_cinsert(ptable_ObjectString.methods, "split"        , ObjectCFunction_create(context, &ObjectString_split));
     Dict_cinsert(ptable_ObjectString.methods, "replace"      , ObjectCFunction_create(context, &ObjectString_replace));
 
-    Dict_cinsert(context->frames[0], "ObjectString", (Object*) &ptable_ObjectString);
+    Dict_cinsert(context->frames[0], "String", (Object*) &ptable_ObjectString);
 
   }
 
@@ -90,7 +90,7 @@ int NOJA_init(Context *context, char *path) {
     Dict_cinsert(ptable_ObjectDict.methods, "replace"      , ObjectCFunction_create(context, &ObjectString_replace));
     */
 
-    Dict_cinsert(context->frames[0], "ObjectInt", (Object*) &ptable_ObjectInt);
+    Dict_cinsert(context->frames[0], "Int", (Object*) &ptable_ObjectInt);
 
   }
 
@@ -109,7 +109,7 @@ int NOJA_init(Context *context, char *path) {
     Dict_cinsert(ptable_ObjectFloat.methods, "replace"      , ObjectCFunction_create(context, &ObjectString_replace));
     */
 
-    Dict_cinsert(context->frames[0], "ObjectFloat", (Object*) &ptable_ObjectFloat);
+    Dict_cinsert(context->frames[0], "Float", (Object*) &ptable_ObjectFloat);
 
   }
 
@@ -128,7 +128,7 @@ int NOJA_init(Context *context, char *path) {
     Dict_cinsert(ptable_ObjectDict.methods, "replace"      , ObjectCFunction_create(context, &ObjectString_replace));
     */
 
-    Dict_cinsert(context->frames[0], "ObjectBool", (Object*) &ptable_ObjectBool);
+    Dict_cinsert(context->frames[0], "Bool", (Object*) &ptable_ObjectBool);
 
   }
 
@@ -147,7 +147,7 @@ int NOJA_init(Context *context, char *path) {
     Dict_cinsert(ptable_ObjectDict.methods, "replace"      , ObjectCFunction_create(context, &ObjectString_replace));
     */
 
-    Dict_cinsert(context->frames[0], "ObjectType", (Object*) &ptable_ObjectType);
+    Dict_cinsert(context->frames[0], "Type", (Object*) &ptable_ObjectType);
 
   }
 

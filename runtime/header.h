@@ -109,8 +109,6 @@ void Mem_release();
 void Mem_init(Context *context, u32 size);
 Heap *Mem_Heap_create(u32 size);
 
-extern Memory_Manager memory_man;
-
 enum {
     OBJ_IS_GC_COLLECTABLE   = 1,
     OBJ_IS_FORWARDING_REFR  = 2,
@@ -295,8 +293,8 @@ Object *Object_sub(Object *a, Object *b);
 Object *Object_mul(Object *a, Object *b);
 Object *Object_div(Object *a, Object *b);
 void    Object_print(Object *a);
-u32 Object_get_raw_repr_size(Object *self);
-void Object_get_raw_repr(Object *self, void *addr, u32 max_size);
+u32     Object_get_raw_repr_size(Object *self);
+void    Object_get_raw_repr(Object *self, void *addr, u32 max_size);
 
 
 /* === Dict === */

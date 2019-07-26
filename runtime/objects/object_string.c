@@ -261,9 +261,13 @@ Object *ObjectString_next(Object *self, Object *iter) {
 
 /* === Methods === */
 
-Object *ObjectString_reverse(Object *parent, Object **argv, u32 argc) {}
+Object *ObjectString_reverse(Object *parent, Object **argv, u32 argc) {
+  return 0;
+}
 
-Object *ObjectString_findAll(Object *parent, Object **argv, u32 argc) {}
+Object *ObjectString_findAll(Object *parent, Object **argv, u32 argc) {
+  return 0;
+}
 
 
 Object *ObjectString_sub(Object *self, Object **argv, u32 argc) {
@@ -438,5 +442,10 @@ Object *ObjectString_split(Object *self, Object **argv, u32 argc) {
   return array;
 }
 
-Object *ObjectString_replace(Object *self, Object **argv, u32 argc) {}
-Object *ObjectString_format(Object *self, Object **argv, u32 argc) {}
+Object *ObjectString_replace(Object *self, Object **argv, u32 argc) {
+  return 0;
+}
+
+Object *ObjectString_format(Object *self, Object **argv, u32 argc) {
+  return 0;
+}
