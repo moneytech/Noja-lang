@@ -29,157 +29,157 @@ int NOJA_init(Context *context, char *path) {
 
   /* Init ObjectArray object class */ {
 
-  TypeTable_ObjectArray.methods = Object_create(context, __ObjectDict__, 0, 0);
+  ptable_ObjectArray.methods = Object_create(context, __ObjectDict__, 0, 0);
 
-    Dict_cinsert(TypeTable_ObjectArray.methods, "reverse", ObjectCFunction_create(context, &ObjectArray_reverse));
-    Dict_cinsert(TypeTable_ObjectArray.methods, "append" , ObjectCFunction_create(context, &ObjectArray_append));
-    Dict_cinsert(TypeTable_ObjectArray.methods, "pop"    , ObjectCFunction_create(context, &ObjectArray_pop));
-    Dict_cinsert(TypeTable_ObjectArray.methods, "size"   , ObjectCFunction_create(context, &ObjectArray_size));
+    Dict_cinsert(ptable_ObjectArray.methods, "reverse", ObjectCFunction_create(context, &ObjectArray_reverse));
+    Dict_cinsert(ptable_ObjectArray.methods, "append" , ObjectCFunction_create(context, &ObjectArray_append));
+    Dict_cinsert(ptable_ObjectArray.methods, "pop"    , ObjectCFunction_create(context, &ObjectArray_pop));
+    Dict_cinsert(ptable_ObjectArray.methods, "size"   , ObjectCFunction_create(context, &ObjectArray_size));
 
-    Dict_cinsert(context->frames[0], "ObjectArray", &TypeTable_ObjectArray);
+    Dict_cinsert(context->frames[0], "ObjectArray", (Object*) &ptable_ObjectArray);
 
   }
 
   /* Init ObjectString object class */ {
 
-    TypeTable_ObjectString.methods = Object_create(context, __ObjectDict__, 0, 0);
+    ptable_ObjectString.methods = Object_create(context, __ObjectDict__, 0, 0);
 
-    Dict_cinsert(TypeTable_ObjectString.methods, "format"       , ObjectCFunction_create(context, &ObjectString_format));
-    Dict_cinsert(TypeTable_ObjectString.methods, "reverse"      , ObjectCFunction_create(context, &ObjectString_reverse));
-    Dict_cinsert(TypeTable_ObjectString.methods, "sub"          , ObjectCFunction_create(context, &ObjectString_sub));
-    Dict_cinsert(TypeTable_ObjectString.methods, "find"         , ObjectCFunction_create(context, &ObjectString_find));
-    Dict_cinsert(TypeTable_ObjectString.methods, "length"       , ObjectCFunction_create(context, &ObjectString_length));
-    Dict_cinsert(TypeTable_ObjectString.methods, "split"        , ObjectCFunction_create(context, &ObjectString_split));
-    Dict_cinsert(TypeTable_ObjectString.methods, "replace"      , ObjectCFunction_create(context, &ObjectString_replace));
+    Dict_cinsert(ptable_ObjectString.methods, "format"       , ObjectCFunction_create(context, &ObjectString_format));
+    Dict_cinsert(ptable_ObjectString.methods, "reverse"      , ObjectCFunction_create(context, &ObjectString_reverse));
+    Dict_cinsert(ptable_ObjectString.methods, "sub"          , ObjectCFunction_create(context, &ObjectString_sub));
+    Dict_cinsert(ptable_ObjectString.methods, "find"         , ObjectCFunction_create(context, &ObjectString_find));
+    Dict_cinsert(ptable_ObjectString.methods, "length"       , ObjectCFunction_create(context, &ObjectString_length));
+    Dict_cinsert(ptable_ObjectString.methods, "split"        , ObjectCFunction_create(context, &ObjectString_split));
+    Dict_cinsert(ptable_ObjectString.methods, "replace"      , ObjectCFunction_create(context, &ObjectString_replace));
 
-    Dict_cinsert(context->frames[0], "ObjectString", &TypeTable_ObjectString);
+    Dict_cinsert(context->frames[0], "ObjectString", (Object*) &ptable_ObjectString);
 
   }
 
   /* Init Dict object class */ {
 
-    TypeTable_Dict.methods = Object_create(context, __ObjectDict__, 0, 0);
+    ptable_ObjectDict.methods = Object_create(context, __ObjectDict__, 0, 0);
 
 
     /*
-    Dict_cinsert(TypeTable_Dict.methods, "format"       , ObjectCFunction_create(context, &ObjectString_format));
-    Dict_cinsert(TypeTable_Dict.methods, "reverse"      , ObjectCFunction_create(context, &ObjectString_reverse));
-    Dict_cinsert(TypeTable_Dict.methods, "sub"          , ObjectCFunction_create(context, &ObjectString_sub));
-    Dict_cinsert(TypeTable_Dict.methods, "find"         , ObjectCFunction_create(context, &ObjectString_find));
-    Dict_cinsert(TypeTable_Dict.methods, "length"       , ObjectCFunction_create(context, &ObjectString_length));
-    Dict_cinsert(TypeTable_Dict.methods, "split"        , ObjectCFunction_create(context, &ObjectString_split));
-    Dict_cinsert(TypeTable_Dict.methods, "replace"      , ObjectCFunction_create(context, &ObjectString_replace));
+    Dict_cinsert(ptable_ObjectDict.methods, "format"       , ObjectCFunction_create(context, &ObjectString_format));
+    Dict_cinsert(ptable_ObjectDict.methods, "reverse"      , ObjectCFunction_create(context, &ObjectString_reverse));
+    Dict_cinsert(ptable_ObjectDict.methods, "sub"          , ObjectCFunction_create(context, &ObjectString_sub));
+    Dict_cinsert(ptable_ObjectDict.methods, "find"         , ObjectCFunction_create(context, &ObjectString_find));
+    Dict_cinsert(ptable_ObjectDict.methods, "length"       , ObjectCFunction_create(context, &ObjectString_length));
+    Dict_cinsert(ptable_ObjectDict.methods, "split"        , ObjectCFunction_create(context, &ObjectString_split));
+    Dict_cinsert(ptable_ObjectDict.methods, "replace"      , ObjectCFunction_create(context, &ObjectString_replace));
     */
 
-    Dict_cinsert(context->frames[0], "Dict", &TypeTable_Dict);
+    Dict_cinsert(context->frames[0], "Dict", (Object*) &ptable_ObjectDict);
 
   }
 
   /* Init ObjectInt object class */ {
 
-    TypeTable_ObjectInt.methods = Object_create(context, __ObjectDict__, 0, 0);
+    ptable_ObjectInt.methods = Object_create(context, __ObjectDict__, 0, 0);
 
 
     /*
-    Dict_cinsert(TypeTable_Dict.methods, "format"       , ObjectCFunction_create(context, &ObjectString_format));
-    Dict_cinsert(TypeTable_Dict.methods, "reverse"      , ObjectCFunction_create(context, &ObjectString_reverse));
-    Dict_cinsert(TypeTable_Dict.methods, "sub"          , ObjectCFunction_create(context, &ObjectString_sub));
-    Dict_cinsert(TypeTable_Dict.methods, "find"         , ObjectCFunction_create(context, &ObjectString_find));
-    Dict_cinsert(TypeTable_Dict.methods, "length"       , ObjectCFunction_create(context, &ObjectString_length));
-    Dict_cinsert(TypeTable_Dict.methods, "split"        , ObjectCFunction_create(context, &ObjectString_split));
-    Dict_cinsert(TypeTable_Dict.methods, "replace"      , ObjectCFunction_create(context, &ObjectString_replace));
+    Dict_cinsert(ptable_ObjectDict.methods, "format"       , ObjectCFunction_create(context, &ObjectString_format));
+    Dict_cinsert(ptable_ObjectDict.methods, "reverse"      , ObjectCFunction_create(context, &ObjectString_reverse));
+    Dict_cinsert(ptable_ObjectDict.methods, "sub"          , ObjectCFunction_create(context, &ObjectString_sub));
+    Dict_cinsert(ptable_ObjectDict.methods, "find"         , ObjectCFunction_create(context, &ObjectString_find));
+    Dict_cinsert(ptable_ObjectDict.methods, "length"       , ObjectCFunction_create(context, &ObjectString_length));
+    Dict_cinsert(ptable_ObjectDict.methods, "split"        , ObjectCFunction_create(context, &ObjectString_split));
+    Dict_cinsert(ptable_ObjectDict.methods, "replace"      , ObjectCFunction_create(context, &ObjectString_replace));
     */
 
-    Dict_cinsert(context->frames[0], "ObjectInt", &TypeTable_ObjectInt);
+    Dict_cinsert(context->frames[0], "ObjectInt", (Object*) &ptable_ObjectInt);
 
   }
 
   /* Init ObjectFloat object class */ {
 
-    TypeTable_ObjectFloat.methods = Object_create(context, __ObjectDict__, 0, 0);
+    ptable_ObjectFloat.methods = Object_create(context, __ObjectDict__, 0, 0);
 
 
     /*
-    Dict_cinsert(TypeTable_ObjectFloat.methods, "format"       , ObjectCFunction_create(context, &ObjectString_format));
-    Dict_cinsert(TypeTable_ObjectFloat.methods, "reverse"      , ObjectCFunction_create(context, &ObjectString_reverse));
-    Dict_cinsert(TypeTable_ObjectFloat.methods, "sub"          , ObjectCFunction_create(context, &ObjectString_sub));
-    Dict_cinsert(TypeTable_ObjectFloat.methods, "find"         , ObjectCFunction_create(context, &ObjectString_find));
-    Dict_cinsert(TypeTable_ObjectFloat.methods, "length"       , ObjectCFunction_create(context, &ObjectString_length));
-    Dict_cinsert(TypeTable_ObjectFloat.methods, "split"        , ObjectCFunction_create(context, &ObjectString_split));
-    Dict_cinsert(TypeTable_ObjectFloat.methods, "replace"      , ObjectCFunction_create(context, &ObjectString_replace));
+    Dict_cinsert(ptable_ObjectFloat.methods, "format"       , ObjectCFunction_create(context, &ObjectString_format));
+    Dict_cinsert(ptable_ObjectFloat.methods, "reverse"      , ObjectCFunction_create(context, &ObjectString_reverse));
+    Dict_cinsert(ptable_ObjectFloat.methods, "sub"          , ObjectCFunction_create(context, &ObjectString_sub));
+    Dict_cinsert(ptable_ObjectFloat.methods, "find"         , ObjectCFunction_create(context, &ObjectString_find));
+    Dict_cinsert(ptable_ObjectFloat.methods, "length"       , ObjectCFunction_create(context, &ObjectString_length));
+    Dict_cinsert(ptable_ObjectFloat.methods, "split"        , ObjectCFunction_create(context, &ObjectString_split));
+    Dict_cinsert(ptable_ObjectFloat.methods, "replace"      , ObjectCFunction_create(context, &ObjectString_replace));
     */
 
-    Dict_cinsert(context->frames[0], "ObjectFloat", &TypeTable_ObjectFloat);
+    Dict_cinsert(context->frames[0], "ObjectFloat", (Object*) &ptable_ObjectFloat);
 
   }
 
   /* Init ObjectBool object class */ {
 
-    TypeTable_ObjectBool.methods = Object_create(context, __ObjectDict__, 0, 0);
+    ptable_ObjectBool.methods = Object_create(context, __ObjectDict__, 0, 0);
 
 
     /*
-    Dict_cinsert(TypeTable_Dict.methods, "format"       , ObjectCFunction_create(context, &ObjectString_format));
-    Dict_cinsert(TypeTable_Dict.methods, "reverse"      , ObjectCFunction_create(context, &ObjectString_reverse));
-    Dict_cinsert(TypeTable_Dict.methods, "sub"          , ObjectCFunction_create(context, &ObjectString_sub));
-    Dict_cinsert(TypeTable_Dict.methods, "find"         , ObjectCFunction_create(context, &ObjectString_find));
-    Dict_cinsert(TypeTable_Dict.methods, "length"       , ObjectCFunction_create(context, &ObjectString_length));
-    Dict_cinsert(TypeTable_Dict.methods, "split"        , ObjectCFunction_create(context, &ObjectString_split));
-    Dict_cinsert(TypeTable_Dict.methods, "replace"      , ObjectCFunction_create(context, &ObjectString_replace));
+    Dict_cinsert(ptable_ObjectDict.methods, "format"       , ObjectCFunction_create(context, &ObjectString_format));
+    Dict_cinsert(ptable_ObjectDict.methods, "reverse"      , ObjectCFunction_create(context, &ObjectString_reverse));
+    Dict_cinsert(ptable_ObjectDict.methods, "sub"          , ObjectCFunction_create(context, &ObjectString_sub));
+    Dict_cinsert(ptable_ObjectDict.methods, "find"         , ObjectCFunction_create(context, &ObjectString_find));
+    Dict_cinsert(ptable_ObjectDict.methods, "length"       , ObjectCFunction_create(context, &ObjectString_length));
+    Dict_cinsert(ptable_ObjectDict.methods, "split"        , ObjectCFunction_create(context, &ObjectString_split));
+    Dict_cinsert(ptable_ObjectDict.methods, "replace"      , ObjectCFunction_create(context, &ObjectString_replace));
     */
 
-    Dict_cinsert(context->frames[0], "ObjectBool", &TypeTable_ObjectBool);
+    Dict_cinsert(context->frames[0], "ObjectBool", (Object*) &ptable_ObjectBool);
 
   }
 
   /* Init ObjectType object class */ {
 
-    TypeTable_ObjectType.methods = Object_create(context, __ObjectDict__, 0, 0);
+    ptable_ObjectType.methods = Object_create(context, __ObjectDict__, 0, 0);
 
 
     /*
-    Dict_cinsert(TypeTable_Dict.methods, "format"       , ObjectCFunction_create(context, &ObjectString_format));
-    Dict_cinsert(TypeTable_Dict.methods, "reverse"      , ObjectCFunction_create(context, &ObjectString_reverse));
-    Dict_cinsert(TypeTable_Dict.methods, "sub"          , ObjectCFunction_create(context, &ObjectString_sub));
-    Dict_cinsert(TypeTable_Dict.methods, "find"         , ObjectCFunction_create(context, &ObjectString_find));
-    Dict_cinsert(TypeTable_Dict.methods, "length"       , ObjectCFunction_create(context, &ObjectString_length));
-    Dict_cinsert(TypeTable_Dict.methods, "split"        , ObjectCFunction_create(context, &ObjectString_split));
-    Dict_cinsert(TypeTable_Dict.methods, "replace"      , ObjectCFunction_create(context, &ObjectString_replace));
+    Dict_cinsert(ptable_ObjectDict.methods, "format"       , ObjectCFunction_create(context, &ObjectString_format));
+    Dict_cinsert(ptable_ObjectDict.methods, "reverse"      , ObjectCFunction_create(context, &ObjectString_reverse));
+    Dict_cinsert(ptable_ObjectDict.methods, "sub"          , ObjectCFunction_create(context, &ObjectString_sub));
+    Dict_cinsert(ptable_ObjectDict.methods, "find"         , ObjectCFunction_create(context, &ObjectString_find));
+    Dict_cinsert(ptable_ObjectDict.methods, "length"       , ObjectCFunction_create(context, &ObjectString_length));
+    Dict_cinsert(ptable_ObjectDict.methods, "split"        , ObjectCFunction_create(context, &ObjectString_split));
+    Dict_cinsert(ptable_ObjectDict.methods, "replace"      , ObjectCFunction_create(context, &ObjectString_replace));
     */
 
-    Dict_cinsert(context->frames[0], "ObjectType", &TypeTable_ObjectType);
+    Dict_cinsert(context->frames[0], "ObjectType", (Object*) &ptable_ObjectType);
 
   }
 
   /* Init Module object class */ {
 
-    TypeTable_Module.methods = Object_create(context, __ObjectDict__, 0, 0);
+    ptable_ObjectModule.methods = Object_create(context, __ObjectDict__, 0, 0);
 
 
     /*
-    Dict_cinsert(TypeTable_Dict.methods, "format"       , ObjectCFunction_create(context, &ObjectString_format));
-    Dict_cinsert(TypeTable_Dict.methods, "reverse"      , ObjectCFunction_create(context, &ObjectString_reverse));
-    Dict_cinsert(TypeTable_Dict.methods, "sub"          , ObjectCFunction_create(context, &ObjectString_sub));
-    Dict_cinsert(TypeTable_Dict.methods, "find"         , ObjectCFunction_create(context, &ObjectString_find));
-    Dict_cinsert(TypeTable_Dict.methods, "length"       , ObjectCFunction_create(context, &ObjectString_length));
-    Dict_cinsert(TypeTable_Dict.methods, "split"        , ObjectCFunction_create(context, &ObjectString_split));
-    Dict_cinsert(TypeTable_Dict.methods, "replace"      , ObjectCFunction_create(context, &ObjectString_replace));
+    Dict_cinsert(ptable_ObjectDict.methods, "format"       , ObjectCFunction_create(context, &ObjectString_format));
+    Dict_cinsert(ptable_ObjectDict.methods, "reverse"      , ObjectCFunction_create(context, &ObjectString_reverse));
+    Dict_cinsert(ptable_ObjectDict.methods, "sub"          , ObjectCFunction_create(context, &ObjectString_sub));
+    Dict_cinsert(ptable_ObjectDict.methods, "find"         , ObjectCFunction_create(context, &ObjectString_find));
+    Dict_cinsert(ptable_ObjectDict.methods, "length"       , ObjectCFunction_create(context, &ObjectString_length));
+    Dict_cinsert(ptable_ObjectDict.methods, "split"        , ObjectCFunction_create(context, &ObjectString_split));
+    Dict_cinsert(ptable_ObjectDict.methods, "replace"      , ObjectCFunction_create(context, &ObjectString_replace));
     */
 
-    Dict_cinsert(context->frames[0], "Module", &TypeTable_Module);
+    Dict_cinsert(context->frames[0], "Module", (Object*) &ptable_ObjectModule);
 
   }
 
   /* Init Iterator object class */ {
 
-    TypeTable_ObjectIterator.methods = Object_create(context, __ObjectDict__, 0, 0);
+    ptable_ObjectIterator.methods = Object_create(context, __ObjectDict__, 0, 0);
 
-    Dict_cinsert(TypeTable_ObjectIterator.methods, "iterated", ObjectCFunction_create(context, &ObjectIterator_iterated));
-    Dict_cinsert(TypeTable_ObjectIterator.methods, "next", ObjectCFunction_create(context, &ObjectIterator_next));
-    Dict_cinsert(TypeTable_ObjectIterator.methods, "ended", ObjectCFunction_create(context, &ObjectIterator_ended));
-    Dict_cinsert(TypeTable_ObjectIterator.methods, "index", ObjectCFunction_create(context, &ObjectIterator_index));
+    Dict_cinsert(ptable_ObjectIterator.methods, "iterated", ObjectCFunction_create(context, &ObjectIterator_iterated));
+    Dict_cinsert(ptable_ObjectIterator.methods, "next", ObjectCFunction_create(context, &ObjectIterator_next));
+    Dict_cinsert(ptable_ObjectIterator.methods, "ended", ObjectCFunction_create(context, &ObjectIterator_ended));
+    Dict_cinsert(ptable_ObjectIterator.methods, "index", ObjectCFunction_create(context, &ObjectIterator_index));
 
-    Dict_cinsert(context->frames[0], "Iterator", &TypeTable_ObjectIterator);
+    Dict_cinsert(context->frames[0], "Iterator", (Object*) &ptable_ObjectIterator);
 
   }
 

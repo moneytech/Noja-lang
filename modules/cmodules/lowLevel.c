@@ -205,7 +205,7 @@ ObjectType TypeTable_Pointer = {
     .get_raw_repr = 0,
     .get_raw_repr_size = 0,
     .print  = Pointer_print,
-    .expid  = 0,
+    .operators  = 0,
     .to_cbool = &Pointer_to_cbool,
     .collectChildren = 0
 };

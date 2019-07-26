@@ -4,17 +4,18 @@
 #define MIN(a, b) ((a < b) ? a : b)
 #define MAX(a, b) ((a > b) ? a : b)
 
-#define __ObjectType__          &TypeTable_ObjectType
-#define __ObjectInt__           &TypeTable_ObjectInt
-#define __ObjectFloat__         &TypeTable_ObjectFloat
-#define __ObjectString__        &TypeTable_ObjectString
-#define __ObjectDict__          &TypeTable_Dict
-#define __ObjectBuckets__       &TypeTable_Buckets
-#define __ObjectArray__         &TypeTable_ObjectArray
-#define __ObjectFunction__      &TypeTable_ObjectFunction
-#define __ObjectCFunction__     &TypeTable_ObjectCFunction
-#define __ObjectBool__          &TypeTable_ObjectBool
-#define __ObjectIterator___     &TypeTable_ObjectIterator
+#define __ObjectType__          &ptable_ObjectType
+#define __ObjectInt__           &ptable_ObjectInt
+#define __ObjectFloat__         &ptable_ObjectFloat
+#define __ObjectString__        &ptable_ObjectString
+#define __ObjectDict__          &ptable_ObjectDict
+#define __ObjectBuckets__       &ptable_ObjectBuckets
+#define __ObjectArray__         &ptable_ObjectArray
+#define __ObjectFunction__      &ptable_ObjectFunction
+#define __ObjectCFunction__     &ptable_ObjectCFunction
+#define __ObjectBool__          &ptable_ObjectBool
+#define __ObjectIterator___     &ptable_ObjectIterator
+#define __ObjectModule__           &ptable_ObjectModule
 
 typedef struct Context Context;
 
@@ -79,16 +80,6 @@ struct Offset {
 
 typedef Object *(*Operator)(Object*, Object*);
 
-extern Operator operator_matrix_add[6][6];
-extern Operator operator_matrix_sub[6][6];
-extern Operator operator_matrix_mul[6][6];
-extern Operator operator_matrix_div[6][6];
-extern Operator operator_matrix_lss[6][6];
-extern Operator operator_matrix_leq[6][6];
-extern Operator operator_matrix_grt[6][6];
-extern Operator operator_matrix_geq[6][6];
-extern Operator operator_matrix_eql[7][7];
-
 char import_shared_library(char *name, Object *dest);
 
 /* === Memory manager === */
@@ -144,9 +135,9 @@ struct Object {
 typedef struct ObjectTypeOperators ObjectTypeOperators;
 
 struct ObjectTypeOperators {
-  Operator  add, 
-            sub, 
-            mul, 
+  Operator  add,
+            sub,
+            mul,
             div,
             eql,
             grt,
@@ -181,17 +172,9 @@ struct ObjectType {
     u32     (*get_raw_repr_size)(Object *self);
     void    (*get_raw_repr)(Object *self, void *addr, u32 max_size);
 
-    /* Casters */
-
     char (*to_cbool)(Object*);
 
-    /* For operations */
-
     ObjectTypeOperators *operators;
-
-    u32 expid;
-
-    /* Garbage collector */
 
     void (*collectChildren)(Object *self);
 
@@ -274,18 +257,18 @@ struct ObjectIstance {
   Object *members;
 };
 
-extern ObjectType TypeTable_ObjectType;
-extern ObjectType TypeTable_ObjectInt;
-extern ObjectType TypeTable_ObjectFloat;
-extern ObjectType TypeTable_ObjectString;
-extern ObjectType TypeTable_Dict;
-extern ObjectType TypeTable_Buckets;
-extern ObjectType TypeTable_ObjectArray;
-extern ObjectType TypeTable_ObjectFunction;
-extern ObjectType TypeTable_ObjectCFunction;
-extern ObjectType TypeTable_Module;
-extern ObjectType TypeTable_ObjectBool;
-extern ObjectType TypeTable_ObjectIterator;
+extern ObjectType ptable_ObjectType;
+extern ObjectType ptable_ObjectInt;
+extern ObjectType ptable_ObjectFloat;
+extern ObjectType ptable_ObjectString;
+extern ObjectType ptable_ObjectDict;
+extern ObjectType ptable_ObjectBuckets;
+extern ObjectType ptable_ObjectArray;
+extern ObjectType ptable_ObjectFunction;
+extern ObjectType ptable_ObjectCFunction;
+extern ObjectType ptable_ObjectModule;
+extern ObjectType ptable_ObjectBool;
+extern ObjectType ptable_ObjectIterator;
 extern Object *NOJA_True;
 extern Object *NOJA_False;
 
@@ -347,7 +330,7 @@ char    ObjectFloat_to_cbool(Object *self);
 
 /* === ObjectString === */
 
-void    ObjectString_init(Object *self, Object *argv, u32 argc);
+void    ObjectString_init(Object *self, Object **argv, u32 argc);
 Object *ObjectString_from_cstring(Context *context, char *s);
 Object *ObjectString_wrap_cstring(Context *context, char *value, u32 size);
 void    ObjectString_print(Object *self);

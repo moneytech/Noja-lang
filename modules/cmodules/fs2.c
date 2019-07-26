@@ -22,7 +22,7 @@ Object *FS_readDir(Object *parent, Object **argv, u32 argc) {
     if(argv == 0)
       return NOJA_False;
 
-    if(argv[0]->type != &TypeTable_ObjectString) {
+    if(argv[0]->type != __ObjectString__) {
       ctx_throw_exception(parent->context, Exception_TypeError);
       return NOJA_False;
     }
@@ -238,7 +238,7 @@ ObjectType TypeTable_FileHandle = {
     .getAttr = 0,
     .setAttr = 0,
     .print  = 0,
-    .expid  = 4,
+    .operators = 0,
     .to_cbool = &return_1,
     .collectChildren = 0
 };
@@ -258,7 +258,7 @@ Object *FS_open(Object *parent, Object **argv, u32 argc) {
 
         case 2:
 
-        if(argv[1]->type != &TypeTable_ObjectString) {
+        if(argv[1]->type != __ObjectString__) {
             ctx_throw_exception(parent->context, Exception_TypeError);
             return NOJA_False;
         }
@@ -267,7 +267,7 @@ Object *FS_open(Object *parent, Object **argv, u32 argc) {
 
         case 1:
 
-        if(argv[0]->type != &TypeTable_ObjectString) {
+        if(argv[0]->type != __ObjectString__) {
             ctx_throw_exception(parent->context, Exception_TypeError);
             return NOJA_False;
         }

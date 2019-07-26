@@ -53,12 +53,12 @@ void NOJA_run(Context *context) {
 
             case OPCODE_BUILD_CLASS:
 
-            reg0._obj = Object_create(context, &TypeTable_ObjectType, 0, 0);
+            reg0._obj = Object_create(context, __ObjectType__, 0, 0);
 
             ((ObjectType*) reg0._obj)->name = "Class";
             ((ObjectType*) reg0._obj)->size = sizeof(ObjectIstance);
             //((ObjectType*) reg0._obj)->flags = 0;
-            ((ObjectType*) reg0._obj)->methods = Object_create(context, &TypeTable_Dict, 0, 0);
+            ((ObjectType*) reg0._obj)->methods = Object_create(context, __ObjectDict__, 0, 0);
             ((ObjectType*) reg0._obj)->free = Class_delete;
             ((ObjectType*) reg0._obj)->select = Class_select;
             ((ObjectType*) reg0._obj)->insert = Class_insert;
@@ -69,7 +69,7 @@ void NOJA_run(Context *context) {
             ((ObjectType*) reg0._obj)->print = Class_print;
             ((ObjectType*) reg0._obj)->iter = 0;
             ((ObjectType*) reg0._obj)->next = 0;
-            ((ObjectType*) reg0._obj)->expid = 0;
+            ((ObjectType*) reg0._obj)->operators = 0;
             ((ObjectType*) reg0._obj)->to_cbool = return_1;
             ((ObjectType*) reg0._obj)->collectChildren = Class_collectChildren;
 
@@ -114,7 +114,7 @@ void NOJA_run(Context *context) {
               reg0._str = ctx_read_string(context); // path
               reg1._str = ctx_read_string(context); // name
 
-              reg2._obj = Object_create(context, &TypeTable_Module, 0, 0);
+              reg2._obj = Object_create(context, __ObjectModule__, 0, 0);
 
               if(!import_shared_library(reg0._str, (reg2._module)->members)) {
 

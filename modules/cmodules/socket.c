@@ -240,7 +240,7 @@ ObjectType TypeTable_Connection = {
   .getAttr = 0,
   .setAttr = 0,
   .print  = 0,
-  .expid  = 4,
+  .operators = 0,
   .to_cbool = &Connection_to_cbool,
   .collectChildren = 0
 };
@@ -259,7 +259,7 @@ ObjectType TypeTable_Socket = {
     .getAttr = 0,
     .setAttr = 0,
     .print  = 0,
-    .expid  = 4,
+    .operators = 0,
     .to_cbool = &Socket_to_cbool,
     .collectChildren = 0
 };

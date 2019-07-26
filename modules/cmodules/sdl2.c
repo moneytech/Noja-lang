@@ -481,6 +481,7 @@ ObjectType TypeTable_SDL2Context = {
   .getAttr = 0,
   .setAttr = 0,
   .print = 0,
+  .operators = 0,
   .to_cbool = 0,
   .collectChildren = 0,
 };
