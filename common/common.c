@@ -61,7 +61,8 @@ InstrInfo instr_infos[] = {
     {OPCODE_IMPORT_AND_NAME,    "IMPORT_AND_NAME",  (int[]) {OPT_STRING, OPT_STRING}, 2}, // ok
     {OPCODE_CIMPORT,            "CIMPORT",          (int[]) {OPT_STRING}, 1}, // OK
     {OPCODE_CIMPORT_AND_NAME,   "CIMPORT_AND_NAME", (int[]) {OPT_STRING, OPT_STRING}, 2}, // OK
-    {OPCODE_LINENO,             "LINENO",           (int[]){OPT_U32}, 1} // ok
+    {OPCODE_LINENO,             "LINENO",           (int[]) {OPT_U32}, 1}, // ok
+    {OPCODE_PUSH_LAMBDA,        "PUSH_LAMBDA",      (int[]) {OPT_U32}, 1}
 };
 
 int instr_count = sizeof(instr_infos) / sizeof(InstrInfo);

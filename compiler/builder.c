@@ -235,29 +235,65 @@ void Build_ObjectFunction(Segment *seg, AST_Node *node) {
   function_block_segment.size = 0;
   function_block_segment.used = 0;
 
-  Segment_insert_opcode(&builder.code, OPCODE_PUSH_FUNC);
 
-  func_name_data_addr = Segment_insert(&builder.data, func->name, strlen(func->name)+1);
-
-  Segment_insert(&builder.code, &func_name_data_addr, 4);
 
   Segment_insert_opcode(&function_block_segment, OPCODE_FUNC_BEG);
-
   
   build_function_head(&function_block_segment, func);
 
   Build_Block(&function_block_segment, func->block, 0);
 
   Segment_insert_opcode(&function_block_segment, OPCODE_PUSH_TRUE);
+
   Segment_insert_opcode(&function_block_segment, OPCODE_FUNC_END);
 
+
+
   func_block_addr = Segment_addr(&builder.function_space);
+
+
+
+  Segment_insert_opcode(&builder.code, OPCODE_PUSH_FUNC);
+
+  func_name_data_addr = Segment_insert(&builder.data, func->name, strlen(func->name)+1);
+
+  Segment_insert(&builder.code, &func_name_data_addr, 4);
 
   Segment_insert(&builder.code, &func_block_addr, 4);
 
   Segment_merge(&builder.function_space, &function_block_segment);
 
   Segment_free(&function_block_segment);
+
+}
+
+void Build_Lambda(Segment *seg, AST_Node *node) {
+
+    AST_Node_ObjectFunction *func = (AST_Node_ObjectFunction*) node;
+
+    u32 func_space_block_addr;
+    Segment func_seg;
+    func_seg.content = 0;
+    func_seg.used = 0;
+    func_seg.size = 0;
+
+    Segment_insert_opcode(&func_seg, OPCODE_FUNC_BEG);
+
+    build_function_head(&func_seg, func);
+
+    Build_Block(&func_seg, func->block, 0);
+
+    Segment_insert_opcode(&func_seg, OPCODE_PUSH_TRUE);
+    Segment_insert_opcode(&func_seg, OPCODE_FUNC_END);
+
+    func_space_block_addr = Segment_addr(&builder.function_space);
+
+    Segment_insert_opcode(seg, OPCODE_PUSH_LAMBDA);
+    Segment_insert(seg, &func_space_block_addr, 4);
+
+    Segment_merge(&builder.function_space, &func_seg);
+
+    Segment_free(&func_seg);
 
 }
 
@@ -270,6 +306,10 @@ void Build_Exp(Segment *seg, AST_Node *node) {
     emit_lineno_of(seg, exp);
 
     switch(exp->type) {
+
+        case EXP_LAMBDA:
+        Build_Lambda(seg, exp->value_lambda);
+        break;
 
         case EXP_TRUE:
         Segment_insert_opcode(seg, OPCODE_PUSH_TRUE);

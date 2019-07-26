@@ -22,6 +22,7 @@ class List {
   fn __print__() {
 
     i = 0;
+    
     node = self.head;
 
     while i < self.size {
@@ -29,6 +30,7 @@ class List {
       print(i, ': ', node.value);
 
       i = i + 1;
+
       node = node.next;
     }
 
@@ -58,8 +60,11 @@ class List {
 list = List();
 
 i = 0;
+
 while i < 10000 {
+
   list.append(i);
+
   i = i + 1;
 }
 

@@ -82,6 +82,7 @@ enum {
     OPCODE_BUILD_CLASS, // create a class object and pushed it onto the stack
     OPCODE_PUSH_METHOD, // inserts a method into the class object onto the stack
     OPCODE_LINENO,
+    OPCODE_PUSH_LAMBDA,
   };
 
 enum {

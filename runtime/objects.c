@@ -270,9 +270,6 @@ void Object_print(Object *a) {
 
 /* === Class === */
 
-
-/* === Class === */
-
 void Class_delete(Object *self) {
 
 }

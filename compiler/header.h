@@ -72,7 +72,8 @@ enum {
     EXP_SELECT_ATTR,
     EXP_ASSIGN,
     EXP_TRUE,
-    EXP_FALSE
+    EXP_FALSE,
+    EXP_LAMBDA,
 
 };
 
@@ -206,7 +207,7 @@ struct AST_Node_Exp {
         char *label;
         AST_Node_ExpList *value_array;
         AST_Node_Dict    *value_dict;
-        AST_Node_ObjectFunction *value_function;
+        AST_Node_ObjectFunction *value_lambda;
     };
 
     union {
@@ -253,7 +254,8 @@ void 		AST_Node_append(AST_Node *node, AST_Node *node2);
 AST_Node 	*AST_Node_Dict_create();
 void 		AST_Node_Dict_append(AST_Node *_dict, char *label, AST_Node *value);
 AST_Node 	*AST_Node_operator(u8 type, AST_Node *l_exp, AST_Node *r_exp);
-AST_Node 	*AST_Node_dict(AST_Node *_node);
+AST_Node    *AST_Node_dict(AST_Node *_node);
+AST_Node    *AST_Node_lambda(AST_Node *node);
 AST_Node 	*AST_Node_true();
 AST_Node 	*AST_Node_false();
 AST_Node 	*AST_Node_string(char *string);
@@ -315,6 +317,7 @@ void Build_Class(Segment *seg, AST_Node *node);
 void Build_Block(Segment *seg, AST_Node *node, int flags);
 void Build_While(Segment *seg, AST_Node *node, int flags);
 void Build_If(Segment *seg, AST_Node *node, int flags);
+void Build_Lambda(Segment *seg, AST_Node *node); // TODO
 
 
 char *Build(AST_Node *root, u32 *e_size);

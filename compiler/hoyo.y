@@ -151,6 +151,13 @@ term
   | LABEL                         { $$ = AST_Node_label($1);  }
   | term DOT LABEL                { $$ = AST_Node_operator(EXP_SELECT_ATTR, $1, AST_Node_label($3));  }
   | term BRK_S_OP exp BRK_S_CL    { $$ = AST_Node_operator(EXP_SELECT, $1, $3); }
+
+  | DOLLA BRK_OP label_list BRK_CL BRK_C_OP statements BRK_C_CL { $$ = AST_Node_lambda(AST_Node_ObjectFunction_create(0, $3, $6)); }
+  | DOLLA BRK_OP            BRK_CL BRK_C_OP statements BRK_C_CL { $$ = AST_Node_lambda(AST_Node_ObjectFunction_create(0, 0, $5)); }
+  | DOLLA                          BRK_C_OP statements BRK_C_CL { $$ = AST_Node_lambda(AST_Node_ObjectFunction_create(0, 0, $3)); }
+  | DOLLA BRK_OP label_list BRK_CL DDOTS    statement           { $$ = AST_Node_lambda(AST_Node_ObjectFunction_create(0, $3, AST_Node_Block_create($6))); }
+  | DOLLA BRK_OP            BRK_CL DDOTS    statement           { $$ = AST_Node_lambda(AST_Node_ObjectFunction_create(0, 0, AST_Node_Block_create($5))); }
+  | DOLLA                          DDOTS    statement           { $$ = AST_Node_lambda(AST_Node_ObjectFunction_create(0, 0, AST_Node_Block_create($3))); }
   ;
 
 exp_multiplicative

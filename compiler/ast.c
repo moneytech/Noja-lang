@@ -343,6 +343,17 @@ AST_Node *AST_Node_label(char *label) {
     return (AST_Node*) node;
 }
 
+AST_Node *AST_Node_lambda(AST_Node *lambda) {
+
+    AST_Node_Exp *node = (AST_Node_Exp*) AST_Node_create(NODE_EXP);
+
+    node->type  = EXP_LAMBDA;
+    node->value_lambda = lambda;
+    node->flags = EXP_CONSTANT;
+
+    return (AST_Node*) node;
+}
+
 /* Node Import */
 
 AST_Node *AST_Node_import_create(char *name, char *as) {

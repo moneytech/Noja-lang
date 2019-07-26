@@ -13,14 +13,12 @@ m1.add(m2);
 
 print(m1);
 
-fn matrix_copy() {
+prototype(m1).copy = $ {
 	new_matrix = math.Matrix(self.width(), self.height());
 	new_matrix.set(0.0);
 	new_matrix.add(self);
 	return new_matrix;
-}
-
-prototype(m1).copy = matrix_copy;
+};
 
 m3 = m1.copy();
 

@@ -229,6 +229,24 @@ void NOJA_run(Context *context) {
 
             break;
 
+            case OPCODE_PUSH_LAMBDA: {
+
+                u32   addr;
+
+                addr = ctx_read_u32(context);
+
+                // get also the addr of its code block
+
+                Object *function_object = ObjectFunction_create(
+                  context,
+                  context->source_stack[context->source_depth-1]->function_space_addr + addr,
+                  context->source_stack[context->source_depth-1]
+                );
+
+                ctx_push(context, function_object);
+
+            } break;
+
             case OPCODE_PUSH_FUNC: {
 
                 char *name;

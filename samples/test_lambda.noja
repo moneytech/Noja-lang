@@ -1,0 +1,23 @@
+
+fn main() {
+	
+	g = prototype(0)();
+
+	print(g);
+
+	print(prototype(0));
+
+	prototype(5).hoy = $ {
+
+		print(self + 1);
+
+	};
+
+
+	3.hoy();
+
+}
+
+main();
+
+0.hoy();
