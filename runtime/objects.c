@@ -17,7 +17,7 @@ u32 Object_get_raw_repr_size(Object *self) {
 }
 
 void Object_get_raw_repr(Object *self, void *addr, u32 max_size) {
-  
+
   if(self->type->get_raw_repr == NULL)
     return;
 
@@ -32,18 +32,19 @@ void Object_destroy(Object *self) {
     }
 }
 
-Object *Object_create(ObjectType *type, Object **argv, u32 argc) {
+Object *Object_create(Context *context, ObjectType *type, Object **argv, u32 argc) {
 
     if(type == __ObjectBool__)
       return NOJA_True;
 
-    Object *object = (Object*) Mem_allocate(type->size);
+    Object *object = (Object*) Mem_allocate(context, type->size);
 
     if(!object)
       return 0;
 
     object->flags |= OBJ_IS_GC_COLLECTABLE;
     object->type = type;
+    object->context = context;
 
     if(type->init)
 
@@ -55,7 +56,7 @@ Object *Object_create(ObjectType *type, Object **argv, u32 argc) {
 Object *Object_call(Object *self, Object *parent, Object **argv, u32 argc) {
 
   if(!self->type->call) {
-    ctx_throw_exception(&context, Exception_UncallableCalled);
+    ctx_throw_exception(self->context, Exception_UncallableCalled);
     return 0;
   }
 
@@ -71,7 +72,7 @@ void Object_setAttr(Object *self, char *name, Object *value) {
     if(!self->type->setAttr) {
 
 
-      ctx_throw_exception(&context, Exception_SetAttributeError);
+      ctx_throw_exception(self->context, Exception_SetAttributeError);
 
       return;
     }
@@ -85,7 +86,7 @@ Object *Object_getAttr(Object *self, char *name) {
 
         if(!self->type->methods) {
 
-          ctx_throw_exception(&context, Exception_AttributeError);
+          ctx_throw_exception(self->context, Exception_AttributeError);
 
           return 0;
 
@@ -95,7 +96,7 @@ Object *Object_getAttr(Object *self, char *name) {
 
         if(!value) {
 
-          ctx_throw_exception(&context, Exception_AttributeError);
+          ctx_throw_exception(self->context, Exception_AttributeError);
 
           return 0;
 
@@ -111,7 +112,7 @@ char Object_insert(Object *self, Object *key, Object *value) {
 
     if(!self->type->insert) {
 
-      ctx_throw_exception(&context, Exception_InsertError);
+      ctx_throw_exception(self->context, Exception_InsertError);
 
       return 0;
     }
@@ -123,7 +124,7 @@ Object *Object_select(Object *self, Object *key) {
 
     if(!self->type->select) {
 
-      ctx_throw_exception(&context, Exception_SelectError);
+      ctx_throw_exception(self->context, Exception_SelectError);
 
       return 0;
     }
@@ -137,18 +138,16 @@ void Object_collectChildren(Object *self) {
   if(self->type->flags & OBJ_IS_GC_COLLECTABLE)
     Mem_collect((Object**) &self->type);
 
-    if(self->type->collectChildren) {
-
-        self->type->collectChildren(self);
-
-    }
+  if(self->type->collectChildren) {
+    self->type->collectChildren(self);
+  }
 }
 
 char Object_to_cbool(Object *self) {
 
     if(!self->type->to_cbool) {
 
-      ctx_throw_exception(&context, Exception_TypeError);
+      ctx_throw_exception(self->context, Exception_TypeError);
 
       return 0;
     }
@@ -158,137 +157,104 @@ char Object_to_cbool(Object *self) {
 
 Object *Object_lss(Object *a, Object *b) {
 
-    Operator f;
-
-    if(a->type->expid == 0 || b->type->expid == 0)
+    if(a->type->operators == NULL)
       return 0;
 
-    f = operator_matrix_lss[a->type->expid-1][b->type->expid-1];
-
-    if(!f)
+    if(a->type->operators->lss == NULL)
       return 0;
 
-    return f(a, b);
+    return a->type->operators->lss(a, b);
 }
 
 Object *Object_grt(Object *a, Object *b) {
 
-    Operator f;
+    if(a->type->operators == NULL)
+      return 0;
 
-    if(a->type->expid == 0 || b->type->expid == 0)
-        return 0;
+    if(a->type->operators->grt == NULL)
+      return 0;
 
-    f = operator_matrix_grt[a->type->expid-1][b->type->expid-1];
-
-    if(!f)
-        return 0;
-
-    return f(a, b);
+    return a->type->operators->grt(a, b);
 }
 
 Object *Object_eql(Object *a, Object *b) {
 
-    Operator f;
+    if(a->type->operators == NULL)
+      return 0;
 
-    if(a->type->expid == 0 || b->type->expid == 0)
-        return 0;
+    if(a->type->operators->eql == NULL)
+      return 0;
 
-    f = operator_matrix_eql[a->type->expid-1][b->type->expid-1];
-
-    if(!f)
-        return 0;
-
-    return f(a, b);
+    return a->type->operators->eql(a, b);
 }
 
 Object *Object_leq(Object *a, Object *b) {
 
-    Operator f;
+    if(a->type->operators == NULL)
+      return 0;
 
-    if(a->type->expid == 0 || b->type->expid == 0)
-        return 0;
+    if(a->type->operators->grt == NULL)
+      return 0;
 
-    f = operator_matrix_leq[a->type->expid-1][b->type->expid-1];
+    return a->type->operators->grt(a, b) == NOJA_True ? NOJA_False : NOJA_True;
 
-    if(!f)
-        return 0;
-
-    return f(a, b);
 }
 
 Object *Object_geq(Object *a, Object *b) {
 
-    Operator f;
+    if(a->type->operators == NULL)
+      return 0;
 
-    if(a->type->expid == 0 || b->type->expid == 0)
-        return 0;
+    if(a->type->operators->lss == NULL)
+      return 0;
 
-    f = operator_matrix_geq[a->type->expid-1][b->type->expid-1];
+    return a->type->operators->lss(a, b) == NOJA_True ? NOJA_False : NOJA_True;
 
-    if(!f)
-        return 0;
-
-    return f(a, b);
 }
 
 Object *Object_add(Object *a, Object *b) {
 
-    Operator f;
+    if(a->type->operators == NULL)
+      return 0;
 
-    if(a->type->expid == 0 || b->type->expid == 0)
-        return 0;
+    if(a->type->operators->add == NULL)
+      return 0;
 
-    f = operator_matrix_add[a->type->expid-1][b->type->expid-1];
+    return a->type->operators->add(a, b);
 
-    if(!f)
-        return 0;
-
-    return f(a, b);
 }
 
 Object *Object_sub(Object *a, Object *b) {
 
-    Operator f;
+    if(a->type->operators == NULL)
+      return 0;
 
-    if(a->type->expid == 0 || b->type->expid == 0)
-        return 0;
+    if(a->type->operators->add == NULL)
+      return 0;
 
-    f = operator_matrix_sub[a->type->expid-1][b->type->expid-1];
-
-    if(!f)
-        return 0;
-
-    return f(a, b);
+    return a->type->operators->sub(a, b);
 }
 
 Object *Object_mul(Object *a, Object *b) {
 
-    Operator f;
+    if(a->type->operators == NULL)
+      return 0;
 
-    if(a->type->expid == 0 || b->type->expid == 0)
-        return 0;
+    if(a->type->operators->mul == NULL)
+      return 0;
 
-    f = operator_matrix_mul[a->type->expid-1][b->type->expid-1];
-
-    if(!f)
-        return 0;
-
-    return f(a, b);
+    return a->type->operators->mul(a, b);
 }
 
 Object *Object_div(Object *a, Object *b) {
 
-    Operator f;
+    if(a->type->operators == NULL)
+      return 0;
 
-    if(a->type->expid == 0 || b->type->expid == 0)
-        return 0;
+    if(a->type->operators->div == NULL)
+      return 0;
 
-    f = operator_matrix_div[a->type->expid-1][b->type->expid-1];
-
-    if(!f)
-        return 0;
-
-    return f(a, b);
+    return a->type->operators->div(a, b);
 }
 
 void Object_print(Object *a) {
@@ -326,7 +292,7 @@ void ObjectType_print(Object *self) {
 
 Object *ObjectType_call(Object *self, Object *parent, Object **argv, u32 argc) {
 
-    return Object_create((ObjectType*) self, argv, argc);
+    return Object_create(parent->context, (ObjectType*) self, argv, argc); // parent or self?
 }
 
 void ObjectType_collectChildren(Object *self) {
@@ -336,7 +302,8 @@ void ObjectType_collectChildren(Object *self) {
     Mem_collect(&type->methods);
 }
 
-Object *ObjectType_from_stackd(ObjectType *e_type) {
+/*
+Object *ObjectType_from_stackd(ObjectType *e_type) { // do i even need this?
 
   ObjectType *type = (ObjectType*) Object_create(__ObjectType__, 0, 0);
 
@@ -346,6 +313,7 @@ Object *ObjectType_from_stackd(ObjectType *e_type) {
 
   return (Object*) type;
 }
+*/
 
 /* === Module === */
 
@@ -381,7 +349,7 @@ void Module_init(Object *self, Object **argv, u32 argc) {
 
   ObjectModule *module = (ObjectModule*) self;
 
-  module->members = Object_create(&TypeTable_Dict, argv, argc);
+  module->members = Object_create(self->context, &TypeTable_Dict, argv, argc);
 
 }
 
@@ -393,7 +361,7 @@ void ObjectString_init(Object *self, Object *argv, u32 argc) {
 }
 
 void ObjectString_get_raw_repr(Object *self, void *addr, u32 max_size) {
-    
+
   ObjectString *string = (ObjectString*) self;
 
   for(u32 i = 0; i < MIN(string->size, max_size); i++)
@@ -405,9 +373,9 @@ u32 ObjectString_get_raw_repr_size(Object *self) {
   return ((ObjectString*) self)->size;
 }
 
-Object *ObjectString_wrap_cstring(char *value, u32 size) {
+Object *ObjectString_wrap_cstring(Context *context, char *value, u32 size) {
 
-    ObjectString *string = (ObjectString*) Object_create(__ObjectString__, 0, 0);
+    ObjectString *string = (ObjectString*) Object_create(context, __ObjectString__, 0, 0);
 
     string->value = value;
     string->size  = size;
@@ -416,9 +384,9 @@ Object *ObjectString_wrap_cstring(char *value, u32 size) {
 }
 
 
-Object *ObjectString_from_cstring(char *s) {
+Object *ObjectString_from_cstring(Context *context, char *s) {
 
-    ObjectString *string = (ObjectString*) Object_create(__ObjectString__, 0, 0);
+    ObjectString *string = (ObjectString*) Object_create(context, __ObjectString__, 0, 0);
 
     u32 len = strlen(s);
 
@@ -448,7 +416,7 @@ char ObjectString_to_cbool(Object *self) {
 Object *ObjectString_select(Object *self, Object *key) {
 
     if(key->type != &TypeTable_ObjectInt) {
-      ctx_throw_exception(&context, Exception_TypeError);
+      ctx_throw_exception(self->context, Exception_TypeError);
       return 0;
     }
 
@@ -472,18 +440,18 @@ Object *ObjectString_select(Object *self, Object *key) {
     c[0] = string->value[index->value];
     c[1] = 0;
 
-    return ObjectString_from_cstring(c);
+    return ObjectString_from_cstring(self->context, c);
 }
 
 char ObjectString_insert(Object *self, Object *key, Object *value) {
 
     if(key->type != &TypeTable_ObjectInt) {
-      ctx_throw_exception(&context, Exception_IndexError);
+      ctx_throw_exception(self->context, Exception_IndexError);
       return 0;
     }
 
     if(value->type != &TypeTable_ObjectString) {
-      ctx_throw_exception(&context, Exception_TypeError);
+      ctx_throw_exception(self->context, Exception_TypeError);
       return 0;
     }
 
@@ -492,7 +460,7 @@ char ObjectString_insert(Object *self, Object *key, Object *value) {
     ObjectInt    *index        = (ObjectInt*)    key;
 
     if(index->value >= string->size) {
-      ctx_throw_exception(&context, Exception_IndexError);
+      ctx_throw_exception(self->context, Exception_IndexError);
       return 0;
     }
 
@@ -528,7 +496,7 @@ Object *ObjectString_reverse(Object *parent, Object **argv, u32 argc) {}
 Object *ObjectString_findAll(Object *parent, Object **argv, u32 argc) {}
 
 
-Object *ObjectString_sub(Object *parent, Object **argv, u32 argc) {
+Object *ObjectString_sub(Object *self, Object **argv, u32 argc) {
 
   int from, to;
 
@@ -537,10 +505,10 @@ Object *ObjectString_sub(Object *parent, Object **argv, u32 argc) {
     return NOJA_False;
   }
 
-  char *source = ((ObjectString*) parent)->value;
+  char *source = ((ObjectString*) self)->value;
 
   if(argv[0]->type != &TypeTable_ObjectInt) {
-    ctx_throw_exception(&context, Exception_TypeError);
+    ctx_throw_exception(self->context, Exception_TypeError);
     return 0;
   }
 
@@ -549,19 +517,19 @@ Object *ObjectString_sub(Object *parent, Object **argv, u32 argc) {
   if(argc == 2) {
 
     if(argv[1]->type != &TypeTable_ObjectInt) {
-      ctx_throw_exception(&context, Exception_TypeError);
+      ctx_throw_exception(self->context, Exception_TypeError);
       return 0;
     }
 
     to = ((ObjectInt*) argv[1])->value;
 
     if(to < 0) {
-      to = ((ObjectString*) parent)->size + to + 1;
+      to = ((ObjectString*) self)->size + to + 1;
     }
 
   } else {
 
-    to = ((ObjectString*) parent)->size - 1;
+    to = ((ObjectString*) self)->size - 1;
 
   }
 
@@ -569,7 +537,7 @@ Object *ObjectString_sub(Object *parent, Object **argv, u32 argc) {
 
     // return empty string
 
-    return ObjectString_from_cstring("");
+    return ObjectString_from_cstring(self->context, "");
 
   }
 
@@ -579,28 +547,28 @@ Object *ObjectString_sub(Object *parent, Object **argv, u32 argc) {
 
   sub[to-from] = 0;
 
-  return ObjectString_wrap_cstring(sub, from - to + 1);
+  return ObjectString_wrap_cstring(self->context, sub, from - to + 1);
 
 }
 
-Object *ObjectString_find(Object *parent, Object **argv, u32 argc) {
+Object *ObjectString_find(Object *self, Object **argv, u32 argc) {
 
   if(argc == 0)
-    return ObjectInt_from_cint(-1);
+    return ObjectInt_from_cint(self->context, -1);
 
   if(argv[0]->type != &TypeTable_ObjectString) {
-    ctx_throw_exception(&context, Exception_TypeError);
+    ctx_throw_exception(self->context, Exception_TypeError);
     return 0;
   }
 
   char *needle = ((ObjectString*) argv[0])->value;
-  char *text   = ((ObjectString*) parent)->value;
+  char *text   = ((ObjectString*) self)->value;
   int   needle_len = ((ObjectString*) argv[0])->size;
-  int   text_len = ((ObjectString*) parent)->size;
+  int   text_len = ((ObjectString*) self)->size;
 
   if(needle_len >= text_len)
 
-    return ObjectInt_from_cint(-1);
+    return ObjectInt_from_cint(self->context, -1);
 
   int index = -1;
 
@@ -626,20 +594,20 @@ Object *ObjectString_find(Object *parent, Object **argv, u32 argc) {
 
   }
 
-  return ObjectInt_from_cint(index);
+  return ObjectInt_from_cint(self->context, index);
 }
 
-Object *ObjectString_length(Object *parent, Object **argv, u32 argc) {
-  return ObjectInt_from_cint(((ObjectString*) parent)->size);
+Object *ObjectString_length(Object *self, Object **argv, u32 argc) {
+  return ObjectInt_from_cint(self->context, ((ObjectString*) self)->size);
 }
 
-Object *ObjectString_split(Object *parent, Object **argv, u32 argc) {
+Object *ObjectString_split(Object *self, Object **argv, u32 argc) {
 
   /* Not tested */
 
-  char *source = ((ObjectString*) parent)->value;
+  char *source = ((ObjectString*) self)->value;
   char *needle = ((ObjectString*) argv[0])->value;
-  int   source_len = ((ObjectString*) parent)->size;
+  int   source_len = ((ObjectString*) self)->size;
   int   needle_len = ((ObjectString*) argv[0])->size;
 
   int i = 0;
@@ -650,7 +618,7 @@ Object *ObjectString_split(Object *parent, Object **argv, u32 argc) {
   int buffer_used = 0;
   char was_needle;
 
-  Object *array = Object_create(__ObjectArray__, 0, 0);
+  Object *array = Object_create(self->context, __ObjectArray__, 0, 0);
 
   while(1) {
 
@@ -669,7 +637,7 @@ Object *ObjectString_split(Object *parent, Object **argv, u32 argc) {
 
       if(was_needle) {
 
-        ObjectArray_append(array, (Object*[]) {ObjectString_wrap_cstring(buffer, buffer_used)}, 1);
+        ObjectArray_append(array, (Object*[]) {ObjectString_wrap_cstring(self->context, buffer, buffer_used)}, 1);
 
         buffer = (char*) malloc(buffer_size);
         buffer_used = 0;
@@ -700,8 +668,8 @@ Object *ObjectString_split(Object *parent, Object **argv, u32 argc) {
   return array;
 }
 
-Object *ObjectString_replace(Object *parent, Object **argv, u32 argc) {}
-Object *ObjectString_format(Object *parent, Object **argv, u32 argc) {}
+Object *ObjectString_replace(Object *self, Object **argv, u32 argc) {}
+Object *ObjectString_format(Object *self, Object **argv, u32 argc) {}
 
 void ObjectString_iter(Object *self, Object *iter) {
 
@@ -740,19 +708,19 @@ Object *ObjectString_next(Object *self, Object *iter) {
   buffer[0] = string->value[index];
   buffer[1] = 0;
 
-  iterator->index = ObjectInt_from_cint(index);
+  iterator->index = ObjectInt_from_cint(self->context, index);
 
   if(index+1 == string->size)
     iterator->ended = 1;
 
-  return ObjectString_from_cstring(buffer);
+  return ObjectString_from_cstring(self->context, buffer);
 
 }
 
 /* === ObjectInt === */
 
 void ObjectInt_get_raw_repr(Object *self, void *addr, u32 max_size) {
-    
+
   ObjectInt *integer = (ObjectInt*) self;
 
   for(u32 i = 0; i < MIN(sizeof(i64), max_size); i++)
@@ -769,8 +737,8 @@ void ObjectInt_print(Object *self) {
     printf("%ld", ((ObjectInt*) self)->value);
 }
 
-Object *ObjectInt_from_cint(i64 n) {
-    ObjectInt *i = (ObjectInt*) Object_create(__ObjectInt__, 0, 0);
+Object *ObjectInt_from_cint(Context *context, i64 n) {
+    ObjectInt *i = (ObjectInt*) Object_create(context, __ObjectInt__, 0, 0);
     i->value = n;
     return (Object*) i;
 }
@@ -785,14 +753,14 @@ Object *ObjectFunction_call(Object *self, Object *parent, Object **argv, u32 arg
 
     ObjectFunction *f = (ObjectFunction*) self;
 
-    context.pending_call_offset = f->offset;
+    self->context->pending_call_offset = f->offset;
 
     return 0;
 }
 
-Object *ObjectFunction_create(u32 addr, Source *source) {
+Object *ObjectFunction_create(Context *context, u32 addr, Source *source) {
 
-    ObjectFunction *f = (ObjectFunction*) Object_create(__ObjectFunction__, 0, 0);
+    ObjectFunction *f = (ObjectFunction*) Object_create(context, __ObjectFunction__, 0, 0);
     f->offset.source = source;
     f->offset.addr   = addr;
 
@@ -805,8 +773,8 @@ void ObjectFloat_print(Object *self) {
     printf("%g", ((ObjectFloat*) self)->value);
 }
 
-Object *ObjectFloat_from_cdouble(f64 n) {
-    ObjectFloat *i = (ObjectFloat*) Object_create(__ObjectFloat__, 0, 0);
+Object *ObjectFloat_from_cdouble(Context *context, f64 n) {
+    ObjectFloat *i = (ObjectFloat*) Object_create(context, __ObjectFloat__, 0, 0);
     i->value = n;
     return (Object*) i;
 }
@@ -1050,9 +1018,9 @@ Object *ObjectCFunction_call(Object *self, Object *parent, Object **argv, u32 ar
 
 }
 
-Object *ObjectCFunction_create(Object *(*call)(Object *parent, Object **argv, u32 argc)) {
+Object *ObjectCFunction_create(Context *context, Object *(*call)(Object *parent, Object **argv, u32 argc)) {
 
-    Object *o = Object_create(__ObjectCFunction__, 0, 0);
+    Object *o = Object_create(context, __ObjectCFunction__, 0, 0);
 
     ((ObjectCFunction*) o)->call = call;
 
@@ -1096,7 +1064,7 @@ Object *ObjectArray_next(Object *self, Object *iter) {
     return NOJA_False;
 
   if(iterator->index->type == __ObjectInt__) {
-    
+
     index = ((ObjectInt*) iterator->index)->value + 1;
 
   } else {
@@ -1105,7 +1073,7 @@ Object *ObjectArray_next(Object *self, Object *iter) {
 
   }
 
-  iterator->index = ObjectInt_from_cint(index);
+  iterator->index = ObjectInt_from_cint(self->context, index);
 
   Object *object = array->block[index];
 
@@ -1197,14 +1165,14 @@ Object *ObjectArray_size(Object *parent, Object **argv, u32 argc) {
 
     ObjectArray *array = (ObjectArray*) parent;
 
-    return ObjectInt_from_cint(array->used);
+    return ObjectInt_from_cint(parent->context, array->used);
 }
 
 Object *ObjectArray_reverse(Object *parent, Object **argv, u32 argc) {
 
     ObjectArray *self = (ObjectArray*) parent;
 
-    Object *reversed = Object_create(__ObjectArray__, 0, 0);
+    Object *reversed = Object_create(parent->context, __ObjectArray__, 0, 0);
 
     for(u32 i = self->used; i > 0; i--) {
        ObjectArray_append(reversed, (Object*[]) {self->block[i-1]}, 1);
@@ -1238,7 +1206,7 @@ char ObjectArray_cinsert(Object *self, u32 index, Object *elem) {
 
         // Exception: Index out of range
 
-        ctx_throw_exception(&context, Exception_IndexError);
+        ctx_throw_exception(self->context, Exception_IndexError);
 
         return 0;
     }
@@ -1256,7 +1224,7 @@ Object *ObjectArray_cselect(Object *self, u32 index) {
 
         // Exception: Index out of range
 
-        ctx_throw_exception(&context, Exception_IndexError);
+        ctx_throw_exception(self->context, Exception_IndexError);
 
         return 0;
     }
@@ -1289,20 +1257,20 @@ Object *Class_select(Object *self, Object *key) {
   Object *method = Dict_cselect(istance->type->methods, "__select__");
 
   if(!method) {
-    ctx_throw_exception(&context, Exception_AttributeError);
+    ctx_throw_exception(self->context, Exception_AttributeError);
     return 0;
   }
 
   if(method->type != &TypeTable_ObjectFunction) {
-    ctx_throw_exception(&context, Exception_TypeError);
+    ctx_throw_exception(self->context, Exception_TypeError);
     return 0;
   }
 
-  ctx_create_activation_record(&context);
-  ctx_push_self(&context, self);
-  ctx_push_argument(&context, key);
+  ctx_create_activation_record(self->context);
+  ctx_push_self(self->context, self);
+  ctx_push_argument(self->context, key);
 
-  context.pending_call_offset = ((ObjectFunction*) method)->offset;
+  self->context->pending_call_offset = ((ObjectFunction*) method)->offset;
 
   return 0;
 }
@@ -1314,21 +1282,21 @@ char Class_insert(Object *self, Object *key, Object *value) {
   Object *method = Dict_cselect(istance->type->methods, "__insert__");
 
   if(!method) {
-    ctx_throw_exception(&context, Exception_AttributeError);
+    ctx_throw_exception(self->context, Exception_AttributeError);
     return 0;
   }
 
   if(method->type != &TypeTable_ObjectFunction) {
-    ctx_throw_exception(&context, Exception_TypeError);
+    ctx_throw_exception(self->context, Exception_TypeError);
     return 0;
   }
 
-  ctx_create_activation_record(&context);
-  ctx_push_self(&context, self);
-  ctx_push_argument(&context, key);
-  ctx_push_argument(&context, value);
+  ctx_create_activation_record(self->context);
+  ctx_push_self(self->context, self);
+  ctx_push_argument(self->context, key);
+  ctx_push_argument(self->context, value);
 
-  context.pending_call_offset = ((ObjectFunction*) method)->offset;
+  self->context->pending_call_offset = ((ObjectFunction*) method)->offset;
 
   return 1;
 }
@@ -1356,23 +1324,23 @@ void Class_init(Object *self, Object **argv, u32 argc) {
 
   ObjectIstance *istance = (ObjectIstance*) self;
 
-  istance->members = Object_create(__ObjectDict__, 0, 0);
+  istance->members = Object_create(self->context, __ObjectDict__, 0, 0);
 
   Object *method = Dict_cselect(istance->type->methods, "__init__");
 
   if(!method) {
-    ctx_throw_exception(&context, Exception_AttributeError);
+    ctx_throw_exception(self->context, Exception_AttributeError);
     return;
   }
 
   if(method->type != &TypeTable_ObjectFunction) {
-    ctx_throw_exception(&context, Exception_TypeError);
+    ctx_throw_exception(self->context, Exception_TypeError);
     return;
   }
 
-  ctx_push_self(&context, self);
+  ctx_push_self(self->context, self);
 
-  context.pending_call_offset = ((ObjectFunction*) method)->offset;
+  self->context->pending_call_offset = ((ObjectFunction*) method)->offset;
 
 }
 
@@ -1383,18 +1351,18 @@ Object *Class_call(Object *self, Object **argv, u32 argc) {
   Object *method = Dict_cselect(istance->type->methods, "__call__");
 
   if(!method) {
-    ctx_throw_exception(&context, Exception_AttributeError);
+    ctx_throw_exception(self->context, Exception_AttributeError);
     return 0;
   }
 
   if(method->type != &TypeTable_ObjectFunction) {
-    ctx_throw_exception(&context, Exception_TypeError);
+    ctx_throw_exception(self->context, Exception_TypeError);
     return 0;
   }
 
-  ctx_push_self(&context, self);
+  ctx_push_self(self->context, self);
 
-  context.pending_call_offset = ((ObjectFunction*) method)->offset;
+  self->context->pending_call_offset = ((ObjectFunction*) method)->offset;
 
   return 0;
 }
@@ -1406,19 +1374,19 @@ void Class_print(Object *self) {
   Object *method = Dict_cselect(istance->type->methods, "__print__");
 
   if(!method) {
-    ctx_throw_exception(&context, Exception_AttributeError);
+    ctx_throw_exception(self->context, Exception_AttributeError);
     return;
   }
 
   if(method->type != &TypeTable_ObjectFunction) {
-    ctx_throw_exception(&context, Exception_TypeError);
+    ctx_throw_exception(self->context, Exception_TypeError);
     return;
   }
 
-  ctx_create_activation_record(&context);
-  ctx_push_self(&context, self);
+  ctx_create_activation_record(self->context);
+  ctx_push_self(self->context, self);
 
-  context.pending_call_offset = ((ObjectFunction*) method)->offset;
+  self->context->pending_call_offset = ((ObjectFunction*) method)->offset;
 
 }
 
@@ -1443,7 +1411,7 @@ void ObjectIterator_init(Object *self, Object **argv, u32 argc) {
 
   if(iterated->type->iter == NULL) {
     // object can't be iterated
-    ctx_throw_exception(&context, Exception_UniterableIterated);
+    ctx_throw_exception(self->context, Exception_UniterableIterated);
     return;
   }
 

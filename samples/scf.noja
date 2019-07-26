@@ -1,0 +1,10 @@
+
+import 'fs2' as fs;
+
+handle = fs.open('regole_scf.txt', 'r');
+
+
+
+
+
+fs.close();

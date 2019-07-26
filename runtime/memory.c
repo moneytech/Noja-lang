@@ -1,8 +1,6 @@
 
 #include "header.h"
 
-Memory_Manager memory_man;
-
 Heap *Mem_Heap_create(u32 size) {
 
     Heap *heap;
@@ -18,25 +16,25 @@ Heap *Mem_Heap_create(u32 size) {
     return heap;
 }
 
-void Mem_init(u32 size) {
+void Mem_init(Context *context, u32 size) {
 
     Heap *heap = Mem_Heap_create(size);
 
     if(!heap) {
-      ctx_throw_exception(&context, Exception_OutOfMemory);
+      ctx_throw_exception(context, Exception_OutOfMemory);
       return;
     }
 
-    memory_man.current_head     = heap;
-    memory_man.current_tail     = heap;
-    memory_man.temp             = 0;
-    memory_man.total_heaps_size = size;
+    context->memory_man.current_head     = heap;
+    context->memory_man.current_tail     = heap;
+    context->memory_man.temp             = 0;
+    context->memory_man.total_heaps_size = size;
 
 }
 
-void Mem_release() {
+void Mem_release(Context *context) {
 
-    Mem_HeapList_destroy(memory_man.current_head);
+    Mem_HeapList_destroy(context->memory_man.current_head);
 
 }
 
@@ -118,11 +116,11 @@ void Mem_collect(Object **object_refr) {
 
     u32 obj_size = Object_size(object);
 
-    memcpy(memory_man.temp->chunk + memory_man.temp->used, object, obj_size);
+    memcpy(object->context->memory_man.temp->chunk + object->context->memory_man.temp->used, object, obj_size);
 
-    Object *object_copy = (Object*) (memory_man.temp->chunk + memory_man.temp->used);
+    Object *object_copy = (Object*) (object->context->memory_man.temp->chunk + object->context->memory_man.temp->used);
 
-    memory_man.temp->used += obj_size;
+    object->context->memory_man.temp->used += obj_size;
 
     object->flags |= OBJ_IS_FORWARDING_REFR;
     object->forwarding_refr = object_copy;
@@ -132,47 +130,47 @@ void Mem_collect(Object **object_refr) {
     Object_collectChildren(object_copy);
 }
 
-void Mem_cycle() {
+void Mem_cycle(Context *context) {
 
-    u32 new_size = memory_man.total_heaps_size;
+    u32 new_size = context->memory_man.total_heaps_size;
 
-    memory_man.temp = Mem_Heap_create(new_size);
+    context->memory_man.temp = Mem_Heap_create(new_size);
 
-    if(!memory_man.temp) {
-      ctx_throw_exception(&context, Exception_IndexError);
+    if(!context->memory_man.temp) {
+      ctx_throw_exception(context, Exception_IndexError);
       return;
     }
 
-    memory_man.total_heaps_size = new_size;
+    context->memory_man.total_heaps_size = new_size;
 
-    for(u32 i = 0; i < context.frame_depth; i++)
-        Mem_collect(&context.frames[i]);
+    for(u32 i = 0; i < context->frame_depth; i++)
+        Mem_collect(&context->frames[i]);
 
-    context.root_frame = context.frames[0];
+    context->root_frame = context->frames[0];
 
-    for(u32 i = 0; i < context.stack_size; i++)
-        Mem_collect(&context.stack[i]);
+    for(u32 i = 0; i < context->stack_size; i++)
+        Mem_collect(&context->stack[i]);
 
-    for(u32 j = 0; j < context.activation_records_count; j++) {
-        Mem_collect(&context.activation_records[j].self);
-        for(u32 i = context.activation_records[j].bot; i < context.activation_records[j].top + 1; i++)
-            Mem_collect(&context.activation_records[j].args[i]);
+    for(u32 j = 0; j < context->activation_records_count; j++) {
+        Mem_collect(&context->activation_records[j].self);
+        for(u32 i = context->activation_records[j].bot; i < context->activation_records[j].top + 1; i++)
+            Mem_collect(&context->activation_records[j].args[i]);
     }
 
-    for(u32 j = 0; j < context.root_count; j++)
-        Mem_collect(context.roots[j]);
+    for(u32 j = 0; j < context->root_count; j++)
+        Mem_collect(context->roots[j]);
 
-    Mem_HeapList_destroy(memory_man.current_head);
+    Mem_HeapList_destroy(context->memory_man.current_head);
 
-    memory_man.current_head = memory_man.temp;
-    memory_man.current_tail = memory_man.temp;
-    memory_man.temp = 0;
+    context->memory_man.current_head = context->memory_man.temp;
+    context->memory_man.current_tail = context->memory_man.temp;
+    context->memory_man.temp = 0;
 
 }
 
-void *Mem_allocate(u32 size) {
+void *Mem_allocate(Context *context, u32 size) {
 
-    Heap *heap = memory_man.current_tail;
+    Heap *heap = context->memory_man.current_tail;
 
     if(size >= (heap->size - heap->used)) {
 
@@ -184,15 +182,15 @@ void *Mem_allocate(u32 size) {
 
               new_size <<= 1;
 
-        memory_man.total_heaps_size += new_size;
+        context->memory_man.total_heaps_size += new_size;
         heap->next = Mem_Heap_create(new_size); // Out of memory?
 
         if(!heap->next) {
-          ctx_throw_exception(&context, Exception_IndexError);
+          ctx_throw_exception(context, Exception_IndexError);
           return 0;
         }
 
-        memory_man.current_tail = heap->next;
+        context->memory_man.current_tail = heap->next;
 
         heap = heap->next;
 

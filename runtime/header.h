@@ -16,6 +16,9 @@
 #define __ObjectBool__          &TypeTable_ObjectBool
 #define __ObjectIterator___     &TypeTable_ObjectIterator
 
+typedef struct Context Context;
+
+/* === Sources === */
 
 typedef struct Source Source;
 
@@ -107,12 +110,12 @@ struct Memory_Manager {
          *temp;
 };
 
-void *Mem_allocate(u32 size);
-void Mem_cycle();
+void *Mem_allocate(Context *context, u32 size);
+void Mem_cycle(Context *context);
 void Mem_HeapList_destroy(Heap *heap);
 void Mem_collect(Object **object_refr);
 void Mem_release();
-void Mem_init(u32 size);
+void Mem_init(Context *context, u32 size);
 Heap *Mem_Heap_create(u32 size);
 
 extern Memory_Manager memory_man;
@@ -131,10 +134,25 @@ enum {
 #define OBJECT_HEAD \
   ObjectType *type;\
   Object *forwarding_refr;\
+  Context *context;\
   u8 flags
 
 struct Object {
   OBJECT_HEAD;
+};
+
+typedef struct ObjectTypeOperators ObjectTypeOperators;
+
+struct ObjectTypeOperators {
+  Operator  add, 
+            sub, 
+            mul, 
+            div,
+            eql,
+            grt,
+            lss,
+            inc,
+            dec;
 };
 
 struct ObjectType {
@@ -168,6 +186,8 @@ struct ObjectType {
     char (*to_cbool)(Object*);
 
     /* For operations */
+
+    ObjectTypeOperators *operators;
 
     u32 expid;
 
@@ -271,7 +291,7 @@ extern Object *NOJA_False;
 
 char return_1(Object *o);
 void    Object_destroy(Object *self);
-Object *Object_create(ObjectType *type, Object **argv, u32 argc);
+Object *Object_create(Context *context, ObjectType *type, Object **argv, u32 argc);
 char    Object_isCallable(Object *self);
 Offset  Object_stdCall(Object *self);
 Object *Object_call(Object *self, Object *parent, Object **argv, u32 argc);
@@ -312,7 +332,7 @@ void    Dict_destroy(Object *self);
 
 /* === ObjectInt === */
 
-Object *ObjectInt_from_cint(i64 n);
+Object *ObjectInt_from_cint(Context *context, i64 n);
 void    ObjectInt_print(Object *self);
 char    ObjectInt_to_cbool(Object *self);
 void    ObjectInt_get_raw_repr(Object *self, void *addr, u32 max_size);
@@ -321,15 +341,15 @@ u32     ObjectInt_get_raw_repr_size(Object *self);
 
 /* === ObjectFloat === */
 
-Object *ObjectFloat_from_cdouble(f64 n);
+Object *ObjectFloat_from_cdouble(Context *context, f64 n);
 void    ObjectFloat_print(Object *self);
 char    ObjectFloat_to_cbool(Object *self);
 
 /* === ObjectString === */
 
 void    ObjectString_init(Object *self, Object *argv, u32 argc);
-Object *ObjectString_from_cstring(char *s);
-Object *ObjectString_wrap_cstring(char *value, u32 size);
+Object *ObjectString_from_cstring(Context *context, char *s);
+Object *ObjectString_wrap_cstring(Context *context, char *value, u32 size);
 void    ObjectString_print(Object *self);
 char    ObjectString_to_cbool(Object *self);
 void    ObjectString_collectChildren(Object *self);
@@ -385,11 +405,11 @@ Object *ObjectArray_size(Object *parent, Object **argv, u32 argc);
 /* === ObjectFunction === */
 
 Object *ObjectFunction_call(Object *self, Object *parent, Object **argv, u32 argc);
-Object *ObjectFunction_create(u32 addr, Source *source);
+Object *ObjectFunction_create(Context *context, u32 addr, Source *source);
 
 /* === ObjectCFunction === */
 
-Object *ObjectCFunction_create(Object *(*call)(Object *parent, Object **argv, u32 argc));
+Object *ObjectCFunction_create(Context *context, Object *(*call)(Object *parent, Object **argv, u32 argc));
 Object *ObjectCFunction_call(Object *self, Object *parent, Object **argv, u32 argc);
 
 /* === ObjectBool === */
@@ -475,6 +495,7 @@ Object *ObjectString_add(Object *a, Object *b);
 Object *typename_of(Object *parent, Object **argv, u32 argc);
 Object *proto_attributes_of(Object *parent, Object **argv, u32 argc);
 Object *bi_exit(Object *parent, Object **argv, u32 argc);
+Object *prototype(Object *parent, Object **argv, u32 argc);
 
 /* === Runtime === */
 
@@ -483,7 +504,6 @@ enum {
     BLOCK_FUNC
 };
 
-typedef struct Context Context;
 typedef struct ContextBlock ContextBlock;
 typedef struct ActivationRecord ActivationRecord;
 
@@ -497,7 +517,6 @@ struct ActivationRecord {
     Object *args[32];
     u32 top, bot;
 };
-
 
 u8 ctx_read_u8(Context *context);
 u16 ctx_read_u16(Context *context);
@@ -539,6 +558,8 @@ typedef union {
 
 struct Context {
 
+  Memory_Manager memory_man;
+
   ActivationRecord activation_records[16];
   u32 activation_records_count;
 
@@ -565,6 +586,7 @@ struct Context {
 
   int exception_code;
 };
+
 
 enum {
   Exception_None,
@@ -599,12 +621,7 @@ enum {
 extern Source sources[128];
 extern u32 source_count;
 
-extern Context context;
-
-extern char *code_stack[128];
-extern u32 code_stack_size;
-
-void NOJA_run();
+void NOJA_run(Context *context);
 
 char Sources_load(char *path);
-void Sources_unload_all();
+void Sources_unload_all(Context *context);

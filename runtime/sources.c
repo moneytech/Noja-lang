@@ -29,6 +29,7 @@ char NOJA_SourceMap_insert(SourceMap *map, char *path, Source *source) {
   while(1) {
 
     if(map->headers[i].path) {
+      
       if(strcmp(map->headers[i].path, path) == 0) {
 
         assert(0);
@@ -99,11 +100,11 @@ Source *NOJA_SourceMap_seek(SourceMap *map, char *path) {
   return 0;
 }
 
-void Sources_unload_all() {
+void Sources_unload_all(Context *context) {
 
-  for(u32 i = 0; i < context.source_depth; i++) {
-      free(context.source_stack[i]->data);
-      free(context.source_stack[i]->code);
+  for(u32 i = 0; i < context->source_depth; i++) {
+      free(context->source_stack[i]->data);
+      free(context->source_stack[i]->code);
   }
 }
 

@@ -124,7 +124,7 @@ Object *ObjectInt_add(Object *a, Object *b) {
     a2 = (ObjectInt*) a;
     b2 = (ObjectInt*) b;
 
-    ObjectInt *result = (ObjectInt*) Object_create(__ObjectInt__, 0, 0);
+    ObjectInt *result = (ObjectInt*) Object_create(a->context, __ObjectInt__, 0, 0);
 
 
     result->value = a2->value + b2->value;
@@ -139,7 +139,7 @@ Object *ObjectInt_sub(Object *a, Object *b) {
     a2 = (ObjectInt*) a;
     b2 = (ObjectInt*) b;
 
-    ObjectInt *result = (ObjectInt*) Object_create(__ObjectInt__, 0, 0);
+    ObjectInt *result = (ObjectInt*) Object_create(a->context, __ObjectInt__, 0, 0);
 
     i64 v1, v2;
 
@@ -159,7 +159,7 @@ Object *ObjectInt_mul(Object *a, Object *b) {
     a2 = (ObjectInt*) a;
     b2 = (ObjectInt*) b;
 
-    ObjectInt *result = (ObjectInt*) Object_create(__ObjectInt__, 0, 0);
+    ObjectInt *result = (ObjectInt*) Object_create(a->context, __ObjectInt__, 0, 0);
 
     result->value = a2->value * b2->value;
 
@@ -173,7 +173,7 @@ Object *ObjectInt_div(Object *a, Object *b) {
     a2 = (ObjectInt*) a;
     b2 = (ObjectInt*) b;
 
-    ObjectInt *result = (ObjectInt*) Object_create(__ObjectInt__, 0, 0);
+    ObjectInt *result = (ObjectInt*) Object_create(a->context, __ObjectInt__, 0, 0);
 
     result->value = a2->value / b2->value;
 
@@ -188,7 +188,7 @@ Object *ObjectFloat_add(Object *a, Object *b) {
     a2 = (ObjectFloat*) a;
     b2 = (ObjectFloat*) b;
 
-    ObjectFloat *result = (ObjectFloat*) Object_create(__ObjectFloat__, 0, 0);
+    ObjectFloat *result = (ObjectFloat*) Object_create(a->context, __ObjectFloat__, 0, 0);
 
     result->value = a2->value + b2->value;
 
@@ -202,7 +202,7 @@ Object *ObjectFloat_sub(Object *a, Object *b) {
     a2 = (ObjectFloat*) a;
     b2 = (ObjectFloat*) b;
 
-    ObjectFloat *result = (ObjectFloat*) Object_create(__ObjectFloat__, 0, 0);
+    ObjectFloat *result = (ObjectFloat*) Object_create(a->context, __ObjectFloat__, 0, 0);
 
     result->value = a2->value - b2->value;
 
@@ -216,7 +216,7 @@ Object *ObjectFloat_mul(Object *a, Object *b) {
     a2 = (ObjectFloat*) a;
     b2 = (ObjectFloat*) b;
 
-    ObjectFloat *result = (ObjectFloat*) Object_create(__ObjectFloat__, 0, 0);
+    ObjectFloat *result = (ObjectFloat*) Object_create(a->context, __ObjectFloat__, 0, 0);
 
     result->value = a2->value * b2->value;
 
@@ -230,7 +230,7 @@ Object *ObjectFloat_div(Object *a, Object *b) {
     a2 = (ObjectFloat*) a;
     b2 = (ObjectFloat*) b;
 
-    ObjectFloat *result = (ObjectFloat*) Object_create(__ObjectFloat__, 0, 0);
+    ObjectFloat *result = (ObjectFloat*) Object_create(a->context, __ObjectFloat__, 0, 0);
 
     result->value = a2->value / b2->value;
 
@@ -244,7 +244,7 @@ Object *ObjectString_add(Object *a, Object *b) {
     a2 = (ObjectString*) a;
     b2 = (ObjectString*) b;
 
-    c = (ObjectString*) Object_create(__ObjectString__, 0, 0);
+    c = (ObjectString*) Object_create(a->context, __ObjectString__, 0, 0);
 
     c->size = a2->size + b2->size;
     c->value = (char*) malloc(c->size+1);

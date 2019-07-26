@@ -39,7 +39,7 @@ void Pointer_init(Object *self, Object **argv, u32 argc) {
 }
 
 void Pointer_destroy(Object *self) {
-	
+
 	Pointer *p = (Pointer*) self;
 
 	if(p->addr == NULL)
@@ -66,7 +66,7 @@ Object *Pointer_free(Object *self, Object **argv, u32 argc) {
 
 Object *Pointer_size(Object *self, Object **argv, u32 argc) {
 
-	return ObjectInt_from_cint((i64) ((Pointer*) self)->size);
+	return ObjectInt_from_cint(self->context, (i64) ((Pointer*) self)->size);
 
 }
 
@@ -88,17 +88,17 @@ Object *Pointer_write(Object *self, Object **argv, u32 argc) {
 
 		if(argv[1]->type != __ObjectInt__) { // The starting index is not an integer
 
-			ctx_throw_exception(&context, Exception_TypeError);
-		
+			ctx_throw_exception(self->context, Exception_TypeError);
+
 			return NOJA_False;
-		
+
 		}
 
 		beg = ((ObjectInt*) argv[1])->value;
 
 		if(beg < 0)
 			return NOJA_False;
-	
+
 	} else { // By default write at index 0
 
 		beg = 0;
@@ -106,9 +106,9 @@ Object *Pointer_write(Object *self, Object **argv, u32 argc) {
 	}
 
 	if(argc > 2) { // End index provided
-		
+
 		if(argv[2]->type != __ObjectInt__) { // End index is not an integer
-			ctx_throw_exception(&context, Exception_TypeError);
+			ctx_throw_exception(self->context, Exception_TypeError);
 			return NOJA_False;
 		}
 
@@ -117,9 +117,9 @@ Object *Pointer_write(Object *self, Object **argv, u32 argc) {
 		if(end < 0 || end <= beg || end >= p->size) // invalid end index
 
 			return NOJA_False;
-	
+
 	} else { // By default write till the end of the pointed chunk
-		
+
 		end = p->size - beg; // +-1?
 
 	}
@@ -134,7 +134,7 @@ Object *Pointer_write(Object *self, Object **argv, u32 argc) {
 
 	Object_get_raw_repr(argv[0], p->addr + beg, end - beg);
 
-	return ObjectInt_from_cint(MIN(object_repr_size, end - beg));
+	return ObjectInt_from_cint(self->context, MIN(object_repr_size, end - beg));
 }
 
 char Pointer_to_cbool(Object *self) {
@@ -174,12 +174,12 @@ Object *Pointer_next(Object *self, Object *iter) {
 
 	char byte = ((char*) p->addr)[index];
 
-	iterator->index = ObjectInt_from_cint(index);
+	iterator->index = ObjectInt_from_cint(self->context, index);
 
 	if(index+1 == p->size)
 		iterator->ended = 1;
 
-	return ObjectInt_from_cint((i64) byte);
+	return ObjectInt_from_cint(self->context, (i64) byte);
 
 }
 
@@ -213,11 +213,11 @@ ObjectType TypeTable_Pointer = {
 
 char Module_lowLevel_init(Object *dest) {
 
-    Object *methods = Object_create(__ObjectDict__, 0, 0);
+    Object *methods = Object_create(dest->context, __ObjectDict__, 0, 0);
 
-    Dict_cinsert(methods, "size" , ObjectCFunction_create(&Pointer_size));
-    Dict_cinsert(methods, "free" , ObjectCFunction_create(&Pointer_free));
-    Dict_cinsert(methods, "write" , ObjectCFunction_create(&Pointer_write));
+    Dict_cinsert(methods, "size" , ObjectCFunction_create(dest->context, &Pointer_size));
+    Dict_cinsert(methods, "free" , ObjectCFunction_create(dest->context, &Pointer_free));
+    Dict_cinsert(methods, "write" , ObjectCFunction_create(dest->context, &Pointer_write));
 
     TypeTable_Pointer.methods = methods;
 

@@ -20,7 +20,7 @@ fn matrix_copy() {
 	return new_matrix;
 }
 
-m1.__prototype__.copy = matrix_copy;
+prototype(m1).copy = matrix_copy;
 
 m3 = m1.copy();
 
@@ -33,12 +33,12 @@ print(m1);
 print(m3);
 
 fn abs() {
-	if self > 0: 
+	if self > 0:
 		return self;
 	return 0-self;
 }
 
-7.__prototype__.abs = abs;
+prototype(7).abs = abs;
 
 print('3.abs() == ', 3.abs());
 print('(-3).abs() == ', (0-3).abs());

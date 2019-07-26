@@ -1,5 +1,5 @@
 
-all: fs socket sdl2 json fs2 mongoose libmicrohttpd lowLevel gsl math
+all: socket sdl2 json fs2 mongoose libmicrohttpd lowLevel gsl math
 
 math: cmodules/math/math.c cmodules/math/matrix.c cmodules/math/functions.c
 	gcc -shared -fPIC cmodules/math/matrix.c cmodules/math/math.c cmodules/math/functions.c -o libmath.so -lc -g -lm
@@ -15,9 +15,6 @@ libmicrohttpd: cmodules/libmicrohttpd.c
 
 mongoose: cmodules/mongoose.c
 	gcc -shared -fPIC cmodules/mongoose.c -o libmongoose.so -lc -g
-
-fs: cmodules/fs.c
-	gcc -shared -fPIC cmodules/fs.c -o libfs.so -lc -g
 
 fs2: cmodules/fs2.c
 	gcc -shared -fPIC cmodules/fs2.c -o libfs2.so -lc -g

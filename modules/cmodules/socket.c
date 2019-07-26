@@ -136,7 +136,7 @@ Object *Socket_accept(Object *self, Object **argv, u32 argc) {
     return NOJA_False;
   }
 
-  Connection *conn = (Connection*) Object_create(&TypeTable_Connection, 0, 0);
+  Connection *conn = (Connection*) Object_create(self->context, &TypeTable_Connection, 0, 0);
   conn->fd = new_socket;
 
   return (Object*) conn;
@@ -196,7 +196,7 @@ Object *Connection_read(Object *self, Object **argv, u32 argc) {
 
   buffer[readbytes] = 0;
 
-  return ObjectString_wrap_cstring(buffer, buffer_size+1);
+  return ObjectString_wrap_cstring(self->context, buffer, buffer_size+1);
 }
 
 Object *Connection_write(Object *self, Object **argv, u32 argc) {
@@ -268,10 +268,10 @@ char Module_socket_init(Object *dest) {
 
   /* Insert methods into the Socket class */ {
 
-    Object *methods = Object_create(__ObjectDict__, 0, 0);
+    Object *methods = Object_create(dest->context, __ObjectDict__, 0, 0);
 
-    Dict_cinsert(methods, "listen", ObjectCFunction_create(&Socket_listen));
-    Dict_cinsert(methods, "accept", ObjectCFunction_create(&Socket_accept));
+    Dict_cinsert(methods, "listen", ObjectCFunction_create(dest->context, &Socket_listen));
+    Dict_cinsert(methods, "accept", ObjectCFunction_create(dest->context, &Socket_accept));
 
     TypeTable_Socket.methods = methods;
 
@@ -279,48 +279,48 @@ char Module_socket_init(Object *dest) {
 
   /* Insert methods into the Connection class */ {
 
-    Object *methods = Object_create(__ObjectDict__, 0, 0);
+    Object *methods = Object_create(dest->context, __ObjectDict__, 0, 0);
 
-    Dict_cinsert(methods, "close", ObjectCFunction_create(&Connection_close));
-    Dict_cinsert(methods, "read", ObjectCFunction_create(&Connection_read));
-    Dict_cinsert(methods, "write", ObjectCFunction_create(&Connection_write));
+    Dict_cinsert(methods, "close", ObjectCFunction_create(dest->context, &Connection_close));
+    Dict_cinsert(methods, "read", ObjectCFunction_create(dest->context, &Connection_read));
+    Dict_cinsert(methods, "write", ObjectCFunction_create(dest->context, &Connection_write));
 
     TypeTable_Connection.methods = methods;
 
   }
 
-  Dict_cinsert(dest, "AF_INET"      , ObjectInt_from_cint((i64) AF_INET));
-  Dict_cinsert(dest, "AF_LOCAL"     , ObjectInt_from_cint((i64) AF_INET));
-  Dict_cinsert(dest, "AF_UNIX"      , ObjectInt_from_cint((i64) AF_INET));
-  Dict_cinsert(dest, "AF_AX25"      , ObjectInt_from_cint((i64) AF_INET));
-  Dict_cinsert(dest, "AF_IPX"       , ObjectInt_from_cint((i64) AF_INET));
-  Dict_cinsert(dest, "AF_APPLETALK" , ObjectInt_from_cint((i64) AF_INET));
-  Dict_cinsert(dest, "AF_X25"       , ObjectInt_from_cint((i64) AF_INET));
-  Dict_cinsert(dest, "AF_INET6"     , ObjectInt_from_cint((i64) AF_INET));
-  Dict_cinsert(dest, "AF_DECnet"    , ObjectInt_from_cint((i64) AF_INET));
-  Dict_cinsert(dest, "AF_KEY"       , ObjectInt_from_cint((i64) AF_INET));
-  Dict_cinsert(dest, "AF_NETLINK"   , ObjectInt_from_cint((i64) AF_NETLINK));
-  Dict_cinsert(dest, "AF_PACKET"    , ObjectInt_from_cint((i64) AF_PACKET));
-  Dict_cinsert(dest, "AF_RDS"       , ObjectInt_from_cint((i64) AF_RDS));
-  Dict_cinsert(dest, "AF_PPPOX"     , ObjectInt_from_cint((i64) AF_PPPOX));
-  Dict_cinsert(dest, "AF_LLC"       , ObjectInt_from_cint((i64) AF_LLC));
-  Dict_cinsert(dest, "AF_IB"        , ObjectInt_from_cint((i64) AF_IB));
-  Dict_cinsert(dest, "AF_MPLS"      , ObjectInt_from_cint((i64) AF_MPLS));
-  Dict_cinsert(dest, "AF_CAN"       , ObjectInt_from_cint((i64) AF_CAN));
-  Dict_cinsert(dest, "AF_TIPC"      , ObjectInt_from_cint((i64) AF_TIPC));
-  Dict_cinsert(dest, "AF_BLUETOOTH" , ObjectInt_from_cint((i64) AF_BLUETOOTH));
-  Dict_cinsert(dest, "AF_ALG"       , ObjectInt_from_cint((i64) AF_ALG));
-  Dict_cinsert(dest, "AF_VSOCK"     , ObjectInt_from_cint((i64) AF_VSOCK));
-  Dict_cinsert(dest, "AF_KCM"       , ObjectInt_from_cint((i64) AF_KCM));
-  Dict_cinsert(dest, "AF_XDP"       , ObjectInt_from_cint((i64) AF_XDP));
-  Dict_cinsert(dest, "SOCK_SEQPACKET", ObjectInt_from_cint((i64) SOCK_SEQPACKET));
-  Dict_cinsert(dest, "SOCK_RAW"     , ObjectInt_from_cint((i64) SOCK_RAW));
-  Dict_cinsert(dest, "SOCK_RDM"     , ObjectInt_from_cint((i64) SOCK_RDM));
-  Dict_cinsert(dest, "SOCK_PACKET"  , ObjectInt_from_cint((i64) SOCK_PACKET));
-  Dict_cinsert(dest, "SOCK_NONBLOCK", ObjectInt_from_cint((i64) SOCK_NONBLOCK));
-  Dict_cinsert(dest, "SOCK_CLOEXEC" , ObjectInt_from_cint((i64) SOCK_CLOEXEC));
-  Dict_cinsert(dest, "SOCK_STREAM"  , ObjectInt_from_cint((i64) SOCK_STREAM));
-  Dict_cinsert(dest, "SOCK_DGRAM"   , ObjectInt_from_cint((i64) SOCK_DGRAM));
+  Dict_cinsert(dest, "AF_INET"      , ObjectInt_from_cint(dest->context, (i64) AF_INET));
+  Dict_cinsert(dest, "AF_LOCAL"     , ObjectInt_from_cint(dest->context, (i64) AF_INET));
+  Dict_cinsert(dest, "AF_UNIX"      , ObjectInt_from_cint(dest->context, (i64) AF_INET));
+  Dict_cinsert(dest, "AF_AX25"      , ObjectInt_from_cint(dest->context, (i64) AF_INET));
+  Dict_cinsert(dest, "AF_IPX"       , ObjectInt_from_cint(dest->context, (i64) AF_INET));
+  Dict_cinsert(dest, "AF_APPLETALK" , ObjectInt_from_cint(dest->context, (i64) AF_INET));
+  Dict_cinsert(dest, "AF_X25"       , ObjectInt_from_cint(dest->context, (i64) AF_INET));
+  Dict_cinsert(dest, "AF_INET6"     , ObjectInt_from_cint(dest->context, (i64) AF_INET));
+  Dict_cinsert(dest, "AF_DECnet"    , ObjectInt_from_cint(dest->context, (i64) AF_INET));
+  Dict_cinsert(dest, "AF_KEY"       , ObjectInt_from_cint(dest->context, (i64) AF_INET));
+  Dict_cinsert(dest, "AF_NETLINK"   , ObjectInt_from_cint(dest->context, (i64) AF_NETLINK));
+  Dict_cinsert(dest, "AF_PACKET"    , ObjectInt_from_cint(dest->context, (i64) AF_PACKET));
+  Dict_cinsert(dest, "AF_RDS"       , ObjectInt_from_cint(dest->context, (i64) AF_RDS));
+  Dict_cinsert(dest, "AF_PPPOX"     , ObjectInt_from_cint(dest->context, (i64) AF_PPPOX));
+  Dict_cinsert(dest, "AF_LLC"       , ObjectInt_from_cint(dest->context, (i64) AF_LLC));
+  Dict_cinsert(dest, "AF_IB"        , ObjectInt_from_cint(dest->context, (i64) AF_IB));
+  Dict_cinsert(dest, "AF_MPLS"      , ObjectInt_from_cint(dest->context, (i64) AF_MPLS));
+  Dict_cinsert(dest, "AF_CAN"       , ObjectInt_from_cint(dest->context, (i64) AF_CAN));
+  Dict_cinsert(dest, "AF_TIPC"      , ObjectInt_from_cint(dest->context, (i64) AF_TIPC));
+  Dict_cinsert(dest, "AF_BLUETOOTH" , ObjectInt_from_cint(dest->context, (i64) AF_BLUETOOTH));
+  Dict_cinsert(dest, "AF_ALG"       , ObjectInt_from_cint(dest->context, (i64) AF_ALG));
+  Dict_cinsert(dest, "AF_VSOCK"     , ObjectInt_from_cint(dest->context, (i64) AF_VSOCK));
+  Dict_cinsert(dest, "AF_KCM"       , ObjectInt_from_cint(dest->context, (i64) AF_KCM));
+  Dict_cinsert(dest, "AF_XDP"       , ObjectInt_from_cint(dest->context, (i64) AF_XDP));
+  Dict_cinsert(dest, "SOCK_SEQPACKET", ObjectInt_from_cint(dest->context, (i64) SOCK_SEQPACKET));
+  Dict_cinsert(dest, "SOCK_RAW"     , ObjectInt_from_cint(dest->context, (i64) SOCK_RAW));
+  Dict_cinsert(dest, "SOCK_RDM"     , ObjectInt_from_cint(dest->context, (i64) SOCK_RDM));
+  Dict_cinsert(dest, "SOCK_PACKET"  , ObjectInt_from_cint(dest->context, (i64) SOCK_PACKET));
+  Dict_cinsert(dest, "SOCK_NONBLOCK", ObjectInt_from_cint(dest->context, (i64) SOCK_NONBLOCK));
+  Dict_cinsert(dest, "SOCK_CLOEXEC" , ObjectInt_from_cint(dest->context, (i64) SOCK_CLOEXEC));
+  Dict_cinsert(dest, "SOCK_STREAM"  , ObjectInt_from_cint(dest->context, (i64) SOCK_STREAM));
+  Dict_cinsert(dest, "SOCK_DGRAM"   , ObjectInt_from_cint(dest->context, (i64) SOCK_DGRAM));
   Dict_cinsert(dest, "Socket"       , (Object*) &TypeTable_Socket);
   Dict_cinsert(dest, "Connection"   , (Object*) &TypeTable_Connection);
 

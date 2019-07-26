@@ -28,7 +28,7 @@ char build_transposed(Matrix *m) {
 		return 0;
 
 	Matrix_inner *mt = malloc(sizeof(Matrix_inner) * m->rw * m->rh * sizeof(double));
-		
+
 	if(mt == NULL)
 		return 0;
 
@@ -37,14 +37,14 @@ char build_transposed(Matrix *m) {
 	for(u32 i = 0; i < m->h; i++)
 		for(u32 j = 0; j < m->w; j++)
 			mt->chunk[j * m->rw + i] = m->inner->chunk[i * m->rw + i];
-	
+
 	m->inner_t = mt;
 
 	return 1;
 }
 
 void Matrix_print(Object *self) {
-	
+
 	Matrix *m = (Matrix*) self;
 
 	int i, j;
@@ -69,10 +69,10 @@ void Matrix_print(Object *self) {
 			j = 0;
 
 			printf("]");
-			
+
 			if(i == m->h)
 				break;
-		
+
 			printf(", [");
 		} else {
 			printf(", ");
@@ -85,7 +85,7 @@ void Matrix_print(Object *self) {
 }
 
 void Matrix_init(Object *self, Object **argv, u32 argc) {
-	
+
 	Matrix *m = (Matrix*) self;
 	i64 w, h, rw, rh;
 	Matrix_inner *inner;
@@ -102,7 +102,7 @@ void Matrix_init(Object *self, Object **argv, u32 argc) {
 
 	if(argc > 2) {
 		if(argv[2]->type == __ObjectInt__) {
-			
+
 			default_value = (double) ((ObjectInt*) argv[2])->value;
 
 		} else if(argv[2]->type == __ObjectFloat__) {
@@ -148,7 +148,7 @@ void Matrix_init(Object *self, Object **argv, u32 argc) {
 }
 
 void Matrix_destroy(Object *self) {
-	
+
 	Matrix *m = (Matrix*) self;
 
 	m->inner->refcount--;
@@ -159,17 +159,17 @@ void Matrix_destroy(Object *self) {
 }
 
 Object *Matrix_select(Object *self, Object *key_obj) {
-	
+
 	Matrix *m = (Matrix*) self;
 	i64 key;
 
 	if(m->inner == NULL) {
-		ctx_throw_exception(&context, Exception_IndexError);
+		ctx_throw_exception(self->context, Exception_IndexError);
 		return NOJA_False;
 	}
 
 	if(key_obj->type != __ObjectInt__) {
-		ctx_throw_exception(&context, Exception_IndexError);
+		ctx_throw_exception(self->context, Exception_IndexError);
 		return NOJA_False;
 	}
 
@@ -191,15 +191,15 @@ Object *Matrix_select(Object *self, Object *key_obj) {
 		*/
 
 	} else if(m->h == 1) {
-		
+
 		// horizontal vector
 
 		if(key < 0)
 			key = m->w + key;
-		
+
 		double value = m->inner->chunk[m->displacement + key];
 
-		return ObjectFloat_from_cdouble(value);
+		return ObjectFloat_from_cdouble(self->context, value);
 
 	} else {
 
@@ -208,7 +208,7 @@ Object *Matrix_select(Object *self, Object *key_obj) {
 		if(key < 0)
 			key = m->h + key;
 
-		Matrix *child = (Matrix*) Object_create(&TypeTable_Matrix, 0, 0);
+		Matrix *child = (Matrix*) Object_create(self->context, &TypeTable_Matrix, 0, 0);
 
 		child->inner = m->inner;
 		child->displacement = m->rw * key;
@@ -224,18 +224,18 @@ Object *Matrix_select(Object *self, Object *key_obj) {
 
 
 char Matrix_insert(Object *self, Object *key_obj, Object *value_obj) {
-	
+
 	Matrix *m = (Matrix*) self;
 	i64 key;
 	double value;
 
 	if(m->inner == NULL) {
-		ctx_throw_exception(&context, Exception_IndexError);
+		ctx_throw_exception(self->context, Exception_IndexError);
 		return 0;
 	}
 
 	if(key_obj->type != __ObjectInt__) {
-		ctx_throw_exception(&context, Exception_IndexError);
+		ctx_throw_exception(self->context, Exception_IndexError);
 		return 0;
 	}
 
@@ -257,11 +257,11 @@ char Matrix_insert(Object *self, Object *key_obj, Object *value_obj) {
 		*/
 
 	} else if(m->h == 1) {
-		
+
 		// horizontal vector
 
 		if(value_obj->type != __ObjectFloat__) {
-			ctx_throw_exception(&context, Exception_TypeError);
+			ctx_throw_exception(self->context, Exception_TypeError);
 			return 0;
 		}
 
@@ -272,10 +272,10 @@ char Matrix_insert(Object *self, Object *key_obj, Object *value_obj) {
 		}
 
 		if(key >= m->w) {
-			ctx_throw_exception(&context, Exception_IndexError);
+			ctx_throw_exception(self->context, Exception_IndexError);
 			return 0;
 		}
-		
+
 		m->inner->chunk[m->displacement + key] = value;
 
 	} else {
@@ -287,14 +287,14 @@ char Matrix_insert(Object *self, Object *key_obj, Object *value_obj) {
 		}
 
 		if(key >= m->h) {
-			ctx_throw_exception(&context, Exception_IndexError);
+			ctx_throw_exception(self->context, Exception_IndexError);
 			return 0;
 		}
 
 		Matrix *m2;
 
 		if(value_obj->type != &TypeTable_Matrix) {
-			ctx_throw_exception(&context, Exception_TypeError);
+			ctx_throw_exception(self->context, Exception_TypeError);
 			return 0;
 		}
 
@@ -317,11 +317,11 @@ char Matrix_insert(Object *self, Object *key_obj, Object *value_obj) {
 }
 
 Object *Matrix_width(Object *self, Object **argv, u32 argc) {
-	return ObjectInt_from_cint(((Matrix*) self)->w);
+	return ObjectInt_from_cint(self->context, ((Matrix*) self)->w);
 }
 
 Object *Matrix_height(Object *self, Object **argv, u32 argc) {
-	return ObjectInt_from_cint(((Matrix*) self)->h);
+	return ObjectInt_from_cint(self->context, ((Matrix*) self)->h);
 }
 
 Object *Matrix_mul(Object *self, Object **argv, u32 argc) {
@@ -354,18 +354,18 @@ Object *Matrix_mul(Object *self, Object **argv, u32 argc) {
 	for(u32 i = 0; i < m1->rh; i++) {
 
 		for(u32 j = 0; j < m2->rw; j++) {
-			
+
 			i3->chunk[m2->rw * j + i] = 0;
 
 			for(u32 k = 0; k < m1->rh; k++) {
-				
+
 				i3->chunk[m2->rw * j + i] += i1->chunk[m1->rw * i + k] * i2->chunk[m2->rw * k + j];
 
 			}
 		}
 	}
 
-	Matrix *m3 = (Matrix*) Object_create(&TypeTable_Matrix, 0, 0);
+	Matrix *m3 = (Matrix*) Object_create(self->context, &TypeTable_Matrix, 0, 0);
 
 	m3->w = m2->w;
 	m3->h = m1->h;
@@ -391,7 +391,7 @@ Object *Matrix_set(Object *self, Object **argv, u32 argc) {
 		return NOJA_False;
 
 	if(argv[0]->type != __ObjectFloat__) {
-		ctx_throw_exception(&context, Exception_TypeError);
+		ctx_throw_exception(self->context, Exception_TypeError);
 		return NOJA_False;
 	}
 
@@ -437,7 +437,7 @@ Object *Matrix_scale(Object *self, Object **argv, u32 argc) {
 		return NOJA_False;
 
 	if(argv[0]->type != __ObjectFloat__) {
-		ctx_throw_exception(&context, Exception_TypeError);
+		ctx_throw_exception(self->context, Exception_TypeError);
 		return NOJA_False;
 	}
 
@@ -482,7 +482,7 @@ Object *Matrix_add(Object *self, Object **argv, u32 argc) {
 		return NOJA_False;
 
 	if(argv[0]->type != &TypeTable_Matrix) {
-		ctx_throw_exception(&context, Exception_TypeError);
+		ctx_throw_exception(self->context, Exception_TypeError);
 		return NOJA_False;
 	}
 
@@ -530,7 +530,7 @@ Object *Matrix_sub(Object *self, Object **argv, u32 argc) {
 		return NOJA_False;
 
 	if(argv[0]->type != &TypeTable_Matrix) {
-		ctx_throw_exception(&context, Exception_TypeError);
+		ctx_throw_exception(self->context, Exception_TypeError);
 		return NOJA_False;
 	}
 
@@ -578,7 +578,7 @@ Object *Matrix_equals(Object *self, Object **argv, u32 argc) {
 		return NOJA_False;
 
 	if(argv[0]->type != &TypeTable_Matrix) {
-		ctx_throw_exception(&context, Exception_TypeError);
+		ctx_throw_exception(self->context, Exception_TypeError);
 		return NOJA_False;
 	}
 

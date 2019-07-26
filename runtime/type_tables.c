@@ -1,6 +1,56 @@
 
 #include "header.h"
 
+ObjectTypeOperators object_string_operators = {
+    .add = ObjectString_add,
+    .sub = 0,
+    .mul = 0,
+    .div = 0,
+    .eql = 0,
+    .grt = 0,
+    .lss = 0,
+};
+
+ObjectTypeOperators object_int_operators = {
+    .add = ObjectInt_add,
+    .sub = ObjectInt_sub,
+    .mul = ObjectInt_mul,
+    .div = ObjectInt_div,
+    .eql = ObjectInt_eql,
+    .grt = ObjectInt_grt,
+    .lss = ObjectInt_lss,
+};
+
+ObjectTypeOperators object_float_operators = {
+    .add = ObjectFloat_add,
+    .sub = ObjectFloat_sub,
+    .mul = ObjectFloat_mul,
+    .div = ObjectFloat_div,
+    .eql = ObjectFloat_eql,
+    .grt = ObjectFloat_grt,
+    .lss = ObjectFloat_lss,
+};
+
+ObjectTypeOperators object_bool_operators = {
+    .add = 0,
+    .sub = 0,
+    .mul = 0,
+    .div = 0,
+    .eql = ObjectBool_eql,
+    .grt = 0,
+    .lss = 0,
+};
+
+ObjectTypeOperators object_array_operators = {
+    .add = 0,
+    .sub = 0,
+    .mul = 0,
+    .div = 0,
+    .eql = ObjectArray_eql,
+    .grt = 0,
+    .lss = 0,
+};
+
 ObjectType TypeTable_ObjectType = {
     .type = &TypeTable_ObjectType,
     .flags = 0,
@@ -19,6 +69,7 @@ ObjectType TypeTable_ObjectType = {
     .next = 0,
     .get_raw_repr = 0,
     .get_raw_repr_size = 0,
+    .operators = 0,
     .expid  = 1,
     .to_cbool = &return_1,
     .collectChildren = &ObjectType_collectChildren
@@ -40,6 +91,7 @@ ObjectType TypeTable_ObjectIterator = {
     .next = 0,
     .get_raw_repr = 0,
     .get_raw_repr_size = 0,
+    .operators = 0,
     .expid  = 1,
     .to_cbool = &return_1,
     .collectChildren = &ObjectIterator_collectChildren
@@ -62,6 +114,7 @@ ObjectType TypeTable_ObjectInt = {
     .next = 0,
     .get_raw_repr = &ObjectInt_get_raw_repr,
     .get_raw_repr_size = &ObjectInt_get_raw_repr_size,
+    .operators = &object_int_operators,
     .expid  = 2,
     .to_cbool = &ObjectInt_to_cbool,
     .collectChildren = 0
@@ -83,6 +136,7 @@ ObjectType TypeTable_ObjectFloat = {
     .next = 0,
     .get_raw_repr = 0,
     .get_raw_repr_size = 0,
+    .operators = &object_float_operators,
     .expid  = 3,
     .to_cbool = &ObjectFloat_to_cbool,
     .collectChildren = 0
@@ -104,6 +158,7 @@ ObjectType TypeTable_ObjectString = {
     .next   = &ObjectString_next,
     .get_raw_repr = &ObjectString_get_raw_repr,
     .get_raw_repr_size = &ObjectString_get_raw_repr_size,
+    .operators = &object_string_operators,
     .expid  = 4,
     .to_cbool = &ObjectString_to_cbool,
     .collectChildren = 0
@@ -125,6 +180,7 @@ ObjectType TypeTable_Dict = {
     .next = 0,
     .get_raw_repr = 0,
     .get_raw_repr_size = 0,
+    .operators = 0,
     .expid  = 5,
     .to_cbool = &Dict_to_cbool,
     .collectChildren = &Dict_collectChildren
@@ -146,6 +202,7 @@ ObjectType TypeTable_ObjectArray = {
     .next = &ObjectArray_next,
     .get_raw_repr = 0,
     .get_raw_repr_size = 0,
+    .operators = &object_array_operators,
     .expid  = 6,
     .to_cbool = &ObjectArray_to_cbool,
     .collectChildren = &ObjectArray_collectChildren
@@ -165,6 +222,7 @@ ObjectType TypeTable_ObjectBool = {
     .next = 0,
     .get_raw_repr = 0,
     .get_raw_repr_size = 0,
+    .operators = &object_bool_operators,
     .expid  = 7,
     .to_cbool = &ObjectBool_to_cbool,
     .collectChildren = 0
@@ -184,6 +242,7 @@ ObjectType TypeTable_ObjectFunction = {
     .next = 0,
     .get_raw_repr = 0,
     .get_raw_repr_size = 0,
+    .operators = 0,
     .expid  = 0,
     .to_cbool = &return_1,
     .collectChildren = 0
@@ -203,6 +262,7 @@ ObjectType TypeTable_ObjectCFunction = {
     .next = 0,
     .get_raw_repr = 0,
     .get_raw_repr_size = 0,
+    .operators = 0,
     .expid  = 0,
     .to_cbool = &return_1,
     .collectChildren = 0
@@ -226,6 +286,7 @@ ObjectType TypeTable_Module = {
     .next = 0,
     .get_raw_repr = 0,
     .get_raw_repr_size = 0,
+    .operators = 0,
     .expid = 0,
     .to_cbool = &return_1,
     .collectChildren = &Module_collectChildren

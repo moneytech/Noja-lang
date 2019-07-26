@@ -2,13 +2,10 @@
 
 #include "header.h"
 
-#define STACK_TOP context.stack[context.stack_size-1]
-#define SOURCE_TOP context.source_stack[context.source_depth-1]
+#define STACK_TOP context->stack[context->stack_size-1]
+#define SOURCE_TOP context->source_stack[context->source_depth-1]
 
-
-Context context;
-
-void NOJA_run() {
+void NOJA_run(Context *context) {
 
     char opcode;
     char done = 0;
@@ -21,20 +18,20 @@ void NOJA_run() {
 
     while(1) {
 
-        if(context.pc >= context.source_stack[context.source_depth-1]->code_size) {
-          ctx_throw_exception(&context, InternalException_11);
+        if(context->pc >= context->source_stack[context->source_depth-1]->code_size) {
+          ctx_throw_exception(context, InternalException_11);
           break;
         }
 
-        opcode = context.source_stack[context.source_depth - 1]->code[context.pc++];
+        opcode = context->source_stack[context->source_depth - 1]->code[context->pc++];
 
         /*
         instr_info = get_instrinfo_by_repr(opcode);
 
-        printf("line %-3d :: %-4d: %-30s (stack size: %d", context.lineno, context.pc, instr_info->name, context.stack_size);
+        printf("line %-3d :: %-4d: %-30s (stack size: %d", context->lineno, context->pc, instr_info->name, context->stack_size);
 
-        if(context.activation_records_count > 0) {
-          printf(", self = %p", context.activation_records[context.activation_records_count-1].self);
+        if(context->activation_records_count > 0) {
+          printf(", self = %p", context->activation_records[context->activation_records_count-1].self);
         }
 
         printf(")\n");
@@ -44,9 +41,9 @@ void NOJA_run() {
 
             case OPCODE_LINENO:
 
-            context.lineno = ctx_read_u32(&context);
+            context->lineno = ctx_read_u32(context);
 
-            //printf("line %d\n", context.lineno);
+            //printf("line %d\n", context->lineno);
 
             break;
 
@@ -56,12 +53,12 @@ void NOJA_run() {
 
             case OPCODE_BUILD_CLASS:
 
-            reg0._obj = Object_create(&TypeTable_ObjectType, 0, 0);
+            reg0._obj = Object_create(context, &TypeTable_ObjectType, 0, 0);
 
             ((ObjectType*) reg0._obj)->name = "Class";
             ((ObjectType*) reg0._obj)->size = sizeof(ObjectIstance);
             //((ObjectType*) reg0._obj)->flags = 0;
-            ((ObjectType*) reg0._obj)->methods = Object_create(&TypeTable_Dict, 0, 0);
+            ((ObjectType*) reg0._obj)->methods = Object_create(context, &TypeTable_Dict, 0, 0);
             ((ObjectType*) reg0._obj)->free = Class_delete;
             ((ObjectType*) reg0._obj)->select = Class_select;
             ((ObjectType*) reg0._obj)->insert = Class_insert;
@@ -78,7 +75,7 @@ void NOJA_run() {
 
             Dict_cinsert(((ObjectType*) reg0._obj)->methods, "__prototype__", reg0._obj);
 
-            context.stack[context.stack_size++] = reg0._obj;
+            context->stack[context->stack_size++] = reg0._obj;
 
             // does ASSIGN pop?
 
@@ -86,15 +83,15 @@ void NOJA_run() {
 
             case OPCODE_PUSH_METHOD:
 
-            reg0._str  = ctx_read_string(&context); // name
-            reg1._u32  = ctx_read_u32(&context) + context.source_stack[context.source_depth-1]->function_space_addr; // addr
+            reg0._str  = ctx_read_string(context); // name
+            reg1._u32  = ctx_read_u32(context) + context->source_stack[context->source_depth-1]->function_space_addr; // addr
 
-            reg2._obj = context.stack[context.stack_size-1];
+            reg2._obj = context->stack[context->stack_size-1];
 
             Dict_cinsert(
               ((ObjectType*) reg2._obj)->methods,
               reg0._str,
-              ObjectFunction_create(reg1._u32, context.source_stack[context.source_depth-1]) // -1?
+              ObjectFunction_create(context, reg1._u32, context->source_stack[context->source_depth-1]) // -1?
             );
 
             break;
@@ -102,9 +99,9 @@ void NOJA_run() {
 
             case OPCODE_IMPORT: {
 
-              reg0._str = ctx_read_string(&context); // path
+              reg0._str = ctx_read_string(context); // path
 
-              import_shared_library(reg0._str, context.frames[context.frame_depth-1]);
+              import_shared_library(reg0._str, context->frames[context->frame_depth-1]);
 
               // TODO
 
@@ -114,47 +111,47 @@ void NOJA_run() {
 
             case OPCODE_IMPORT_AND_NAME: {
 
-              reg0._str = ctx_read_string(&context); // path
-              reg1._str = ctx_read_string(&context); // name
+              reg0._str = ctx_read_string(context); // path
+              reg1._str = ctx_read_string(context); // name
 
-              reg2._obj = Object_create(&TypeTable_Module, 0, 0);
+              reg2._obj = Object_create(context, &TypeTable_Module, 0, 0);
 
               if(!import_shared_library(reg0._str, (reg2._module)->members)) {
 
-                  ctx_throw_exception(&context, Exception_ImportFailed);
+                  ctx_throw_exception(context, Exception_ImportFailed);
 
                   break;
               }
 
-              Dict_cinsert(context.frames[context.frame_depth-1], reg1._str, reg2._obj);
+              Dict_cinsert(context->frames[context->frame_depth-1], reg1._str, reg2._obj);
 
               // TODO
 
             } break;
 
-            case OPCODE_PUSH_TRUE:  ctx_push(&context, NOJA_True);    break;
-            case OPCODE_PUSH_FALSE: ctx_push(&context, NOJA_False);   break;
+            case OPCODE_PUSH_TRUE:  ctx_push(context, NOJA_True);    break;
+            case OPCODE_PUSH_FALSE: ctx_push(context, NOJA_False);   break;
 
             case OPCODE_AREC_CREATE:
 
-            ctx_create_activation_record(&context);
+            ctx_create_activation_record(context);
 
             break;
 
             case OPCODE_PUSH_SELF:
 
-            ctx_push_self(&context, ctx_top(&context));
+            ctx_push_self(context, ctx_top(context));
 
             break;
 
             case OPCODE_TRY_ASSIGN_SELF:
 
-            if(context.activation_records[context.activation_records_count-1].self != NULL) {
+            if(context->activation_records[context->activation_records_count-1].self != NULL) {
 
               Dict_cinsert(
-                context.frames[context.frame_depth-1],
+                context->frames[context->frame_depth-1],
                 "self",
-                context.activation_records[context.activation_records_count-1].self
+                context->activation_records[context->activation_records_count-1].self
               );
 
             }
@@ -163,70 +160,70 @@ void NOJA_run() {
 
             case OPCODE_SET_ATTR:
 
-            reg0._str = ctx_read_string(&context); // name
-            reg1._obj = ctx_pop(&context); // value
-            reg2._obj = ctx_pop(&context); // self
+            reg0._str = ctx_read_string(context); // name
+            reg1._obj = ctx_pop(context); // value
+            reg2._obj = ctx_pop(context); // self
 
             Object_setAttr(reg2._obj, reg0._str, reg1._obj);
 
-            ctx_push(&context, reg1._obj);
+            ctx_push(context, reg1._obj);
 
             break;
 
             case OPCODE_PUSH_ATTR:
 
-            reg0._str = ctx_read_string(&context);
-            reg1._obj = ctx_pop(&context);
+            reg0._str = ctx_read_string(context);
+            reg1._obj = ctx_pop(context);
 
             reg2._obj = Object_getAttr(reg1._obj, reg0._str);
 
             if(!reg2._obj) {
-              ctx_throw_exception(&context, Exception_AttributeError);
+              ctx_throw_exception(context, Exception_AttributeError);
               break;
             }
 
-            context.stack[context.stack_size] = reg2._obj;
-            context.stack_size++;
+            context->stack[context->stack_size] = reg2._obj;
+            context->stack_size++;
 
             break;
 
             case OPCODE_SELECT:
 
-            reg1._obj = ctx_pop(&context); // key
-            reg0._obj = ctx_pop(&context); // src
+            reg1._obj = ctx_pop(context); // key
+            reg0._obj = ctx_pop(context); // src
 
             reg2._obj = Object_select(reg0._obj, reg1._obj);
 
-            if(context.exception_code) break;
+            if(context->exception_code) break;
 
-            if(context.pending_call_offset.source != 0) {
+            if(context->pending_call_offset.source != 0) {
 
-              ctx_call_pending(&context);
-              //ctx_pop(&context); //?
+              ctx_call_pending(context);
+              //ctx_pop(context); //?
 
             } else {
 
-              ctx_push(&context, reg2._obj);
+              ctx_push(context, reg2._obj);
             }
 
             break;
 
             case OPCODE_TRY_ASSIGN_ARG:
 
-            reg1._str = ctx_read_string(&context);
+            reg1._str = ctx_read_string(context);
 
-            ctx_assign_argument(&context, reg1._str);
+            ctx_assign_argument(context, reg1._str);
 
             /*
 
-            if(context.activation_records[context.activation_records_count-1].bot < context.activation_records[context.activation_records_count-1].top) {
+            if(context->activation_records[context->activation_records_count-1].bot < context->activation_records[context->activation_records_count-1].top) {
 
                 Dict_cinsert(
-                  context.frames[context.frame_depth-1],
+                  context->frames[context->frame_depth-1],
                   reg1._str,
-                  context.activation_records[context.activation_records_count-1].args[context.activation_records[context.activation_records_count-1].bot]);
+                  context->activation_records[context->activation_records_count-1].args[context->activation_records[context->activation_records_count-1].bot]);
 
-                context.activation_records[context.activation_records_count-1].bot++;
+                context->activation_records[context->activation_records_count-1].bot++;
             }
             */
 
@@ -237,17 +234,18 @@ void NOJA_run() {
                 char *name;
                 u32   addr;
 
-                name = ctx_read_string(&context);
-                addr = ctx_read_u32(&context);
+                name = ctx_read_string(context);
+                addr = ctx_read_u32(context);
 
                 // get also the addr of its code block
 
                 Object *function_object = ObjectFunction_create(
-                  context.source_stack[context.source_depth-1]->function_space_addr + addr,
-                  context.source_stack[context.source_depth-1]
+                  context,
+                  context->source_stack[context->source_depth-1]->function_space_addr + addr,
+                  context->source_stack[context->source_depth-1]
                 );
 
-                Dict_cinsert(context.frames[context.frame_depth-1], name, function_object);
+                Dict_cinsert(context->frames[context->frame_depth-1], name, function_object);
 
                 // build
 
@@ -255,86 +253,86 @@ void NOJA_run() {
 
             case OPCODE_FUNC_BEG:
 
-            context.frames[context.frame_depth++] = Object_create(__ObjectDict__, 0, 0);
+            context->frames[context->frame_depth++] = Object_create(context, __ObjectDict__, 0, 0);
 
             break;
 
             case OPCODE_FUNC_END:
 
-            if(context.blocks[context.block_depth-1].type != BLOCK_FUNC) {
+            if(context->blocks[context->block_depth-1].type != BLOCK_FUNC) {
 
-                ctx_throw_exception(&context, InternalException_0);
+                ctx_throw_exception(context, InternalException_0);
                 break;
             }
 
-            context.pc = context.blocks[context.block_depth-1].end;
+            context->pc = context->blocks[context->block_depth-1].end;
 
-            context.activation_records_count--;
-            context.frame_depth--;
-            context.block_depth--;
-            context.source_depth--;
+            context->activation_records_count--;
+            context->frame_depth--;
+            context->block_depth--;
+            context->source_depth--;
 
             break;
 
             case OPCODE_PUSH_ARG:
 
-            if(!context.stack_size) {
-              ctx_throw_exception(&context, InternalException_1);
+            if(!context->stack_size) {
+              ctx_throw_exception(context, InternalException_1);
                 break;
             }
 
-            ctx_push_argument(&context, ctx_top(&context));
+            ctx_push_argument(context, ctx_top(context));
 
             break;
 
             case OPCODE_CALL:
 
             reg0._obj = Object_call(
-              ctx_top(&context),
-              context.activation_records[context.activation_records_count-1].self,
-              context.activation_records[context.activation_records_count-1].args  + context.activation_records[context.activation_records_count-1].bot,
-              context.activation_records[context.activation_records_count-1].top   - context.activation_records[context.activation_records_count-1].bot
+              ctx_top(context),
+              context->activation_records[context->activation_records_count-1].self,
+              context->activation_records[context->activation_records_count-1].args  + context->activation_records[context->activation_records_count-1].bot,
+              context->activation_records[context->activation_records_count-1].top   - context->activation_records[context->activation_records_count-1].bot
             );
 
-            if(context.exception_code) break;
+            if(context->exception_code) break;
 
-            ctx_pop(&context);
+            ctx_pop(context);
 
-            if(context.pending_call_offset.source != 0) {
+            if(context->pending_call_offset.source != 0) {
 
-              ctx_call_pending(&context);
+              ctx_call_pending(context);
 
             } else {
 
-              ctx_push(&context, reg0._obj);
-              context.activation_records_count--;
+              ctx_push(context, reg0._obj);
+              context->activation_records_count--;
             }
 
             break;
 
             case OPCODE_DICT_CREATE:
-            ctx_push(&context, Object_create(__ObjectDict__, 0, 0));
+            ctx_push(context, Object_create(context, __ObjectDict__, 0, 0));
             break;
 
             case OPCODE_INSERT:
 
-            if(context.stack_size < 3) {
-              ctx_throw_exception(&context, InternalException_2);
+            if(context->stack_size < 3) {
+              ctx_throw_exception(context, InternalException_2);
               break;
             }
 
-            reg0._obj = ctx_pop(&context); // key
-            reg1._obj = ctx_pop(&context); // value
-            reg2._obj = ctx_top(&context); // src
+            reg0._obj = ctx_pop(context); // key
+            reg1._obj = ctx_pop(context); // value
+            reg2._obj = ctx_top(context); // src
 
             reg3._u8 = Object_insert(reg2._obj, reg0._obj, reg1._obj);
 
-            if(context.exception_code) break;
+            if(context->exception_code) break;
 
-            if(context.pending_call_offset.source != 0) {
+            if(context->pending_call_offset.source != 0) {
 
-              ctx_call_pending(&context);
-              ctx_pop(&context); //?
+              ctx_call_pending(context);
+              ctx_pop(context); //?
 
             }
 
@@ -342,73 +340,73 @@ void NOJA_run() {
 
             case OPCODE_BUILD_ARRAY: {
 
-                u32 n = ctx_read_u32(&context);
+                u32 n = ctx_read_u32(context);
 
-                if(context.stack_size < n) {
-                  ctx_throw_exception(&context, InternalException_3);
+                if(context->stack_size < n) {
+                  ctx_throw_exception(context, InternalException_3);
                   break;
                 }
 
-                reg0._obj = Object_create(__ObjectArray__, 0, 0);
+                reg0._obj = Object_create(context, __ObjectArray__, 0, 0);
 
-                for(u32 k = context.stack_size - n; k < context.stack_size; k++) {
-                    ObjectArray_append(reg0._obj, context.stack + k, 1);
+                for(u32 k = context->stack_size - n; k < context->stack_size; k++) {
+                    ObjectArray_append(reg0._obj, context->stack + k, 1);
                 }
 
-                ctx_pops(&context, n);
-                ctx_push(&context, reg0._obj);
+                ctx_pops(context, n);
+                ctx_push(context, reg0._obj);
 
             } break;
 
             case OPCODE_PUSH_I64:
-            reg0._i64 = ctx_read_i64(&context);
-            ctx_push(&context, ObjectInt_from_cint(reg0._i64));
+            reg0._i64 = ctx_read_i64(context);
+            ctx_push(context, ObjectInt_from_cint(context, reg0._i64));
             break;
 
             case OPCODE_PUSH_F64:
-            reg0._f64 = ctx_read_f64(&context);
-            ctx_push(&context, ObjectFloat_from_cdouble(reg0._f64));
+            reg0._f64 = ctx_read_f64(context);
+            ctx_push(context, ObjectFloat_from_cdouble(context, reg0._f64));
             break;
 
             case OPCODE_PUSH_STRING:
-            reg0._str = ctx_read_string(&context);
-            ctx_push(&context, ObjectString_from_cstring(reg0._str));
+            reg0._str = ctx_read_string(context);
+            ctx_push(context, ObjectString_from_cstring(context, reg0._str));
             break;
 
             case OPCODE_PUSH_NAMED:
 
-            reg1._str = ctx_read_string(&context);
+            reg1._str = ctx_read_string(context);
 
-            reg0._obj = Dict_cselect(context.frames[context.frame_depth-1], reg1._str);
+            reg0._obj = Dict_cselect(context->frames[context->frame_depth-1], reg1._str);
 
             if(!reg0._obj) {
 
-              if(context.frames[context.frame_depth-1] != context.root_frame) {
+              if(context->frames[context->frame_depth-1] != context->root_frame) {
 
                 reg0._obj = Dict_cselect(
-                  context.root_frame,
+                  context->root_frame,
                   reg1._str
                 );
 
               }
 
               if(!reg0._obj) {
-                ctx_throw_exception(&context, Exception_NameError);
+                ctx_throw_exception(context, Exception_NameError);
                 break;
 
               }
 
             }
 
-            ctx_push(&context, reg0._obj);
+            ctx_push(context, reg0._obj);
 
             break;
 
             case OPCODE_ASSIGN:
 
-            reg0._str = ctx_read_string(&context);
+            reg0._str = ctx_read_string(context);
 
-            Dict_cinsert(context.frames[context.frame_depth-1], reg0._str, ctx_top(&context));
+            Dict_cinsert(context->frames[context->frame_depth-1], reg0._str, ctx_top(context));
 
             break;
 
@@ -416,44 +414,44 @@ void NOJA_run() {
 
             /*
 
-            context.blocks[context.block_depth].type = BLOCK_WHILE;
-            context.blocks[context.block_depth].beg  = i-1+4;
-            context.blocks[context.block_depth].end  = *(u32*) (context.source_stack[context.source_depth-1]->code+context.pc)+1;
-            context.blocks[context.block_depth].end += i;
+            context->blocks[context->block_depth].type = BLOCK_WHILE;
+            context->blocks[context->block_depth].beg  = i-1+4;
+            context->blocks[context->block_depth].end  = *(u32*) (context->source_stack[context->source_depth-1]->code+context->pc)+1;
+            context->blocks[context->block_depth].end += i;
 
-            context.block_depth++;
+            context->block_depth++;
 
             i += 4;
             */
 
-            reg0._u32 = ctx_read_u32(&context);
+            reg0._u32 = ctx_read_u32(context);
 
-            context.blocks[context.block_depth].type = BLOCK_WHILE;
-            context.blocks[context.block_depth].end  = reg0._u32 + 1;
-            context.blocks[context.block_depth].beg  = context.pc - 1;
-            context.blocks[context.block_depth].end += context.pc - 4; // 4 is the size of the u32 just read
+            context->blocks[context->block_depth].type = BLOCK_WHILE;
+            context->blocks[context->block_depth].end  = reg0._u32 + 1;
+            context->blocks[context->block_depth].beg  = context->pc - 1;
+            context->blocks[context->block_depth].end += context->pc - 4; // 4 is the size of the u32 just read
 
-            context.block_depth++;
+            context->block_depth++;
 
             break;
 
             case OPCODE_WHILE_END:
 
-            context.pc = context.blocks[context.block_depth-1].beg;
+            context->pc = context->blocks[context->block_depth-1].beg;
 
             break;
 
             case OPCODE_BIFFP:
 
-            if(!Object_to_cbool(context.stack[context.stack_size - 1])) {
-                
+            if(!Object_to_cbool(context->stack[context->stack_size - 1])) {
+
                 // am i sure i'm in a while block?
 
-                context.pc = context.blocks[context.block_depth-1].end;
-                context.block_depth--;
+                context->pc = context->blocks[context->block_depth-1].end;
+                context->block_depth--;
             }
 
-            context.stack_size--;
+            context->stack_size--;
 
             break;
 
@@ -461,79 +459,79 @@ void NOJA_run() {
 
             // find first while loop
 
-            context.pc = context.blocks[context.block_depth-1].end;
+            context->pc = context->blocks[context->block_depth-1].end;
 
-            context.block_depth--;
+            context->block_depth--;
 
             break;
 
             case OPCODE_CONTINUE:
 
-            context.pc = context.blocks[context.block_depth-1].beg;
+            context->pc = context->blocks[context->block_depth-1].beg;
 
             break;
 
             case OPCODE_JUMP:
 
-            context.pc = ctx_read_u32(&context);
+            context->pc = ctx_read_u32(context);
 
             break;
 
             case OPCODE_JUMPR: // OK
 
-            reg0._u32 = ctx_read_u32(&context);
+            reg0._u32 = ctx_read_u32(context);
 
-            context.pc += reg0._u32 - 5 + 1;
+            context->pc += reg0._u32 - 5 + 1;
 
             break;
 
             case OPCODE_JIFTP:
 
-            if(context.stack_size == 0) {
-              ctx_throw_exception(&context, InternalException_4);
+            if(context->stack_size == 0) {
+              ctx_throw_exception(context, InternalException_4);
               break;
             }
 
-            reg0._i32 = ctx_read_i32(&context);
+            reg0._i32 = ctx_read_i32(context);
 
-            if(Object_to_cbool(context.stack[context.stack_size-1]))
+            if(Object_to_cbool(context->stack[context->stack_size-1]))
 
-                context.pc += reg0._i32;
+                context->pc += reg0._i32;
 
-            context.stack_size--;
+            context->stack_size--;
 
             break;
 
             case OPCODE_JIFFP:
 
-            if(context.stack_size == 0) {
-              ctx_throw_exception(&context, InternalException_5);
+            if(context->stack_size == 0) {
+              ctx_throw_exception(context, InternalException_5);
               break;
             }
 
-            reg0._i32 = ctx_read_i32(&context);
+            reg0._i32 = ctx_read_i32(context);
 
-            if(!Object_to_cbool(context.stack[context.stack_size-1]))
+            if(!Object_to_cbool(context->stack[context->stack_size-1]))
 
-                context.pc += reg0._i32 - 4;
+                context->pc += reg0._i32 - 4;
 
-            context.stack_size--;
+            context->stack_size--;
 
             break;
 
             case OPCODE_PRINT:
 
-            if(context.stack_size == 0) {
-              ctx_throw_exception(&context, InternalException_6);
+            if(context->stack_size == 0) {
+              ctx_throw_exception(context, InternalException_6);
               break;
             }
 
-            Object_print(context.stack[context.stack_size - 1]);
+            Object_print(context->stack[context->stack_size - 1]);
 
 
-            if(context.pending_call_offset.source != 0)
+            if(context->pending_call_offset.source != 0)
 
-              ctx_call_pending(&context);
+              ctx_call_pending(context);
 
 
             break;
@@ -546,29 +544,29 @@ void NOJA_run() {
 
             case OPCODE_TYPE:
 
-            if(context.stack_size == 0) {
-              ctx_throw_exception(&context, InternalException_7);
+            if(context->stack_size == 0) {
+              ctx_throw_exception(context, InternalException_7);
               break;
             }
 
-            context.stack[context.stack_size-1] = (Object*) context.stack[context.stack_size-1]->type;
+            context->stack[context->stack_size-1] = (Object*) context->stack[context->stack_size-1]->type;
 
             break;
 
             case OPCODE_TYPE_NAME:
 
-            if(context.stack_size == 0) {
-              ctx_throw_exception(&context, InternalException_8);
+            if(context->stack_size == 0) {
+              ctx_throw_exception(context, InternalException_8);
               break;
             }
 
-            context.stack[context.stack_size-1] = ObjectString_from_cstring(context.stack[context.stack_size-1]->type->name);
+            context->stack[context->stack_size-1] = ObjectString_from_cstring(context, context->stack[context->stack_size-1]->type->name);
 
             break;
 
             case OPCODE_POP:
 
-            context.stack_size--;
+            context->stack_size--;
 
             break;
 
@@ -583,13 +581,13 @@ void NOJA_run() {
             case OPCODE_EQL:
             case OPCODE_NQL:
 
-            if(context.stack_size < 2) {
-              ctx_throw_exception(&context, InternalException_6);
+            if(context->stack_size < 2) {
+              ctx_throw_exception(context, InternalException_6);
               break;
             }
 
-            reg1._obj = ctx_pop(&context);
-            reg0._obj = ctx_pop(&context);
+            reg1._obj = ctx_pop(context);
+            reg0._obj = ctx_pop(context);
 
             switch (opcode) {
               case OPCODE_ADD: reg2._obj = Object_add(reg0._obj, reg1._obj); break;
@@ -605,11 +603,11 @@ void NOJA_run() {
             }
 
             if(!reg2._obj) {
-              ctx_throw_exception(&context, Exception_badOperation);
+              ctx_throw_exception(context, Exception_badOperation);
               break;
             }
 
-            ctx_push(&context, reg2._obj);
+            ctx_push(context, reg2._obj);
 
             break;
 
@@ -621,29 +619,29 @@ void NOJA_run() {
 
             case OPCODE_BREAKPOINT: {
               printf("============== Breakpoint ===============\n");
-              printf("stack size: %d\n", context.stack_size);
+              printf("stack size: %d\n", context->stack_size);
               printf("=========================================\n");
             } break;
 
             default:
 
-            ctx_throw_exception(&context, InternalException_10);
+            ctx_throw_exception(context, InternalException_10);
             break;
         }
 
-        if(context.exception_code || done) break;
+        if(context->exception_code || done) break;
 
-        if(memory_man.current_head != memory_man.current_tail) {
+        if(context->memory_man.current_head != context->memory_man.current_tail) {
 
-            Mem_cycle();
+            Mem_cycle(context);
         }
     }
 
-    if(context.exception_code) {
+    if(context->exception_code) {
 
-      printf("Aborted at line %d (address %d): ", context.lineno, context.pc);
+      printf("Aborted at line %d (address %d): ", context->lineno, context->pc);
 
-      switch (context.exception_code) {
+      switch (context->exception_code) {
         case Exception_ImportFailed: printf("Import failed"); break;
         case Exception_AttributeError: printf("object doesnt have this attribute"); break;
         case Exception_SetAttributeError: printf("can't set attribute of object"); break;

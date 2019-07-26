@@ -56,7 +56,7 @@ void GSLVector_print(Object *self) {
 	printf("[");
 
 	for(u32 i = 0; i < vector->size; i++) {
-		
+
 		printf("%g", gsl_vector_get(vector->addr, i));
 
 		if(i + 1 < vector->size)
@@ -72,24 +72,24 @@ Object *GSLVector_select(Object *self, Object *key) {
 	i64 index;
 
 	if(vector->addr == NULL) {
-		ctx_throw_exception(&context, Exception_IndexError);
+		ctx_throw_exception(self->context, Exception_IndexError);
 		return NOJA_False;
 	}
 
 	if(key->type != __ObjectInt__) {
-		ctx_throw_exception(&context, Exception_IndexError);
+		ctx_throw_exception(self->context, Exception_IndexError);
 		return NOJA_False;
 	}
 
 	index = ((ObjectInt*) key)->value;
 
 	if(index < 0) {
-	
+
 		index = vector->size + index; // +-1?
-	
+
 	} else if(index >= vector->size) {
-		
-		ctx_throw_exception(&context, Exception_IndexError);
+
+		ctx_throw_exception(self->context, Exception_IndexError);
 
 		return NOJA_False;
 
@@ -97,7 +97,7 @@ Object *GSLVector_select(Object *self, Object *key) {
 
 	double value = gsl_vector_get(vector->addr, index);
 
-	return ObjectFloat_from_cdouble(value);
+	return ObjectFloat_from_cdouble(self->context, value);
 }
 
 char GSLVector_insert(Object *self, Object *key_obj, Object *value_obj) {
@@ -110,19 +110,19 @@ char GSLVector_insert(Object *self, Object *key_obj, Object *value_obj) {
 		return 0;
 
 	if(key_obj->type != __ObjectInt__) {
-		ctx_throw_exception(&context, Exception_IndexError);
+		ctx_throw_exception(self->context, Exception_IndexError);
 		return 0;
 	}
 
 	key = ((ObjectInt*) key_obj)->value;
 
 	if(key < 0) {
-	
+
 		key = vector->size + key; // +-1?
-	
+
 	} else if(key >= vector->size) {
-		
-		ctx_throw_exception(&context, Exception_IndexError);
+
+		ctx_throw_exception(self->context, Exception_IndexError);
 
 		return 0;
 
@@ -135,10 +135,10 @@ char GSLVector_insert(Object *self, Object *key_obj, Object *value_obj) {
 	} else if(value_obj->type == __ObjectFloat__) {
 
 		value = ((ObjectFloat*) value_obj)->value;
-	
+
 	} else {
 
-		ctx_throw_exception(&context, Exception_TypeError);
+		ctx_throw_exception(self->context, Exception_TypeError);
 
 		return 0;
 
@@ -171,15 +171,15 @@ Object *GSLVector_next(Object *self, Object *iter) {
 	if(index+1 == vector->size)
 		iterator->ended = 1;
 
-	iterator->index = ObjectInt_from_cint(index);
+	iterator->index = ObjectInt_from_cint(self->context, index);
 
 	double value = gsl_vector_get(vector->addr, index);
 
-	return ObjectFloat_from_cdouble(value);
+	return ObjectFloat_from_cdouble(self->context, value);
 }
 
 u32 GSLVector_get_raw_repr_size(Object *self) {
-	
+
 	GSLVector *vector = (GSLVector*) self;
 
 	return vector->size * sizeof(double);
@@ -199,7 +199,7 @@ void GSLVector_get_raw_repr(Object *self, void *addr, u32 max_size) {
 
 		remaining -= sizeof(double);
 
-	} 
+	}
 
 }
 
@@ -214,7 +214,7 @@ Object *GSLVector_add(Object *self, Object **argv, u32 argc) {
 	for(u32 i = 0; i < argc; i++) {
 
 		if(argv[i]->type != &TypeTable_GSLVector) {
-			ctx_throw_exception(&context, Exception_TypeError);
+			ctx_throw_exception(self->context, Exception_TypeError);
 			return NOJA_False;
 		}
 
@@ -240,7 +240,7 @@ Object *GSLVector_sub(Object *self, Object **argv, u32 argc) {
 	for(u32 i = 0; i < argc; i++) {
 
 		if(argv[i]->type != &TypeTable_GSLVector) {
-			ctx_throw_exception(&context, Exception_TypeError);
+			ctx_throw_exception(self->context, Exception_TypeError);
 			return NOJA_False;
 		}
 
@@ -268,7 +268,7 @@ Object *GSLVector_mul(Object *self, Object **argv, u32 argc) {
 	for(u32 i = 0; i < argc; i++) {
 
 		if(argv[i]->type != &TypeTable_GSLVector) {
-			ctx_throw_exception(&context, Exception_TypeError);
+			ctx_throw_exception(self->context, Exception_TypeError);
 			return NOJA_False;
 		}
 
@@ -298,7 +298,7 @@ Object *GSLVector_div(Object *self, Object **argv, u32 argc) {
 	for(u32 i = 0; i < argc; i++) {
 
 		if(argv[i]->type != &TypeTable_GSLVector) {
-			ctx_throw_exception(&context, Exception_TypeError);
+			ctx_throw_exception(self->context, Exception_TypeError);
 			return NOJA_False;
 		}
 
@@ -339,7 +339,7 @@ Object *GSLVector_scale(Object *self, Object **argv, u32 argc) {
 		factor = ((ObjectFloat*) argv[0])->value;
 
 	} else {
-		ctx_throw_exception(&context, Exception_TypeError);
+		ctx_throw_exception(self->context, Exception_TypeError);
 		return NOJA_False;
 	}
 
@@ -355,7 +355,7 @@ Object *GSLVector_max(Object *self, Object **argv, u32 argc) {
 	if(vector->addr == NULL)
 		return NOJA_False;
 
-	return ObjectFloat_from_cdouble(gsl_vector_max(vector->addr));
+	return ObjectFloat_from_cdouble(self->context, gsl_vector_max(vector->addr));
 }
 
 Object *GSLVector_min(Object *self, Object **argv, u32 argc) {
@@ -365,7 +365,7 @@ Object *GSLVector_min(Object *self, Object **argv, u32 argc) {
 	if(vector->addr == NULL)
 		return NOJA_False;
 
-	return ObjectFloat_from_cdouble(gsl_vector_min(vector->addr));
+	return ObjectFloat_from_cdouble(self->context, gsl_vector_min(vector->addr));
 }
 
 Object *GSLVector_maxIndex(Object *self, Object **argv, u32 argc) {
@@ -375,7 +375,7 @@ Object *GSLVector_maxIndex(Object *self, Object **argv, u32 argc) {
 	if(vector->addr == NULL)
 		return NOJA_False;
 
-	return ObjectInt_from_cint(gsl_vector_max_index(vector->addr));
+	return ObjectInt_from_cint(self->context, gsl_vector_max_index(vector->addr));
 }
 
 Object *GSLVector_minIndex(Object *self, Object **argv, u32 argc) {
@@ -385,8 +385,8 @@ Object *GSLVector_minIndex(Object *self, Object **argv, u32 argc) {
 	if(vector->addr == NULL)
 		return NOJA_False;
 
-	return ObjectInt_from_cint(gsl_vector_min_index(vector->addr));
-	
+	return ObjectInt_from_cint(self->context, gsl_vector_min_index(vector->addr));
+
 }
 
 Object *GSLVector_equal(Object *self, Object **argv, u32 argc) {
@@ -427,7 +427,7 @@ Object *GSLVector_setAll(Object *self, Object **argv, u32 argc) {
 
 	} else {
 
-		ctx_throw_exception(&context, Exception_TypeError);
+		ctx_throw_exception(self->context, Exception_TypeError);
 		return NOJA_False;
 
 	}

@@ -9,9 +9,9 @@ void skip_spaces(char *text, int *i, int *line) {
   }
 }
 
-Object *parse_dict(char *text, int *i, int *line);
+Object *parse_dict(Context *context, char *text, int *i, int *line);
 
-Object *parse_string(char *text, int *i, int *line) {
+Object *parse_string(Context *context, char *text, int *i, int *line) {
 
   (*i)++;
 
@@ -65,10 +65,10 @@ Object *parse_string(char *text, int *i, int *line) {
 
   (*i)++; // skip the "
 
-  return ObjectString_from_cstring(buffer);
+  return ObjectString_from_cstring(context, buffer);
 }
 
-Object *parse_number(char *text, int *i, int *line) {
+Object *parse_number(Context *context, char *text, int *i, int *line) {
 
   char buffer[1024];
   int buffer_size = 0;
@@ -104,18 +104,18 @@ Object *parse_number(char *text, int *i, int *line) {
   }
 
   if(got_dot)
-    return ObjectFloat_from_cdouble(sign*strtod(buffer, 0));
-  return ObjectInt_from_cint(sign*strtoll(buffer, 0, 0));
+    return ObjectFloat_from_cdouble(context, sign*strtod(buffer, 0));
+  return ObjectInt_from_cint(context, sign*strtoll(buffer, 0, 0));
 
 }
 
-Object *parse_array(char *text, int *i, int *line) {
+Object *parse_array(Context *context, char *text, int *i, int *line) {
 
   (*i)++;
 
   Object *array, *temp;
 
-  array = Object_create(__ObjectArray__, 0, 0);
+  array = Object_create(context, __ObjectArray__, 0, 0);
 
   while(1) {
 
@@ -134,10 +134,10 @@ Object *parse_array(char *text, int *i, int *line) {
       case '6':
       case '7':
       case '8':
-      case '9': temp = parse_number(text, i, line); break;
-      case '"': temp = parse_string(text, i, line); break;
-      case '[': temp = parse_array(text, i, line);  break;
-      case '{': temp = parse_dict(text, i, line);   break;
+      case '9': temp = parse_number(context, text, i, line); break;
+      case '"': temp = parse_string(context, text, i, line); break;
+      case '[': temp = parse_array(context, text, i, line);  break;
+      case '{': temp = parse_dict(context, text, i, line);   break;
       case ']': (*i)++; return array;
     }
 
@@ -170,7 +170,7 @@ Object *parse_array(char *text, int *i, int *line) {
   return array;
 }
 
-Object *parse_dict(char *text, int *i, int *line) {
+Object *parse_dict(Context *context, char *text, int *i, int *line) {
 
   (*i)++;
 
@@ -179,7 +179,7 @@ Object *parse_dict(char *text, int *i, int *line) {
 
   Object *temp, *dict;
 
-  dict = Object_create(__ObjectDict__, 0, 0);
+  dict = Object_create(context, __ObjectDict__, 0, 0);
 
   while(1) {
 
@@ -251,7 +251,7 @@ Object *parse_dict(char *text, int *i, int *line) {
       case '8':
       case '9':
       case '-':
-      case '+': temp = parse_number(text, i, line); break;
+      case '+': temp = parse_number(context, text, i, line); break;
 
       case 'f':
       if(text[(*i) + 1] == 'a' &&
@@ -298,9 +298,9 @@ Object *parse_dict(char *text, int *i, int *line) {
         return 0;
       }
       break;
-      case '{': temp = parse_dict(text, i, line);   break;
-      case '[': temp = parse_array(text, i, line);  break;
-      case '"': temp = parse_string(text, i, line); break;
+      case '{': temp = parse_dict(context, text, i, line);   break;
+      case '[': temp = parse_array(context, text, i, line);  break;
+      case '"': temp = parse_string(context, text, i, line); break;
 
     }
 
@@ -346,7 +346,7 @@ Object *JSON_decode(Object *self, Object **argv, u32 argc) {
     return NOJA_False;
   }
 
-  Object *result = parse_dict(text, &i, &line);
+  Object *result = parse_dict(self->context, text, &i, &line);
 
   if(!result) {
     printf("invalid syntax at line %d\n", line);
@@ -362,8 +362,8 @@ Object *JSON_encode(Object *self, Object **argv, u32 argc) {
 
 char Module_json_init(Object *dest) {
 
-  Dict_cinsert(dest, "encode", ObjectCFunction_create(&JSON_encode));
-  Dict_cinsert(dest, "decode", ObjectCFunction_create(&JSON_decode));
+  Dict_cinsert(dest, "encode", ObjectCFunction_create(dest->context, &JSON_encode));
+  Dict_cinsert(dest, "decode", ObjectCFunction_create(dest->context, &JSON_decode));
 
   return 1;
 }

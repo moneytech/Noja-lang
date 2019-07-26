@@ -23,7 +23,7 @@ Object *FS_readDir(Object *parent, Object **argv, u32 argc) {
       return NOJA_False;
 
     if(argv[0]->type != &TypeTable_ObjectString) {
-      ctx_throw_exception(&context, Exception_TypeError);
+      ctx_throw_exception(parent->context, Exception_TypeError);
       return NOJA_False;
     }
 
@@ -39,7 +39,7 @@ Object *FS_readDir(Object *parent, Object **argv, u32 argc) {
 
     }
 
-    Object *array = Object_create(__ObjectArray__, 0, 0);
+    Object *array = Object_create(parent->context, __ObjectArray__, 0, 0);
     Object *temp;
 
     while((files = readdir(dir_ptr)) != NULL) {
@@ -47,10 +47,10 @@ Object *FS_readDir(Object *parent, Object **argv, u32 argc) {
       if(!strcmp(files->d_name, ".") || !strcmp(files->d_name, ".."))
         continue;
 
-      temp = Object_create(__ObjectDict__, 0, 0);
+      temp = Object_create(parent->context, __ObjectDict__, 0, 0);
 
-      Dict_cinsert(temp, "name", ObjectString_from_cstring(files->d_name));
-      Dict_cinsert(temp, "type", ObjectInt_from_cint((i64) files->d_type));
+      Dict_cinsert(temp, "name", ObjectString_from_cstring(parent->context, files->d_name));
+      Dict_cinsert(temp, "type", ObjectInt_from_cint(parent->context, (i64) files->d_type));
 
       ObjectArray_append(array, (Object*[]) {temp}, 1);
 
@@ -115,7 +115,7 @@ Object *FileHandle_read(Object *parent, Object **argv, u32 argc) {
 
     fread(buffer, 1, size, fh->fp);
 
-    return ObjectString_wrap_cstring(buffer, size);
+    return ObjectString_wrap_cstring(parent->context, buffer, size);
 }
 
 
@@ -178,7 +178,7 @@ Object *FileHandle_tell(Object *parent, Object **argv, u32 argc) {
     if(!fh->fp)
         return NOJA_False;
 
-    return ObjectInt_from_cint((i64) ftell(fh->fp));
+    return ObjectInt_from_cint(parent->context, (i64) ftell(fh->fp));
 }
 
 Object *FileHandle_close(Object *parent, Object **argv, u32 argc) {
@@ -221,7 +221,7 @@ Object *FileHandle_size(Object *parent, Object **argv, u32 argc) {
     if(!fh->fp)
       return NOJA_False;
 
-    return ObjectInt_from_cint((i64) fh->size);
+    return ObjectInt_from_cint(parent->context, (i64) fh->size);
 }
 
 ObjectType TypeTable_FileHandle = {
@@ -250,7 +250,7 @@ Object *FS_open(Object *parent, Object **argv, u32 argc) {
     char *path = 0;
     int   path_size = -1;
 
-    FileHandle  *handle = (FileHandle*) Object_create(&TypeTable_FileHandle, 0, 0);
+    FileHandle  *handle = (FileHandle*) Object_create(parent->context, &TypeTable_FileHandle, 0, 0);
 
     switch(argc) {
 
@@ -259,7 +259,7 @@ Object *FS_open(Object *parent, Object **argv, u32 argc) {
         case 2:
 
         if(argv[1]->type != &TypeTable_ObjectString) {
-            ctx_throw_exception(&context, Exception_TypeError);
+            ctx_throw_exception(parent->context, Exception_TypeError);
             return NOJA_False;
         }
 
@@ -268,7 +268,7 @@ Object *FS_open(Object *parent, Object **argv, u32 argc) {
         case 1:
 
         if(argv[0]->type != &TypeTable_ObjectString) {
-            ctx_throw_exception(&context, Exception_TypeError);
+            ctx_throw_exception(parent->context, Exception_TypeError);
             return NOJA_False;
         }
 
@@ -303,25 +303,25 @@ Object *FS_open(Object *parent, Object **argv, u32 argc) {
 
 char Module_fs2_init(Object *dest) {
 
-    Object *methods = Object_create(__ObjectDict__, 0, 0);
+    Object *methods = Object_create(dest->context, __ObjectDict__, 0, 0);
 
-    Dict_cinsert(methods, "size" , ObjectCFunction_create(&FileHandle_size));
-    Dict_cinsert(methods, "seek" , ObjectCFunction_create(&FileHandle_seek));
-    Dict_cinsert(methods, "tell" , ObjectCFunction_create(&FileHandle_tell));
-    Dict_cinsert(methods, "close", ObjectCFunction_create(&FileHandle_close));
-    Dict_cinsert(methods, "read" , ObjectCFunction_create(&FileHandle_read));
-    Dict_cinsert(methods, "write", ObjectCFunction_create(&FileHandle_write));
+    Dict_cinsert(methods, "size" , ObjectCFunction_create(dest->context, &FileHandle_size));
+    Dict_cinsert(methods, "seek" , ObjectCFunction_create(dest->context, &FileHandle_seek));
+    Dict_cinsert(methods, "tell" , ObjectCFunction_create(dest->context, &FileHandle_tell));
+    Dict_cinsert(methods, "close", ObjectCFunction_create(dest->context, &FileHandle_close));
+    Dict_cinsert(methods, "read" , ObjectCFunction_create(dest->context, &FileHandle_read));
+    Dict_cinsert(methods, "write", ObjectCFunction_create(dest->context, &FileHandle_write));
 
     TypeTable_FileHandle.methods = methods;
 
-    Dict_cinsert(dest, "open"		      , ObjectCFunction_create(&FS_open));
-    Dict_cinsert(dest, "readDir"		  , ObjectCFunction_create(&FS_readDir));
-    Dict_cinsert(dest, "SEEK_SET"     , ObjectInt_from_cint((i64) SEEK_SET));
-    Dict_cinsert(dest, "SEEK_CUR"     , ObjectInt_from_cint((i64) SEEK_CUR));
-    Dict_cinsert(dest, "SEEK_END"     , ObjectInt_from_cint((i64) SEEK_END));
-    Dict_cinsert(dest, "stdin"        , ObjectInt_from_cint((i64) stdin));
-    Dict_cinsert(dest, "stdout"       , ObjectInt_from_cint((i64) stdout));
-    Dict_cinsert(dest, "stderr"       , ObjectInt_from_cint((i64) stderr));
+    Dict_cinsert(dest, "open"		      , ObjectCFunction_create(dest->context, &FS_open));
+    Dict_cinsert(dest, "readDir"		  , ObjectCFunction_create(dest->context, &FS_readDir));
+    Dict_cinsert(dest, "SEEK_SET"     , ObjectInt_from_cint(dest->context, (i64) SEEK_SET));
+    Dict_cinsert(dest, "SEEK_CUR"     , ObjectInt_from_cint(dest->context, (i64) SEEK_CUR));
+    Dict_cinsert(dest, "SEEK_END"     , ObjectInt_from_cint(dest->context, (i64) SEEK_END));
+    Dict_cinsert(dest, "stdin"        , ObjectInt_from_cint(dest->context, (i64) stdin));
+    Dict_cinsert(dest, "stdout"       , ObjectInt_from_cint(dest->context, (i64) stdout));
+    Dict_cinsert(dest, "stderr"       , ObjectInt_from_cint(dest->context, (i64) stderr));
 
     return 1;
 }

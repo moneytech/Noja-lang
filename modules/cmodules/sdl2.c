@@ -32,9 +32,9 @@ Object *SDL2Context_catchEvent(Object *self, Object **argv, u32 argc) {
 
   SDL_PollEvent(&event);
 
-  Object *result = Object_create(__ObjectDict__, 0, 0);
+  Object *result = Object_create(self->context, __ObjectDict__, 0, 0);
 
-  Dict_cinsert(result, "name", ObjectString_from_cstring("?"));
+  Dict_cinsert(result, "name", ObjectString_from_cstring(self->context, "?"));
 
   switch(event.type) {
 
@@ -43,133 +43,133 @@ Object *SDL2Context_catchEvent(Object *self, Object **argv, u32 argc) {
     switch(event.window.event) {
 
       case SDL_WINDOWEVENT_SHOWN:
-      Dict_cinsert(result, "name", ObjectString_from_cstring("window-shown"));
+      Dict_cinsert(result, "name", ObjectString_from_cstring(self->context, "window-shown"));
       break;
 
       case SDL_WINDOWEVENT_HIDDEN:
-      Dict_cinsert(result, "name", ObjectString_from_cstring("window-hidden"));
+      Dict_cinsert(result, "name", ObjectString_from_cstring(self->context, "window-hidden"));
       break;
 
       case SDL_WINDOWEVENT_EXPOSED:
-      Dict_cinsert(result, "name", ObjectString_from_cstring("window-exposed"));
+      Dict_cinsert(result, "name", ObjectString_from_cstring(self->context, "window-exposed"));
       break;
 
       case SDL_WINDOWEVENT_MOVED:
-      Dict_cinsert(result, "name", ObjectString_from_cstring("window-moved"));
+      Dict_cinsert(result, "name", ObjectString_from_cstring(self->context, "window-moved"));
       break;
 
       case SDL_WINDOWEVENT_RESIZED:
-      Dict_cinsert(result, "name", ObjectString_from_cstring("window-resized"));
+      Dict_cinsert(result, "name", ObjectString_from_cstring(self->context, "window-resized"));
       break;
 
       case SDL_WINDOWEVENT_SIZE_CHANGED:
-      Dict_cinsert(result, "name", ObjectString_from_cstring("window-size-changed"));
+      Dict_cinsert(result, "name", ObjectString_from_cstring(self->context, "window-size-changed"));
       break;
 
       case SDL_WINDOWEVENT_MINIMIZED:
-      Dict_cinsert(result, "name", ObjectString_from_cstring("window-minimized"));
+      Dict_cinsert(result, "name", ObjectString_from_cstring(self->context, "window-minimized"));
       break;
 
       case SDL_WINDOWEVENT_MAXIMIZED:
-      Dict_cinsert(result, "name", ObjectString_from_cstring("window-maximized"));
+      Dict_cinsert(result, "name", ObjectString_from_cstring(self->context, "window-maximized"));
       break;
 
       case SDL_WINDOWEVENT_RESTORED:
-      Dict_cinsert(result, "name", ObjectString_from_cstring("window-restored"));
+      Dict_cinsert(result, "name", ObjectString_from_cstring(self->context, "window-restored"));
       break;
 
       case SDL_WINDOWEVENT_ENTER:
-      Dict_cinsert(result, "name", ObjectString_from_cstring("window-enter"));
+      Dict_cinsert(result, "name", ObjectString_from_cstring(self->context, "window-enter"));
       break;
 
       case SDL_WINDOWEVENT_LEAVE:
-      Dict_cinsert(result, "name", ObjectString_from_cstring("window-leave"));
+      Dict_cinsert(result, "name", ObjectString_from_cstring(self->context, "window-leave"));
       break;
 
       case SDL_WINDOWEVENT_FOCUS_GAINED:
-      Dict_cinsert(result, "name", ObjectString_from_cstring("window-focus-gained"));
+      Dict_cinsert(result, "name", ObjectString_from_cstring(self->context, "window-focus-gained"));
       break;
 
       case SDL_WINDOWEVENT_FOCUS_LOST:
-      Dict_cinsert(result, "name", ObjectString_from_cstring("window-focus-lost"));
+      Dict_cinsert(result, "name", ObjectString_from_cstring(self->context, "window-focus-lost"));
       break;
 
       case SDL_WINDOWEVENT_CLOSE:
-      Dict_cinsert(result, "name", ObjectString_from_cstring("window-close"));
+      Dict_cinsert(result, "name", ObjectString_from_cstring(self->context, "window-close"));
       break;
 
       case SDL_WINDOWEVENT_TAKE_FOCUS:
-      Dict_cinsert(result, "name", ObjectString_from_cstring("window-take-focus"));
+      Dict_cinsert(result, "name", ObjectString_from_cstring(self->context, "window-take-focus"));
       break;
 
       case SDL_WINDOWEVENT_HIT_TEST:
-      Dict_cinsert(result, "name", ObjectString_from_cstring("window-hit-test"));
+      Dict_cinsert(result, "name", ObjectString_from_cstring(self->context, "window-hit-test"));
       break;
     }
     break;
 
     case SDL_QUIT:
-    Dict_cinsert(result, "name", ObjectString_from_cstring("quit"));
+    Dict_cinsert(result, "name", ObjectString_from_cstring(self->context, "quit"));
     break;
 
     case SDL_APP_TERMINATING:
-    Dict_cinsert(result, "name", ObjectString_from_cstring("app-terminating"));
+    Dict_cinsert(result, "name", ObjectString_from_cstring(self->context, "app-terminating"));
     break;
 
     case SDL_APP_LOWMEMORY:
-    Dict_cinsert(result, "name", ObjectString_from_cstring("app-lowmemory"));
+    Dict_cinsert(result, "name", ObjectString_from_cstring(self->context, "app-lowmemory"));
     break;
 
     case SDL_APP_WILLENTERBACKGROUND:
-    Dict_cinsert(result, "name", ObjectString_from_cstring("app-willenterbackground"));
+    Dict_cinsert(result, "name", ObjectString_from_cstring(self->context, "app-willenterbackground"));
     break;
 
     case SDL_APP_DIDENTERBACKGROUND:
-    Dict_cinsert(result, "name", ObjectString_from_cstring("app-didenterbackground"));
+    Dict_cinsert(result, "name", ObjectString_from_cstring(self->context, "app-didenterbackground"));
     break;
 
     case SDL_APP_WILLENTERFOREGROUND:
-    Dict_cinsert(result, "name", ObjectString_from_cstring("app-willenterforeground"));
+    Dict_cinsert(result, "name", ObjectString_from_cstring(self->context, "app-willenterforeground"));
     break;
 
     case SDL_APP_DIDENTERFOREGROUND:
-    Dict_cinsert(result, "name", ObjectString_from_cstring("app-didenterforeground"));
+    Dict_cinsert(result, "name", ObjectString_from_cstring(self->context, "app-didenterforeground"));
     break;
 
     case SDL_KEYDOWN://
-    Dict_cinsert(result, "name", ObjectString_from_cstring("keydown"));
-    Dict_cinsert(result, "code", ObjectInt_from_cint((i64) event.key.keysym.sym));
+    Dict_cinsert(result, "name", ObjectString_from_cstring(self->context, "keydown"));
+    Dict_cinsert(result, "code", ObjectInt_from_cint(self->context, (i64) event.key.keysym.sym));
     break;
 
     case SDL_KEYUP://
-    Dict_cinsert(result, "name", ObjectString_from_cstring("keyup"));
-    Dict_cinsert(result, "code", ObjectInt_from_cint((i64) event.key.keysym.sym));
+    Dict_cinsert(result, "name", ObjectString_from_cstring(self->context, "keyup"));
+    Dict_cinsert(result, "code", ObjectInt_from_cint(self->context, (i64) event.key.keysym.sym));
     break;
 
     case SDL_TEXTEDITING://
-    Dict_cinsert(result, "name", ObjectString_from_cstring("textediting"));
+    Dict_cinsert(result, "name", ObjectString_from_cstring(self->context, "textediting"));
     break;
 
     case SDL_TEXTINPUT: //
-    Dict_cinsert(result, "name", ObjectString_from_cstring("textinput"));
+    Dict_cinsert(result, "name", ObjectString_from_cstring(self->context, "textinput"));
     break;
 
     case SDL_KEYMAPCHANGED:
-    Dict_cinsert(result, "name", ObjectString_from_cstring("keymapchanged"));
+    Dict_cinsert(result, "name", ObjectString_from_cstring(self->context, "keymapchanged"));
     break;
 
     case SDL_MOUSEMOTION:
-    Dict_cinsert(result, "name", ObjectString_from_cstring("mousemotion"));
+    Dict_cinsert(result, "name", ObjectString_from_cstring(self->context, "mousemotion"));
     break;
 
     case SDL_MOUSEBUTTONDOWN:
 
     switch(event.button.button) {
-      case SDL_BUTTON_LEFT:   Dict_cinsert(result, "name", ObjectString_from_cstring("mousebuttondown-left")); break;
-      case SDL_BUTTON_RIGHT:  Dict_cinsert(result, "name", ObjectString_from_cstring("mousebuttondown-right")); break;
-      case SDL_BUTTON_MIDDLE: Dict_cinsert(result, "name", ObjectString_from_cstring("mousebuttondown-middle")); break;
-      case SDL_BUTTON_X1:     Dict_cinsert(result, "name", ObjectString_from_cstring("mousebuttondown-x1")); break;
-      case SDL_BUTTON_X2:     Dict_cinsert(result, "name", ObjectString_from_cstring("mousebuttondown-x2")); break;
+      case SDL_BUTTON_LEFT:   Dict_cinsert(result, "name", ObjectString_from_cstring(self->context, "mousebuttondown-left")); break;
+      case SDL_BUTTON_RIGHT:  Dict_cinsert(result, "name", ObjectString_from_cstring(self->context, "mousebuttondown-right")); break;
+      case SDL_BUTTON_MIDDLE: Dict_cinsert(result, "name", ObjectString_from_cstring(self->context, "mousebuttondown-middle")); break;
+      case SDL_BUTTON_X1:     Dict_cinsert(result, "name", ObjectString_from_cstring(self->context, "mousebuttondown-x1")); break;
+      case SDL_BUTTON_X2:     Dict_cinsert(result, "name", ObjectString_from_cstring(self->context, "mousebuttondown-x2")); break;
     }
 
     break;
@@ -177,11 +177,11 @@ Object *SDL2Context_catchEvent(Object *self, Object **argv, u32 argc) {
     case SDL_MOUSEBUTTONUP:
 
     switch(event.button.button) {
-      case SDL_BUTTON_LEFT:   Dict_cinsert(result, "name", ObjectString_from_cstring("mousebuttonup-left")); break;
-      case SDL_BUTTON_RIGHT:  Dict_cinsert(result, "name", ObjectString_from_cstring("mousebuttonup-right")); break;
-      case SDL_BUTTON_MIDDLE: Dict_cinsert(result, "name", ObjectString_from_cstring("mousebuttonup-middle")); break;
-      case SDL_BUTTON_X1:     Dict_cinsert(result, "name", ObjectString_from_cstring("mousebuttonup-x1")); break;
-      case SDL_BUTTON_X2:     Dict_cinsert(result, "name", ObjectString_from_cstring("mousebuttonup-x2")); break;
+      case SDL_BUTTON_LEFT:   Dict_cinsert(result, "name", ObjectString_from_cstring(self->context, "mousebuttonup-left")); break;
+      case SDL_BUTTON_RIGHT:  Dict_cinsert(result, "name", ObjectString_from_cstring(self->context, "mousebuttonup-right")); break;
+      case SDL_BUTTON_MIDDLE: Dict_cinsert(result, "name", ObjectString_from_cstring(self->context, "mousebuttonup-middle")); break;
+      case SDL_BUTTON_X1:     Dict_cinsert(result, "name", ObjectString_from_cstring(self->context, "mousebuttonup-x1")); break;
+      case SDL_BUTTON_X2:     Dict_cinsert(result, "name", ObjectString_from_cstring(self->context, "mousebuttonup-x2")); break;
     }
 
     break;
@@ -212,14 +212,14 @@ Object *SDL2Context_catchEvent(Object *self, Object **argv, u32 argc) {
       }
 
       switch(x + y) {
-        case 1: Dict_cinsert(result, "name", ObjectString_from_cstring("mousewheel-up")); break;
-        case 2: Dict_cinsert(result, "name", ObjectString_from_cstring("mousewheel-down")); break;
-        case 11: Dict_cinsert(result, "name", ObjectString_from_cstring("mousewheel-up-left")); break;
-        case 21: Dict_cinsert(result, "name", ObjectString_from_cstring("mousewheel-up-right")); break;
-        case 12: Dict_cinsert(result, "name", ObjectString_from_cstring("mousewheel-down-left")); break;
-        case 22: Dict_cinsert(result, "name", ObjectString_from_cstring("mousewheel-down-right")); break;
-        case 10: Dict_cinsert(result, "name", ObjectString_from_cstring("mousewheel-left")); break;
-        case 20: Dict_cinsert(result, "name", ObjectString_from_cstring("mousewheel-right")); break;
+        case 1: Dict_cinsert(result, "name", ObjectString_from_cstring(self->context, "mousewheel-up")); break;
+        case 2: Dict_cinsert(result, "name", ObjectString_from_cstring(self->context, "mousewheel-down")); break;
+        case 11: Dict_cinsert(result, "name", ObjectString_from_cstring(self->context, "mousewheel-up-left")); break;
+        case 21: Dict_cinsert(result, "name", ObjectString_from_cstring(self->context, "mousewheel-up-right")); break;
+        case 12: Dict_cinsert(result, "name", ObjectString_from_cstring(self->context, "mousewheel-down-left")); break;
+        case 22: Dict_cinsert(result, "name", ObjectString_from_cstring(self->context, "mousewheel-down-right")); break;
+        case 10: Dict_cinsert(result, "name", ObjectString_from_cstring(self->context, "mousewheel-left")); break;
+        case 20: Dict_cinsert(result, "name", ObjectString_from_cstring(self->context, "mousewheel-right")); break;
       }
 
     }
@@ -499,20 +499,20 @@ Object *quit(Object *self, Object **argv, u32 argc) {
 
 char Module_sdl2_init(Object *dest) {
 
-    Object *methods = Object_create(__ObjectDict__, 0, 0);
+    Object *methods = Object_create(dest->context, __ObjectDict__, 0, 0);
 
-    Dict_cinsert(methods, "drawLine", ObjectCFunction_create(&SDL2Context_drawLine));
-    Dict_cinsert(methods, "drawRect", ObjectCFunction_create(&SDL2Context_drawRect));
-    Dict_cinsert(methods, "fillRect", ObjectCFunction_create(&SDL2Context_fillRect));
-    Dict_cinsert(methods, "clear",    ObjectCFunction_create(&SDL2Context_clear));
-    Dict_cinsert(methods, "update",   ObjectCFunction_create(&SDL2Context_update));
-    Dict_cinsert(methods, "createWindow", ObjectCFunction_create(&SDL2Context_createWindow));
-    Dict_cinsert(methods, "catchEvent", ObjectCFunction_create(&SDL2Context_catchEvent));
+    Dict_cinsert(methods, "drawLine", ObjectCFunction_create(dest->context, &SDL2Context_drawLine));
+    Dict_cinsert(methods, "drawRect", ObjectCFunction_create(dest->context, &SDL2Context_drawRect));
+    Dict_cinsert(methods, "fillRect", ObjectCFunction_create(dest->context, &SDL2Context_fillRect));
+    Dict_cinsert(methods, "clear",    ObjectCFunction_create(dest->context, &SDL2Context_clear));
+    Dict_cinsert(methods, "update",   ObjectCFunction_create(dest->context, &SDL2Context_update));
+    Dict_cinsert(methods, "createWindow", ObjectCFunction_create(dest->context, &SDL2Context_createWindow));
+    Dict_cinsert(methods, "catchEvent", ObjectCFunction_create(dest->context, &SDL2Context_catchEvent));
 
     TypeTable_SDL2Context.methods = methods;
 
-    Dict_cinsert(dest, "init", ObjectCFunction_create(&start));
-    Dict_cinsert(dest, "quit", ObjectCFunction_create(&quit));
+    Dict_cinsert(dest, "init", ObjectCFunction_create(dest->context, &start));
+    Dict_cinsert(dest, "quit", ObjectCFunction_create(dest->context, &quit));
     Dict_cinsert(dest, "Context", (Object*) &TypeTable_SDL2Context);
 
     return 1;
